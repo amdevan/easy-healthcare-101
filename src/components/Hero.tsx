@@ -1,0 +1,86 @@
+import React from 'react';
+import Editable from '@/components/ui/Editable';
+import Button from '@/components/ui/Button';
+import Slider from '@/components/ui/Slider';
+
+const LocationIcon: React.FC = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+);
+
+const SearchIcon: React.FC = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+);
+
+const Hero: React.FC = () => {
+  return (
+    <section className="relative py-16 lg:py-24 bg-gradient-to-br from-brand-cyan-light/40 to-white">
+      <div className="container mx-auto px-4">
+      <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="text-center lg:text-left">
+          <Editable
+            tag="h1"
+            id="hero-title"
+            className="text-4xl md:text-6xl font-extrabold text-brand-gray-900 leading-tight"
+          >
+            Your Trusted Partner for <span className="text-brand-blue">Easy Healthcare</span>
+          </Editable>
+          <Editable
+            tag="p"
+            id="hero-subtitle"
+            className="mt-6 text-lg text-brand-gray-500 max-w-xl mx-auto lg:mx-0"
+          >
+            Connecting you with top doctors, online consultations, and trusted clinics for all your health needs.
+          </Editable>
+          <div className="mt-8 space-y-4 max-w-md mx-auto lg:mx-0">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <LocationIcon />
+              </div>
+              <input 
+                type="text" 
+                placeholder="Select your city (e.g., Kathmandu)"
+                aria-label="Select your city"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
+              />
+            </div>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <SearchIcon />
+              </div>
+              <input 
+                type="text" 
+                placeholder="Search doctors, clinics, hospitals etc."
+                aria-label="Search healthcare providers and services"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
+              />
+            </div>
+            <div className="flex items-center gap-3 pt-2">
+              <Button to="/find-doctors" variant="primary" size="lg">Find Doctors</Button>
+              <Button to="/video-consult" variant="outline" size="lg">Video Consult</Button>
+            </div>
+          </div>
+        </div>
+        <div className="hidden lg:block">
+          <Slider
+            slides={[
+              { src: 'https://picsum.photos/id/26/800/520', alt: 'Essentials neatly arranged' },
+              { src: 'https://picsum.photos/id/32/800/520', alt: 'Medical tools and accessories' },
+              { src: 'https://picsum.photos/id/1041/800/520', alt: 'Work desk with accessories' },
+            ]}
+            autoPlay
+            intervalMs={4500}
+            className="w-[600px] h-[400px]"
+          />
+        </div>
+      </div>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
