@@ -1,5 +1,5 @@
 # Nixpacks configuration for Frontend (React + Vite)
-# This file is for deploying the frontend service
+# Place this file in the root directory as nixpacks.toml
 
 [phases.setup]
 nixPkgs = ['nodejs-20_x']
