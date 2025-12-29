@@ -1,46 +1,54 @@
-# Coolify Deployment Guide
+# Coolify Deployment Guide - Separate Services
 
-Complete guide for deploying Easy Healthcare 101 on Coolify.
+Deploy Easy Healthcare 101 as two independent services in Coolify: a Laravel backend API and a React frontend application.
+
+## Architecture Overview
+
+```
+┌─────────────┐         ┌─────────────┐         ┌─────────────┐
+│   Frontend  │────────▶│   Backend   │────────▶│  PostgreSQL │
+│   (Nginx)   │   API   │  (Laravel)  │   DB    │  Database   │
+└─────────────┘         └─────────────┘         └─────────────┘
+```
+
+**Benefits:**
+- ✅ Independent scaling
+- ✅ Faster frontend serving (Nginx)
+- ✅ Independent deployments
+- ✅ Better resource management
 
 ## Prerequisites
 
-- Coolify instance (self-hosted or cloud)
-- GitHub repository with your code
-- PostgreSQL database (can be provisioned through Coolify)
+- Coolify instance
+- GitHub repository
+- Domain names (optional but recommended):
+  - `api.yourdomain.com` for backend
+  - `yourdomain.com` for frontend
 
-## Quick Start
+---
 
-### 1. Prepare Your Repository
+## Part 1: Deploy Backend API
 
-Ensure all configuration files are committed and pushed:
+### 1. Create Backend Application in Coolify
 
-```bash
-git add .
-git commit -m "Add Coolify deployment configuration"
-git push origin main
-```
+1. **New Resource** → **Application**
+2. **Name**: `easy-healthcare-backend`
+3. **Connect GitHub**: `amdevan/easy-healthcare-101`
+4. **Branch**: `main`
+5. **Build Pack**: **Dockerfile**
+6. **Dockerfile Location**: `backend/Dockerfile`
+7. **Base Directory**: `backend`
 
-### 2. Create Application in Coolify
+### 2. Provision PostgreSQL Database
 
-1. **Log in to Coolify Dashboard**
-2. **Create New Resource** → **Application**
-3. **Connect GitHub Repository**
-   - Select your repository: `amdevan/easy-healthcare-101`
-   - Branch: `main`
-4. **Build Pack**: Choose **Dockerfile** (Coolify will use the root `Dockerfile`)
+1. **New Resource** → **Database** → **PostgreSQL 15**
+2. **Name**: `easy-healthcare-db`
+3. **Database**: `doctor`
+4. Note the connection details
 
-### 3. Provision PostgreSQL Database
+### 3. Configure Backend Environment Variables
 
-1. In Coolify, go to **Resources** → **New Database**
-2. Select **PostgreSQL 15**
-3. Set database name: `doctor`
-4. Note the connection details (host, port, username, password)
-
-### 4. Configure Environment Variables
-
-In your Coolify application settings, add these environment variables:
-
-#### Required Variables
+In Coolify backend application settings, add:
 
 ```env
 # Application
@@ -48,12 +56,12 @@ APP_NAME="Easy Healthcare 101"
 APP_ENV=production
 APP_KEY=base64:YOUR_GENERATED_KEY_HERE
 APP_DEBUG=false
-APP_URL=https://your-domain.com
-FRONTEND_URL=https://your-domain.com
+APP_URL=https://api.yourdomain.com
+FRONTEND_URL=https://yourdomain.com
 
-# Database (use Coolify's PostgreSQL connection details)
+# Database (use Coolify's PostgreSQL internal connection)
 DB_CONNECTION=pgsql
-DB_HOST=postgres-service-name
+DB_HOST=easy-healthcare-db
 DB_PORT=5432
 DB_DATABASE=doctor
 DB_USERNAME=postgres
@@ -64,173 +72,282 @@ SESSION_DRIVER=database
 CACHE_STORE=database
 QUEUE_CONNECTION=database
 
+# CORS (important for frontend communication)
+SANCTUM_STATEFUL_DOMAINS=yourdomain.com
+SESSION_DOMAIN=.yourdomain.com
+
 # Optional: Seed database on first deployment
 SEED_DATABASE=true
 ```
 
-#### Generate APP_KEY
+> [!IMPORTANT]
+> **Generate APP_KEY**: Run `cd backend && php artisan key:generate --show` locally and copy the output
 
-Run this locally to generate an application key:
+### 4. Configure Domain (Optional)
 
-```bash
-cd backend
-php artisan key:generate --show
+1. In backend application settings → **Domains**
+2. Add: `api.yourdomain.com`
+3. Coolify will provision SSL automatically
+
+### 5. Deploy Backend
+
+1. Click **Deploy**
+2. Monitor build logs
+3. Wait for deployment (3-5 minutes)
+4. Verify: `https://api.yourdomain.com/api/health`
+
+Expected response:
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-12-29T...",
+  "services": {
+    "database": "healthy",
+    "application": "healthy"
+  }
+}
 ```
 
-Copy the output (including `base64:` prefix) to the `APP_KEY` environment variable.
+---
 
-### 5. Deploy
+## Part 2: Deploy Frontend
 
-1. Click **Deploy** in Coolify
-2. Monitor the build logs
-3. Wait for deployment to complete (first deployment may take 3-5 minutes)
+### 1. Create Frontend Application in Coolify
 
-### 6. Verify Deployment
+1. **New Resource** → **Application**
+2. **Name**: `easy-healthcare-frontend`
+3. **Connect GitHub**: `amdevan/easy-healthcare-101`
+4. **Branch**: `main`
+5. **Build Pack**: **Dockerfile**
+6. **Dockerfile Location**: `Dockerfile.frontend`
+7. **Docker Build Args**:
+   - Use `.dockerignore.frontend` by renaming or configuring
 
-Once deployed, verify the application:
+### 2. Configure Frontend Environment Variables
 
-1. **Health Check**: Visit `https://your-domain.com/api/health`
-   - Should return: `{"status":"healthy",...}`
+```env
+# API URL (point to your backend)
+VITE_API_URL=https://api.yourdomain.com/api
+```
 
-2. **Frontend**: Visit `https://your-domain.com`
-   - Should load the Easy Healthcare 101 homepage
+> [!WARNING]
+> Make sure `VITE_API_URL` points to your backend API URL (including `/api` path)
 
-3. **API**: Visit `https://your-domain.com/api/doctors`
-   - Should return JSON response with doctors data
+### 3. Configure Domain
 
-## Advanced Configuration
+1. In frontend application settings → **Domains**
+2. Add: `yourdomain.com` (or `www.yourdomain.com`)
+3. Coolify will provision SSL automatically
 
-### Using Coolify's Managed PostgreSQL
+### 4. Deploy Frontend
 
-If using Coolify's managed PostgreSQL service:
+1. Click **Deploy**
+2. Monitor build logs
+3. Wait for deployment (2-3 minutes)
+4. Verify: `https://yourdomain.com`
 
-1. The database service will be on the same network
-2. Use the internal service name as `DB_HOST`
-3. Coolify automatically handles networking between services
+---
 
-### Custom Domain
+## Part 3: Configure CORS (Backend)
 
-1. In Coolify, go to your application settings
-2. Add your custom domain
-3. Coolify will automatically provision SSL certificate via Let's Encrypt
+To allow frontend to communicate with backend, update backend CORS configuration:
 
-### Scaling
+### Option 1: Update in Coolify Environment Variables
 
-To scale your application:
+Already configured if you set `FRONTEND_URL` in backend environment variables.
 
-1. Go to application settings in Coolify
-2. Adjust resource limits (CPU, Memory)
-3. For horizontal scaling, use Coolify's load balancer features
+### Option 2: Manual Configuration (if needed)
 
-## Deployment Options
+Edit `backend/config/cors.php`:
 
-### Option 1: Dockerfile (Recommended)
+```php
+'allowed_origins' => [
+    env('FRONTEND_URL', 'http://localhost:3000'),
+],
+```
 
-Uses the root `Dockerfile` for multi-stage build:
-- ✅ Full control over build process
-- ✅ Optimized production image
-- ✅ Frontend and backend in single container
+---
 
-### Option 2: Nixpacks
+## Verification Checklist
 
-Uses `nixpacks.toml` configuration:
-- ✅ Simpler configuration
-- ✅ Automatic dependency detection
-- ⚠️ May require additional configuration
+After deploying both services:
 
-To use Nixpacks, select **Nixpacks** as build pack in Coolify.
+- [ ] Backend health check responds: `https://api.yourdomain.com/api/health`
+- [ ] Frontend loads: `https://yourdomain.com`
+- [ ] Frontend can fetch data from backend (check browser console for errors)
+- [ ] No CORS errors in browser console
+- [ ] Database migrations ran successfully
+- [ ] SSL certificates are active on both domains
+
+---
+
+## Environment-Specific Configuration
+
+### Production
+
+**Backend:**
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://api.yourdomain.com
+FRONTEND_URL=https://yourdomain.com
+```
+
+**Frontend:**
+```env
+VITE_API_URL=https://api.yourdomain.com/api
+```
+
+### Staging
+
+**Backend:**
+```env
+APP_ENV=staging
+APP_DEBUG=true
+APP_URL=https://api-staging.yourdomain.com
+FRONTEND_URL=https://staging.yourdomain.com
+```
+
+**Frontend:**
+```env
+VITE_API_URL=https://api-staging.yourdomain.com/api
+```
+
+---
+
+## Scaling
+
+### Scale Backend
+
+1. Go to backend application in Coolify
+2. Adjust resources (CPU, Memory)
+3. For horizontal scaling, use load balancer
+
+### Scale Frontend
+
+1. Frontend is stateless (Nginx serving static files)
+2. Can easily scale horizontally
+3. Add CDN for better performance (optional)
+
+---
 
 ## Troubleshooting
 
-### Build Fails
+### CORS Errors
 
-**Issue**: Docker build fails during frontend or backend build
+**Issue**: Browser shows CORS policy errors
 
 **Solution**:
-- Check build logs in Coolify
-- Ensure all dependencies are in `package.json` and `composer.json`
-- Verify Node.js and PHP versions match requirements
+1. Verify `FRONTEND_URL` in backend environment variables
+2. Check `backend/config/cors.php` configuration
+3. Ensure backend is accessible from frontend domain
+
+### Frontend Can't Connect to Backend
+
+**Issue**: API requests fail or timeout
+
+**Solution**:
+1. Verify `VITE_API_URL` in frontend environment variables
+2. Check backend health endpoint is accessible
+3. Verify network connectivity between services
 
 ### Database Connection Error
 
-**Issue**: Application can't connect to database
+**Issue**: Backend can't connect to database
 
 **Solution**:
-- Verify `DB_HOST` matches PostgreSQL service name in Coolify
-- Check database credentials in environment variables
-- Ensure database service is running and healthy
+1. Verify `DB_HOST` matches PostgreSQL service name in Coolify
+2. Check database credentials
+3. Ensure database service is running
 
-### Health Check Fails
+### Build Fails
 
-**Issue**: Health check endpoint returns 503 or times out
+**Backend Build Fails**:
+- Check `backend/Dockerfile` syntax
+- Verify Composer dependencies
+- Check build logs for specific errors
 
-**Solution**:
-- Check application logs in Coolify
-- Verify database connection is working
-- Ensure migrations have run successfully
+**Frontend Build Fails**:
+- Check `Dockerfile.frontend` syntax
+- Verify npm dependencies in `package.json`
+- Ensure Node.js version compatibility
 
-### Frontend Not Loading
-
-**Issue**: Frontend shows 404 or blank page
-
-**Solution**:
-- Verify frontend build completed successfully
-- Check that `dist` files were copied to `backend/public/`
-- Review Apache configuration in Dockerfile
+---
 
 ## Maintenance
 
-### Running Migrations
+### Update Backend
 
-Migrations run automatically on deployment via `entrypoint.sh`. To run manually:
+1. Push changes to GitHub
+2. Coolify auto-deploys (if enabled) or click **Deploy**
+3. Migrations run automatically via `entrypoint.sh`
+
+### Update Frontend
+
+1. Push changes to GitHub
+2. Coolify rebuilds and deploys
+3. No downtime (Nginx serves new build)
+
+### Database Migrations
+
+Migrations run automatically on backend deployment. To run manually:
 
 ```bash
-# In Coolify terminal
-cd backend
+# In Coolify backend terminal
 php artisan migrate --force
 ```
 
-### Clearing Cache
+### View Logs
 
-```bash
-# In Coolify terminal
-cd backend
-php artisan cache:clear
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-```
-
-### Viewing Logs
-
-Access logs in Coolify:
-1. Go to your application
+**Backend Logs**:
+1. Go to backend application in Coolify
 2. Click **Logs** tab
-3. View real-time application logs
+3. View real-time Laravel logs
 
-## Environment-Specific Notes
+**Frontend Logs**:
+1. Go to frontend application in Coolify
+2. Click **Logs** tab
+3. View Nginx access/error logs
 
-### Production Checklist
+---
 
-- [ ] `APP_DEBUG=false`
-- [ ] `APP_ENV=production`
-- [ ] Strong `APP_KEY` generated
-- [ ] Secure database password
-- [ ] SSL certificate configured
-- [ ] Custom domain configured
-- [ ] Database backups enabled in Coolify
+## Cost Optimization
 
-### Staging Environment
+### Resource Allocation
 
-For a staging environment, create a separate application in Coolify with:
-- Different domain (e.g., `staging.your-domain.com`)
-- Separate database
-- `APP_ENV=staging`
-- `APP_DEBUG=true` (optional, for debugging)
+**Backend** (API server):
+- CPU: 1-2 cores
+- Memory: 1-2 GB
+- Storage: 10 GB
+
+**Frontend** (Static files):
+- CPU: 0.5-1 core
+- Memory: 512 MB - 1 GB
+- Storage: 5 GB
+
+### Database
+
+- PostgreSQL: 1-2 GB memory
+- Storage: Based on data size
+
+---
+
+## Security Best Practices
+
+- [ ] Use strong `APP_KEY` for backend
+- [ ] Enable HTTPS on both services (Coolify handles this)
+- [ ] Set `APP_DEBUG=false` in production
+- [ ] Use strong database passwords
+- [ ] Configure CORS properly (don't use `*`)
+- [ ] Enable rate limiting on backend API
+- [ ] Regular database backups (Coolify feature)
+
+---
 
 ## Support
 
-For issues specific to:
-- **Coolify**: Check [Coolify Documentation](https://coolify.io/docs)
-- **Application**: Review application logs and health check endpoint
-- **Database**: Verify PostgreSQL service status in Coolify
+For deployment issues:
+- **Coolify**: [Coolify Documentation](https://coolify.io/docs)
+- **Backend**: Check `/api/health` endpoint and logs
+- **Frontend**: Check browser console and Nginx logs
+- **Database**: Verify connection in Coolify dashboard

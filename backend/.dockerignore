@@ -1,4 +1,58 @@
-storage
-vendor
-node_modules
-.git
+# Dependencies
+/vendor
+/node_modules
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.phpunit.result.cache
+/coverage
+
+# Logs
+*.log
+/storage/logs/*
+
+# Cache
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+
+# Build artifacts
+*.zip
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+
+# Scripts
+*.php
+!artisan
+!/app/**/*.php
+!/bootstrap/**/*.php
+!/config/**/*.php
+!/database/**/*.php
+!/resources/**/*.php
+!/routes/**/*.php
+!/public/**/*.php
+
+# Test files
+check_images.php
+test_db.php

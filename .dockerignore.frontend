@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backend directory
+backend/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build artifacts (will be rebuilt)
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Testing
+coverage/
+
+# Deployment
+.coolify/
+deployment_packages/
+*.zip
+
+# Docker
+Dockerfile
+Dockerfile.frontend
+docker-compose.yml
+.dockerignore
+
+# Scripts
+*.php
+check_storage.php
+debug_error.php
+simple_test.php
+test.html
+clear-hero-title.js
+
+# Documentation
+*.md
+!README.md
+
+# Vercel
+.vercel/
+.vercelignore
+vercel.json
+
+# Other configs
+nixpacks.toml
