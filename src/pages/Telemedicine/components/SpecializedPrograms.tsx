@@ -18,22 +18,22 @@ const ProgramCard: React.FC<ServiceCardProps & { iconName?: string }> = ({ title
   const FinalIcon = IconComp ? <IconComp /> : icon;
 
   return (
-  <div className="group bg-white rounded-xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-teal-200 relative overflow-hidden">
-    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-125 duration-500">
-      {FinalIcon}
+    <div className="group bg-white rounded-xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-teal-200 relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-125 duration-500">
+        {FinalIcon}
+      </div>
+      <div className="mb-6 text-teal-600 p-3 bg-teal-50 rounded-lg inline-block group-hover:bg-teal-600 group-hover:text-white transition-colors">
+        {React.isValidElement(FinalIcon)
+          ? React.cloneElement(FinalIcon as React.ReactElement<{ className?: string }>, { className: 'w-8 h-8' })
+          : FinalIcon
+        }
+      </div>
+      <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
+      <p className="text-gray-600 leading-relaxed">{description}</p>
+      <a href="#cta" className="inline-block mt-6 text-teal-600 font-medium hover:text-teal-800 transition-colors">
+        Learn more &rarr;
+      </a>
     </div>
-    <div className="mb-6 text-teal-600 p-3 bg-teal-50 rounded-lg inline-block group-hover:bg-teal-600 group-hover:text-white transition-colors">
-      {React.isValidElement(FinalIcon) 
-        ? React.cloneElement(FinalIcon as React.ReactElement<{ className?: string }>, { className: 'w-8 h-8' })
-        : FinalIcon
-      }
-    </div>
-    <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
-    <p className="text-gray-600 leading-relaxed">{description}</p>
-    <a href="#cta" className="inline-block mt-6 text-teal-600 font-medium hover:text-teal-800 transition-colors">
-      Learn more &rarr;
-    </a>
-  </div>
   );
 };
 
@@ -65,9 +65,19 @@ const SpecializedPrograms: React.FC<SpecializedProgramsProps> = ({ title, descri
     },
   ];
 
-  const displayPrograms = items && items.length > 0 
-    ? items.map(item => ({ ...item, iconName: item.icon, icon: <HeartPulse /> })) // Fallback icon for prop mapping
-    : defaultPrograms;
+  const displayPrograms = (() => {
+    const apiItems = items && items.length > 0 ? items : [];
+    const validItems = apiItems.filter(item =>
+      item.title?.trim() && item.description?.trim()
+    );
+    const mappedItems = validItems.map(item => ({
+      ...item,
+      iconName: item.icon,
+      icon: <HeartPulse />
+    }));
+    return mappedItems.length > 0 ? mappedItems : defaultPrograms;
+  })();
+
 
   return (
     <section id="programs" className="py-20 bg-gray-50">

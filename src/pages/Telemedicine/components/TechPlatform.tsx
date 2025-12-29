@@ -42,7 +42,14 @@ const TechPlatform: React.FC<TechPlatformProps> = ({ title, description, image, 
     }
   ];
 
-  const displayItems = items && items.length > 0 ? items : defaultItems;
+  const displayItems = (() => {
+    const apiItems = items && items.length > 0 ? items : [];
+    const validItems = apiItems.filter(item =>
+      item.title?.trim() && item.description?.trim()
+    );
+    return validItems.length > 0 ? validItems : defaultItems;
+  })();
+
   const defaultIcons = [Smartphone, Monitor, Database, CreditCard];
 
   const renderIcon = (iconName: string | undefined, index: number) => {
@@ -57,14 +64,14 @@ const TechPlatform: React.FC<TechPlatformProps> = ({ title, description, image, 
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           <div className="lg:w-1/2 order-2 lg:order-1">
-             <div className="relative">
-                <div className="absolute inset-0 bg-teal-200 rounded-full blur-3xl opacity-30"></div>
-                <img
-                  src={imgSrc}
-                  alt="App Interface on Phone"
-                  className="relative z-10 w-full max-w-md mx-auto rounded-3xl shadow-2xl border-8 border-gray-900"
-                />
-             </div>
+            <div className="relative">
+              <div className="absolute inset-0 bg-teal-200 rounded-full blur-3xl opacity-30"></div>
+              <img
+                src={imgSrc}
+                alt="App Interface on Phone"
+                className="relative z-10 w-full max-w-md mx-auto rounded-3xl shadow-2xl border-8 border-gray-900"
+              />
+            </div>
           </div>
 
           <div className="lg:w-1/2 order-1 lg:order-2">

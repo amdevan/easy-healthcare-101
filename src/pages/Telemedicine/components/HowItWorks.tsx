@@ -20,7 +20,14 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ title, subtitle, steps }) => {
 
   const defaultIcons = [UserPlus, Calendar, Clock, Video, FileCheck];
 
-  const displaySteps = steps && steps.length > 0 ? steps : defaultSteps;
+  const displaySteps = (() => {
+    const apiSteps = steps && steps.length > 0 ? steps : [];
+    const validSteps = apiSteps.filter(step =>
+      step.title?.trim() && step.description?.trim()
+    );
+    return validSteps.length > 0 ? validSteps : defaultSteps;
+  })();
+
 
   const renderIcon = (iconName: string | undefined, index: number) => {
     const Icon = getIcon(iconName);

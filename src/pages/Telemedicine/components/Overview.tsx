@@ -37,21 +37,30 @@ const Overview: React.FC<OverviewProps> = ({ title, description, items }) => {
     }
   ];
 
-  const displayItems = items && items.length > 0 ? items : defaultItems;
+  const displayItems = (() => {
+    const apiItems = items && items.length > 0 ? items : [];
+    // Filter out items with empty/whitespace titles or descriptions
+    const validItems = apiItems.filter(item =>
+      item.title?.trim() && item.description?.trim()
+    );
+    // Use defaults if no valid items
+    return validItems.length > 0 ? validItems : defaultItems;
+  })();
+
 
   const renderIcon = (iconName: string | undefined, color: string = 'teal') => {
-      const Icon = getIcon(iconName);
-      const IconComp = Icon || Users; // Fallback
-      
-      let colorClass = 'text-teal-600 bg-teal-100';
-      if (color === 'blue') colorClass = 'text-blue-600 bg-blue-100';
-      if (color === 'red') colorClass = 'text-red-600 bg-red-100';
-      
-      return (
-        <div className={`w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-6 ${colorClass}`}>
-          <IconComp className="w-7 h-7" />
-        </div>
-      );
+    const Icon = getIcon(iconName);
+    const IconComp = Icon || Users; // Fallback
+
+    let colorClass = 'text-teal-600 bg-teal-100';
+    if (color === 'blue') colorClass = 'text-blue-600 bg-blue-100';
+    if (color === 'red') colorClass = 'text-red-600 bg-red-100';
+
+    return (
+      <div className={`w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-6 ${colorClass}`}>
+        <IconComp className="w-7 h-7" />
+      </div>
+    );
   };
 
   return (
@@ -63,9 +72,9 @@ const Overview: React.FC<OverviewProps> = ({ title, description, items }) => {
           </h2>
           <div className="text-lg text-gray-600 mb-12 leading-relaxed">
             {description ? (
-               <div dangerouslySetInnerHTML={{ __html: description }} />
+              <div dangerouslySetInnerHTML={{ __html: description }} />
             ) : (
-               <p>At <span className="font-semibold text-teal-600">Easy Health Care</span>, we believe quality medical attention shouldn't be limited by geography. Our telemedicine platform bridges the gap between patients and certified doctors, designed specifically to serve the diverse terrain of Nepal. Whether you are in the heart of Kathmandu or a remote village in the Himalayas, we bring the clinic to you.</p>
+              <p>At <span className="font-semibold text-teal-600">Easy Health Care</span>, we believe quality medical attention shouldn't be limited by geography. Our telemedicine platform bridges the gap between patients and certified doctors, designed specifically to serve the diverse terrain of Nepal. Whether you are in the heart of Kathmandu or a remote village in the Himalayas, we bring the clinic to you.</p>
             )}
           </div>
         </div>

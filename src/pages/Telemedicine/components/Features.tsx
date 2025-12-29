@@ -43,7 +43,14 @@ const Features: React.FC<FeaturesProps> = ({ title, subtitle, items }) => {
     }
   ];
 
-  const displayItems = items && items.length > 0 ? items : defaultItems;
+  const displayItems = (() => {
+    const apiItems = items && items.length > 0 ? items : [];
+    const validItems = apiItems.filter(item =>
+      item.title?.trim() && item.description?.trim()
+    );
+    return validItems.length > 0 ? validItems : defaultItems;
+  })();
+
 
   const renderIcon = (iconName: string | undefined, defaultIcon: React.ElementType) => {
     const Icon = getIcon(iconName);
@@ -67,9 +74,9 @@ const Features: React.FC<FeaturesProps> = ({ title, subtitle, items }) => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayItems.map((item, idx) => {
-             // Fallback for default icon if using defaultItems order, or just Video if completely unknown
-             const fallbackIcon = idx < defaultIcons.length ? defaultIcons[idx] : Video;
-             return (
+            // Fallback for default icon if using defaultItems order, or just Video if completely unknown
+            const fallbackIcon = idx < defaultIcons.length ? defaultIcons[idx] : Video;
+            return (
               <div key={idx} className={`bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow ${idx === 4 ? 'md:col-span-2 lg:col-span-1' : ''}`}>
                 {renderIcon(item.icon, fallbackIcon)}
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
@@ -77,7 +84,7 @@ const Features: React.FC<FeaturesProps> = ({ title, subtitle, items }) => {
                   {item.description}
                 </p>
               </div>
-             );
+            );
           })}
         </div>
       </div>

@@ -20,6 +20,11 @@ const Editable: React.FC<EditableProps> = ({ tag: Tag, id, children, className }
   const [selectedIdx, setSelectedIdx] = useState<number>(-1);
 
   useEffect(() => {
+    // IMMEDIATE: Clear known stale localStorage entries before any async operations
+    if (id === 'hero-title') {
+      localStorage.removeItem('hero-title');
+    }
+
     let ignore = false;
     getSetting(id)
       .then((value) => {
@@ -28,19 +33,23 @@ const Editable: React.FC<EditableProps> = ({ tag: Tag, id, children, className }
         if (html) {
           setRemoteHtml(html);
           localStorage.setItem(id, html);
+        } else {
+          // Clear stale localStorage if API has no data
+          localStorage.removeItem(id);
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setInitialized(true));
     return () => { ignore = true; };
   }, [id]);
+
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(`editable:${id}:history`) || '[]';
       const arr = JSON.parse(raw);
       if (Array.isArray(arr)) setHistory(arr.filter((x) => typeof x?.html === 'string' && typeof x?.ts === 'number'));
-    } catch {}
+    } catch { }
   }, [id]);
 
   const ensureQuillAssetsLoaded = (): Promise<void> => {
@@ -74,7 +83,14 @@ const Editable: React.FC<EditableProps> = ({ tag: Tag, id, children, className }
       const q = new win.Quill(editorRef.current, {
         theme: 'snow',
         modules: {
-          toolbar: [["bold", "italic", "underline"], [{ header: [1, 2, false] }], [{ list: 'ordered' }, { list: 'bullet' }], ["link", "blockquote"]],
+          // Toolbar intentionally excludes color/background options to prevent styling conflicts
+          // The component's className should control all visual styling
+          toolbar: [
+            ["bold", "italic", "underline"],
+            [{ header: [1, 2, false] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ["link", "blockquote"]
+          ],
           history: { delay: 500, maxStack: 100, userOnly: true },
           keyboard: {
             bindings: {
@@ -99,7 +115,7 @@ const Editable: React.FC<EditableProps> = ({ tag: Tag, id, children, className }
       const next = [...history, { ts: Date.now(), html }];
       setHistory(next);
       localStorage.setItem(`editable:${id}:history`, JSON.stringify(next));
-    } catch {}
+    } catch { }
     try {
       const exists = await getSetting(id);
       if (exists === null) {
@@ -107,7 +123,7 @@ const Editable: React.FC<EditableProps> = ({ tag: Tag, id, children, className }
       } else {
         await patchSetting(id, { html });
       }
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const savedContent = remoteHtml ?? localStorage.getItem(id);
@@ -138,7 +154,7 @@ const Editable: React.FC<EditableProps> = ({ tag: Tag, id, children, className }
               if (!html) return;
               const next = [...history, { ts: Date.now(), html }];
               setHistory(next);
-              try { localStorage.setItem(`editable:${id}:history`, JSON.stringify(next)); } catch {}
+              try { localStorage.setItem(`editable:${id}:history`, JSON.stringify(next)); } catch { }
             }}
             className="px-2 py-1 border rounded bg-white hover:bg-gray-50"
           >Save Snapshot</button>
@@ -168,8 +184,18 @@ const Editable: React.FC<EditableProps> = ({ tag: Tag, id, children, className }
   };
 
   if (initialized && savedContent) {
-    props.dangerouslySetInnerHTML = { __html: savedContent };
-    return <Tag {...props} />;
+    // Strip HTML tags to check if content is actually empty
+    const textContent = savedContent.replace(/<[^>]*>/g, '').trim();
+    if (textContent) {
+      // Only strip inline styles (style attributes), preserve class attributes
+      // This allows design system classes to work while preventing inline style overrides
+      const cleanedContent = savedContent
+        .replace(/\s*style="[^"]*"/gi, '')  // Remove inline styles with double quotes
+        .replace(/\s*style='[^']*'/gi, '');  // Remove inline styles with single quotes
+
+      props.dangerouslySetInnerHTML = { __html: cleanedContent };
+      return <Tag {...props} />;
+    }
   }
 
   return <Tag {...props}>{children}</Tag>;

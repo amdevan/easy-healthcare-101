@@ -10,16 +10,16 @@ import { useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 
 const LocationIcon: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
 );
 
 const SearchIcon: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
 );
 
 interface HeroProps {
@@ -34,14 +34,20 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
   const [search, setSearch] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [specialties, setSpecialties] = useState<SpecialtyDto[]>([]);
+
+  // Clear stale hero-title from localStorage to ensure default blue color shows
+  useEffect(() => {
+    localStorage.removeItem('hero-title');
+  }, []);
+
   useEffect(() => {
     let ignore = false;
     fetchSpecialties()
       .then((list) => {
         if (!ignore) setSpecialties(list);
       })
-      .catch(() => {})
-      .finally(() => {});
+      .catch(() => { })
+      .finally(() => { });
     return () => { ignore = true; };
   }, []);
   const findDoctorsLink = useMemo(() => {
@@ -54,116 +60,116 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
   return (
     <section className="relative py-16 lg:py-24 bg-gradient-to-br from-brand-cyan-light/40 to-white">
       <div className="container mx-auto px-4">
-      <div className="grid lg:grid-cols-2 gap-12 items-center">
-        <div className="text-center lg:text-left">
-          {title ? (
-            <h1 className="text-4xl md:text-6xl font-extrabold text-brand-gray-900 leading-tight">
-               {title}
-            </h1>
-          ) : (
-            <Editable
-              tag="h1"
-              id="hero-title"
-              className="text-4xl md:text-6xl font-extrabold text-brand-gray-900 leading-tight"
-            >
-              Your Trusted Partner for <span className="text-brand-blue">Easy Healthcare</span>
-            </Editable>
-          )}
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-center lg:text-left">
+            {title ? (
+              <h1 className="text-4xl md:text-6xl font-extrabold text-brand-gray-900 leading-tight">
+                {title}
+              </h1>
+            ) : (
+              <Editable
+                tag="h1"
+                id="hero-title"
+                className="text-4xl md:text-6xl font-extrabold text-brand-gray-900 leading-tight"
+              >
+                Your Trusted Partner for <span className="text-brand-blue">Easy Healthcare</span>
+              </Editable>
+            )}
 
-          {subtitle ? (
-            <p className="mt-6 text-lg text-brand-gray-500 max-w-xl mx-auto lg:mx-0">
+            {subtitle ? (
+              <p className="mt-6 text-lg text-brand-gray-500 max-w-xl mx-auto lg:mx-0">
                 {subtitle}
-            </p>
-          ) : (
-             <Editable
-              tag="p"
-              id="hero-subtitle"
-              className="mt-6 text-lg text-brand-gray-500 max-w-xl mx-auto lg:mx-0"
-            >
-              Connecting you with top doctors, online consultations, and trusted clinics for all your health needs.
-            </Editable>
-          )}
+              </p>
+            ) : (
+              <Editable
+                tag="p"
+                id="hero-subtitle"
+                className="mt-6 text-lg text-brand-gray-500 max-w-xl mx-auto lg:mx-0"
+              >
+                Connecting you with top doctors, online consultations, and trusted clinics for all your health needs.
+              </Editable>
+            )}
 
-          <div className="mt-8 space-y-4 max-w-md mx-auto lg:mx-0">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <LocationIcon />
+            <div className="mt-8 space-y-4 max-w-md mx-auto lg:mx-0">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <LocationIcon />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Select your city (e.g., Kathmandu)"
+                  aria-label="Select your city"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const sp = new URLSearchParams();
+                      if (search.trim()) sp.set('q', search.trim());
+                      if (city.trim()) sp.set('location', city.trim());
+                      navigate(`/find-doctors${sp.toString() ? `?${sp.toString()}` : ''}`);
+                    }
+                  }}
+                />
               </div>
-              <input 
-                type="text" 
-                placeholder="Select your city (e.g., Kathmandu)"
-                aria-label="Select your city"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const sp = new URLSearchParams();
-                    if (search.trim()) sp.set('q', search.trim());
-                    if (city.trim()) sp.set('location', city.trim());
-                    navigate(`/find-doctors${sp.toString() ? `?${sp.toString()}` : ''}`);
-                  }
-                }}
-              />
-            </div>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <SearchIcon />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search doctors, clinics, hospitals etc."
+                  aria-label="Search healthcare providers and services"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const sp = new URLSearchParams();
+                      if (search.trim()) sp.set('q', search.trim());
+                      if (city.trim()) sp.set('location', city.trim());
+                      if (specialty.trim()) sp.set('specialty', specialty.trim());
+                      navigate(`/find-doctors${sp.toString() ? `?${sp.toString()}` : ''}`);
+                    }
+                  }}
+                />
               </div>
-              <input 
-                type="text" 
-                placeholder="Search doctors, clinics, hospitals etc."
-                aria-label="Search healthcare providers and services"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const sp = new URLSearchParams();
-                    if (search.trim()) sp.set('q', search.trim());
-                    if (city.trim()) sp.set('location', city.trim());
-                    if (specialty.trim()) sp.set('specialty', specialty.trim());
-                    navigate(`/find-doctors${sp.toString() ? `?${sp.toString()}` : ''}`);
-                  }
-                }}
-              />
-            </div>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <SearchIcon />
+                </div>
+                <input
+                  list="hero-specialty-list"
+                  value={specialty}
+                  onChange={(e) => setSpecialty(e.target.value)}
+                  placeholder="Select Specialty"
+                  aria-label="Select Specialty"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
+                />
+                <datalist id="hero-specialty-list">
+                  {specialties.map((s) => (
+                    <option key={s.id} value={s.name} />
+                  ))}
+                </datalist>
               </div>
-              <input
-                list="hero-specialty-list"
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-                placeholder="Select Specialty"
-                aria-label="Select Specialty"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
-              />
-              <datalist id="hero-specialty-list">
-                {specialties.map((s) => (
-                  <option key={s.id} value={s.name} />
-                ))}
-              </datalist>
-            </div>
-            <div className="flex items-center gap-3 pt-2">
-              <Button to={findDoctorsLink} variant="primary" size="lg">Find Doctors</Button>
-              <Button to="/telemedicine" variant="outline" size="lg">Video Consult</Button>
+              <div className="flex items-center gap-3 pt-2">
+                <Button to={findDoctorsLink} variant="primary" size="lg">Find Doctors</Button>
+                <Button to="/telemedicine" variant="outline" size="lg">Video Consult</Button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="hidden lg:block">
+          <div className="hidden lg:block">
             {image ? (
-                <img 
-                    src={resolveSrc(image)} 
-                    alt={title || "Hero Image"} 
-                    className="w-full h-auto rounded-xl shadow-lg object-cover max-h-[500px]"
-                />
+              <img
+                src={resolveSrc(image)}
+                alt={title || "Hero Image"}
+                className="w-full h-auto rounded-xl shadow-lg object-cover max-h-[500px]"
+              />
             ) : (
-                <HomeSlider />
+              <HomeSlider />
             )}
+          </div>
         </div>
-      </div>
       </div>
     </section>
   );
@@ -202,8 +208,8 @@ const HomeSlider: React.FC = () => {
           setButtonText(typeof opts.buttonText === 'string' && opts.buttonText.trim() ? String(opts.buttonText) : 'View');
         }
       })
-      .catch(() => {})
-      .finally(() => {});
+      .catch(() => { })
+      .finally(() => { });
     return () => { ignore = true; };
   }, []);
 

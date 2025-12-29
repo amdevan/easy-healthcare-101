@@ -18,7 +18,14 @@ const Impact: React.FC<ImpactProps> = ({ title, items }) => {
     { value: '24/7', label: 'Tech-Driven Care', description: 'Positioning Easy Health Care as a modern leader.' }
   ];
 
-  const displayItems = items && items.length > 0 ? items : defaultItems;
+  const displayItems = (() => {
+    const apiItems = items && items.length > 0 ? items : [];
+    const validItems = apiItems.filter(item =>
+      item.value?.trim() && item.label?.trim()
+    );
+    return validItems.length > 0 ? validItems : defaultItems;
+  })();
+
 
   return (
     <section className="py-20 bg-white">

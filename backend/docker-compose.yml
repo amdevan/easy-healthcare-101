@@ -18,18 +18,21 @@ services:
       timeout: 5s
       retries: 10
 
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: easy_healthcare_phpmyadmin
+  postgres:
+    image: postgres:15
+    container_name: easy_healthcare_postgres
     restart: unless-stopped
     environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
+      POSTGRES_DB: ${DB_DATABASE:-doctor}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-root}
     ports:
-      - "8081:80"
-    depends_on:
-      - mysql
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
 
 volumes:
   mysql_data:
+    driver: local
+  pg_data:
     driver: local

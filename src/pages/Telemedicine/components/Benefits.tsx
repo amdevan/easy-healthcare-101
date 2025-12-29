@@ -48,15 +48,22 @@ const Benefits: React.FC<BenefitsProps> = ({ title, description, image, imageCap
     }
   ];
 
-  const displayItems = items && items.length > 0 ? items : defaultItems;
+  const displayItems = (() => {
+    const apiItems = items && items.length > 0 ? items : [];
+    const validItems = apiItems.filter(item =>
+      item.title?.trim() && item.description?.trim()
+    );
+    return validItems.length > 0 ? validItems : defaultItems;
+  })();
+
 
   const defaultIcons = [Home, Globe, TrendingUp, DollarSign, Lock];
 
   const renderIcon = (iconName: string | undefined, index: number) => {
-     const Icon = getIcon(iconName);
-     const DefaultIcon = defaultIcons[index] || Home;
-     const IconComp = Icon || DefaultIcon;
-     return <IconComp className="w-6 h-6 text-teal-300" />;
+    const Icon = getIcon(iconName);
+    const DefaultIcon = defaultIcons[index] || Home;
+    const IconComp = Icon || DefaultIcon;
+    return <IconComp className="w-6 h-6 text-teal-300" />;
   };
 
   return (
@@ -71,12 +78,12 @@ const Benefits: React.FC<BenefitsProps> = ({ title, description, image, imageCap
               {description || "We have built our platform with the patient at the center. Every feature is designed to make healthcare simpler, faster, and more effective for you and your family."}
             </p>
             <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-2xl border border-teal-700">
-               <img src={imgSrc} alt="Happy family" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
-               <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <p className="font-semibold text-white">
-                    {imageCaption || "Serving over 10,000 families"}
-                  </p>
-               </div>
+              <img src={imgSrc} alt="Happy family" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
+              <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
+                <p className="font-semibold text-white">
+                  {imageCaption || "Serving over 10,000 families"}
+                </p>
+              </div>
             </div>
           </div>
 
