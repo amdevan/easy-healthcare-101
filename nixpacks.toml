@@ -1,23 +1,19 @@
+# Nixpacks configuration for Frontend (React + Vite)
+# This file is for deploying the frontend service
+
 [phases.setup]
-nixPkgs = ['nodejs-20_x', 'php82', 'php82Packages.composer']
+nixPkgs = ['nodejs-20_x']
 
 [phases.install]
-cmds = [
-  'npm ci',
-  'cd backend && composer install --no-dev --optimize-autoloader --no-interaction'
-]
+cmds = ['npm ci']
 
 [phases.build]
-cmds = [
-  'npm run build',
-  'cd backend && php artisan config:cache',
-  'cd backend && php artisan route:cache',
-  'cd backend && php artisan view:cache'
-]
+cmds = ['npm run build']
 
 [start]
-cmd = 'cd backend && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080'
+# Serve the built files using a simple static server
+cmd = 'npx serve -s dist -l ${PORT:-3000}'
 
 [variables]
 NODE_ENV = 'production'
-APP_ENV = 'production'
+
