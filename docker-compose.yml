@@ -1,17 +1,81 @@
+version: '3.8'
+
 services:
-  mysql:
-    image: mysql:8.0
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: easy_healthcare_app
+    restart: unless-stopped
     ports:
-      - '3306:3306'
+      - "${APP_PORT:-80}:80"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: doctor
+      # Laravel Configuration
+      APP_NAME: ${APP_NAME:-Easy Healthcare 101}
+      APP_ENV: ${APP_ENV:-production}
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+
+      # Database Configuration (PostgreSQL)
+      DB_CONNECTION: pgsql
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      # Session & Cache
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+
+      # Optional: Seed database on first run
+      SEED_DATABASE: ${SEED_DATABASE:-false}
     volumes:
-      - 'mysql-data:/var/lib/mysql'
+      - storage_data:/var/www/html/backend/storage/app
+      - storage_logs:/var/www/html/backend/storage/logs
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
+      test: [ "CMD", "curl", "-f", "http://localhost/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - postgres
+    networks:
+      - easy_healthcare_network
+
+  # PostgreSQL Database (optional - use Coolify's managed DB instead)
+  postgres:
+    image: postgres:15-alpine
+    container_name: easy_healthcare_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-doctor}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - easy_healthcare_network
 
 volumes:
-  mysql-data:
+  postgres_data:
+    driver: local
+  storage_data:
+    driver: local
+  storage_logs:
+    driver: local
+
+networks:
+  easy_healthcare_network:
+    driver: bridge

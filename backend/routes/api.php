@@ -23,8 +23,13 @@ use App\Http\Controllers\Api\MembershipController;
 use App\Http\Controllers\Api\PackageRequestController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PatientPanelController;
+use App\Http\Controllers\Api\HealthController;
 use Illuminate\Http\Request;
 use App\Models\Role;
+
+// Health check endpoint for Coolify
+Route::get('/health', [HealthController::class, 'check']);
+
 
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/doctors/{doctor}', [DoctorController::class, 'show']);

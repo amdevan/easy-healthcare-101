@@ -1,0 +1,23 @@
+[phases.setup]
+nixPkgs = ['nodejs-20_x', 'php82', 'php82Packages.composer']
+
+[phases.install]
+cmds = [
+  'npm ci',
+  'cd backend && composer install --no-dev --optimize-autoloader --no-interaction'
+]
+
+[phases.build]
+cmds = [
+  'npm run build',
+  'cd backend && php artisan config:cache',
+  'cd backend && php artisan route:cache',
+  'cd backend && php artisan view:cache'
+]
+
+[start]
+cmd = 'cd backend && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080'
+
+[variables]
+NODE_ENV = 'production'
+APP_ENV = 'production'
