@@ -17,10 +17,13 @@ use App\Http\Controllers\Api\InquiryController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\FrontendController;
 use App\Http\Controllers\Api\BoardMemberController;
+use App\Http\Controllers\Api\ManagementTeamController;
 use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\NemtBookingController;
 use App\Http\Controllers\Api\MembershipController;
 use App\Http\Controllers\Api\PackageRequestController;
+use App\Http\Controllers\Api\HealthPackageController;
+use App\Http\Controllers\Api\PharmacyOrderController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PatientPanelController;
 use App\Http\Controllers\Api\HealthController;
@@ -29,6 +32,10 @@ use App\Models\Role;
 
 // Health check endpoint for Coolify
 Route::get('/health', [HealthController::class, 'check']);
+
+Route::get('/test-api', function() {
+    return response()->json(['status' => 'ok', 'message' => 'API is working']);
+});
 
 
 Route::get('/doctors', [DoctorController::class, 'index']);
@@ -76,6 +83,8 @@ Route::apiResource('media', MediaController::class);
 
 // Users CRUD
 Route::apiResource('users', UserController::class);
+Route::apiResource('board-members', BoardMemberController::class);
+Route::apiResource('management-teams', ManagementTeamController::class);
 
 // Contact form
 Route::post('/contact', [InquiryController::class, 'store']);
@@ -88,7 +97,11 @@ Route::post('/nemt-requests', [NemtBookingController::class, 'store']);
 Route::post('/memberships', [MembershipController::class, 'store']);
 
 // Package Booking
+Route::get('/health-packages/{id}', [HealthPackageController::class, 'show']);
 Route::post('/package-requests', [PackageRequestController::class, 'store']);
+
+// Pharmacy Order
+Route::post('/pharmacy-orders', [PharmacyOrderController::class, 'store']);
 
 // Roles CRUD (closure-based to minimize new files)
 Route::get('/roles', function (Request $request) {
@@ -128,6 +141,7 @@ Route::delete('/roles/{role}', function (Role $role) {
 // Pages management (backed by Page model)
 Route::get('/pages', [PageController::class, 'index']);
 Route::get('/pages/{slug}', [PageController::class, 'show']);
+Route::put('/pages/{id}', [PageController::class, 'update']);
 
 // Board members CRUD
 Route::apiResource('board-members', BoardMemberController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
@@ -154,7 +168,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     
     // Patient Panel
-    Route::prefix('my')->group(function () {
+        Route::prefix('my')->group(function () {
+        Route::get('/profile', [PatientPanelController::class, 'profile']);
         Route::put('/profile', [PatientPanelController::class, 'updateProfile']);
         
         Route::get('/appointments', [PatientPanelController::class, 'appointments']);
@@ -164,4 +179,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/prescriptions', [PatientPanelController::class, 'prescriptions']);
         Route::get('/lab-appointments', [PatientPanelController::class, 'labAppointments']);
     });
+});
+
+// Mobile App Routes
+Route::prefix('mobile')->group(function () {
+    Route::get('/version', [\App\Http\Controllers\Api\Mobile\MobileVersionController::class, 'check']);
+    Route::get('/home', [\App\Http\Controllers\Api\Mobile\MobileHomeController::class, 'index']);
 });

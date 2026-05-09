@@ -6,7 +6,7 @@ import GoogleLogo from '@/assets/icons/google.svg';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -34,18 +34,6 @@ const Register: React.FC = () => {
     { iso: 'SG', dial: '+65', name: 'Singapore', flag: '🇸🇬' },
     { iso: 'AE', dial: '+971', name: 'United Arab Emirates', flag: '🇦🇪' },
   ]);
-
-  const countryDialMap = countries.reduce<Record<string, string>>((acc, c) => {
-    acc[c.iso] = c.dial;
-    return acc;
-  }, {});
-
-  // Minimal country code map; extend as needed
-  useEffect(() => {
-    // Default to Nepal regardless of browser locale
-    const npDial = countries.find((c) => c.iso === 'NP')?.dial || '+977';
-    setCountryCode(npDial);
-  }, [countries]);
 
   // Fetch full country list (flags + dial codes) from Rest Countries
   useEffect(() => {
@@ -105,20 +93,30 @@ const Register: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     setIsLoading(true);
+    
+    // Recalculate phone just in case
+    const sanitizedLocal = localPhone.replace(/\D/g, '');
+    const fullPhone = `${countryCode}${sanitizedLocal}`;
+
     try {
-      // Placeholder: integrate with backend API here to create account and send OTPs
-      const sanitizedLocal = localPhone.replace(/\D/g, '');
-      const fullPhone = `${countryCode}${sanitizedLocal}`;
-      navigate('/auth/verify-otp', { state: { email, phone: fullPhone } });
+      await register({
+        name,
+        email,
+        password,
+        password_confirmation: confirm,
+        phone: fullPhone
+      });
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSocialLogin = (provider: 'google' | 'apple') => {
-    // Placeholder for real OAuth flow. For now, simulate auth and navigate.
-    login();
-    navigate('/dashboard');
+    // Placeholder for real OAuth flow
+    setError('Social login not implemented yet.');
   };
 
   return (
@@ -255,15 +253,9 @@ const Register: React.FC = () => {
                       placeholder="e.g. 9812345678"
                       value={localPhone}
                       onChange={(e) => setLocalPhone(e.target.value)}
-                      className="flex-1 rounded-lg border border-brand-gray-300 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/20 px-4 py-2.5 text-brand-gray-900 placeholder-brand-gray-400 outline-none"
+                      className="block w-full rounded-lg border border-brand-gray-300 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/20 px-4 py-2.5 text-brand-gray-900 placeholder-brand-gray-400 outline-none"
                     />
                   </div>
-                  <p className="text-xs text-brand-gray-500 pt-1">
-                    {(() => {
-                      const selected = countries.find((c) => c.dial === countryCode);
-                      return `Example: ${selected ? selected.flag + ' ' + selected.dial : countryCode}9812345678`;
-                    })()}
-                  </p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -272,7 +264,6 @@ const Register: React.FC = () => {
                     id="email"
                     name="email"
                     type="email"
-                    autoComplete="email"
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -286,12 +277,12 @@ const Register: React.FC = () => {
                     id="password"
                     name="password"
                     type="password"
-                    autoComplete="new-password"
-                    placeholder="At least 8 characters"
+                    placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="block w-full rounded-lg border border-brand-gray-300 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/20 px-4 py-2.5 text-brand-gray-900 placeholder-brand-gray-400 outline-none"
                   />
+                  <p className="text-xs text-brand-gray-500">Must be at least 8 characters.</p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -300,89 +291,78 @@ const Register: React.FC = () => {
                     id="confirm"
                     name="confirm"
                     type="password"
-                    autoComplete="new-password"
-                    placeholder="Re-enter password"
+                    placeholder="Repeat password"
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     className="block w-full rounded-lg border border-brand-gray-300 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/20 px-4 py-2.5 text-brand-gray-900 placeholder-brand-gray-400 outline-none"
                   />
                 </div>
 
-                <div className="flex items-center justify-between pt-1">
-                  <label className="flex items-center text-sm text-brand-gray-600">
+                <div className="flex items-start">
+                  <div className="flex items-center h-5">
                     <input
+                      id="terms"
+                      name="terms"
                       type="checkbox"
-                      className="h-4 w-4 text-brand-blue focus:ring-brand-blue border-brand-gray-300 rounded mr-2"
                       checked={acceptTerms}
                       onChange={(e) => setAcceptTerms(e.target.checked)}
+                      className="h-4 w-4 rounded border-brand-gray-300 text-brand-blue focus:ring-brand-blue/20"
                     />
-                    I accept the <Link to="#" className="text-brand-blue hover:underline ml-1">Terms</Link> and <Link to="#" className="text-brand-blue hover:underline">Privacy</Link>
-                  </label>
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <label htmlFor="terms" className="text-brand-gray-600">
+                      I agree to the <Link to="/terms" className="font-medium text-brand-blue hover:text-brand-blue/80">Terms of Service</Link> and <Link to="/privacy" className="font-medium text-brand-blue hover:text-brand-blue/80">Privacy Policy</Link>.
+                    </label>
+                  </div>
                 </div>
 
-                <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Creating account…' : 'Create account'}
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="w-full justify-center py-3 text-base font-semibold"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Creating account...' : 'Create account'}
                 </Button>
               </form>
 
-              {/* Social login options */}
-              <div className="mt-6">
+              <div className="mt-8">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-brand-gray-200" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-brand-gray-500">Or continue with</span>
+                    <span className="bg-white px-4 text-brand-gray-500">Or continue with</span>
                   </div>
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-3">
+
+                <div className="mt-6 grid grid-cols-2 gap-4">
                   <button
                     type="button"
                     onClick={() => handleSocialLogin('google')}
-                    className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#4285F4] hover:bg-[#357AE8] text-white px-4 py-2.5"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-brand-gray-700 hover:bg-brand-gray-50 focus:outline-none focus:ring-4 focus:ring-brand-gray-100"
                   >
-                    <img
-                      src={GoogleLogo}
-                      alt="Google logo"
-                      className="h-5 w-5 inline-block"
-                      width={20}
-                      height={20}
-                    />
-                    <span className="font-medium">Google</span>
+                    <img src={GoogleLogo} alt="Google" className="h-5 w-5" />
+                    <span>Google</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleSocialLogin('apple')}
-                    className="flex items-center justify-center gap-2 w-full rounded-lg bg-black hover:bg-[#111111] text-white px-4 py-2.5"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-brand-gray-700 hover:bg-brand-gray-50 focus:outline-none focus:ring-4 focus:ring-brand-gray-100"
                   >
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
-                      alt="Apple logo"
-                      className="h-5 w-5 inline-block"
-                      width={20}
-                      height={20}
-                      referrerPolicy="no-referrer"
-                      style={{ filter: 'invert(1)' }}
-                    />
-                    <span className="font-medium">Apple</span>
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                    </svg>
+                    <span>GitHub</span>
                   </button>
                 </div>
-              </div>
 
-              <div className="mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-brand-gray-200" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-brand-gray-500">Already have an account?</span>
-                  </div>
-                </div>
-                <div className="mt-4 flex justify-center">
-                  <Link to="/auth/login" className="text-brand-blue hover:underline font-medium text-sm">
-                    Sign in
+                <p className="mt-6 text-center text-sm text-brand-gray-600">
+                  Already have an account?{' '}
+                  <Link to="/auth/login" className="font-semibold text-brand-blue hover:text-brand-blue/80">
+                    Log in
                   </Link>
-                </div>
+                </p>
               </div>
             </div>
           </div>

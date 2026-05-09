@@ -14,11 +14,13 @@ class Page extends Model
         'seo_title',
         'seo_description',
         'is_active',
+        'open_in_new_tab',
         'sort_order',
     ];
 
     protected $casts = [
         'content' => 'array',
         'is_active' => 'boolean',
+        'open_in_new_tab' => 'boolean',
     ];
 }

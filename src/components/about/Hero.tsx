@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { resolveSrc } from '@/utils/url';
+import Button from '@/components/ui/Button';
 
 interface HeroProps {
   title?: string;
@@ -10,12 +11,14 @@ interface HeroProps {
   badge?: string;
   primaryButtonText?: string;
   primaryButtonLink?: string;
+  primaryButtonNewTab?: boolean;
   secondaryButtonText?: string;
   secondaryButtonLink?: string;
+  secondaryButtonNewTab?: boolean;
   stats?: Array<{ value: string; label: string }>;
 }
 
-const Hero: React.FC<HeroProps> = ({ title, subtitle, description, image, badge, primaryButtonText, primaryButtonLink, secondaryButtonText, secondaryButtonLink, stats }) => {
+const Hero: React.FC<HeroProps> = ({ title, subtitle, description, image, badge, primaryButtonText, primaryButtonLink, primaryButtonNewTab, secondaryButtonText, secondaryButtonLink, secondaryButtonNewTab, stats }) => {
   const defaultTitle = "About Us";
   const defaultSubtitle = "स्वास्थ्य तपाईको साथ हाम्रो";
   const defaultDescription = "Bringing together clinical care, telemedicine, pharmacy, and diagnostics under one seamless ecosystem — making healthcare simple, connected, and patient-centered.";
@@ -42,45 +45,53 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, description, image, badge,
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
-                {displayBadge}
+                <div dangerouslySetInnerHTML={{ __html: displayBadge }} />
              </div>
              
-             <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-3 leading-[1.1] tracking-tight">
-               {title || defaultTitle}
-             </h1>
+             <div className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-3 leading-[1.1] tracking-tight" dangerouslySetInnerHTML={{ __html: title || defaultTitle }} />
              
-             <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600 mb-5 font-sans tracking-tight">
-               {subtitle || defaultSubtitle}
-             </h2>
+             <div className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600 mb-5 font-sans tracking-tight" dangerouslySetInnerHTML={{ __html: subtitle || defaultSubtitle }} />
 
-            <p className="text-slate-600 text-base md:text-lg leading-relaxed mb-8 pr-4 font-normal max-w-xl">
+            <div className="text-slate-600 text-base md:text-lg leading-relaxed mb-8 pr-4 font-normal max-w-xl">
               {description ? (
-                <span dangerouslySetInnerHTML={{ __html: description }} />
+                <div dangerouslySetInnerHTML={{ __html: description }} />
               ) : (
-                <>Bringing together clinical care, telemedicine, pharmacy, and diagnostics under one seamless ecosystem — making healthcare <span className="font-semibold text-slate-800">simple, connected, and patient-centered.</span></>
+                <div>Bringing together clinical care, telemedicine, pharmacy, and diagnostics under one seamless ecosystem — making healthcare <span className="font-semibold text-slate-800">simple, connected, and patient-centered.</span></div>
               )}
-            </p>
+            </div>
 
             {Array.isArray(stats) && stats.length > 0 && (
               <div className="grid grid-cols-2 gap-4 mb-8 max-w-md">
                 {stats.map((s, i) => (
                   <div key={i} className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
-                    <div className="text-2xl font-extrabold text-slate-900">{s.value}</div>
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">{s.label}</div>
+                    <div className="text-2xl font-extrabold text-slate-900" dangerouslySetInnerHTML={{ __html: s.value }} />
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider" dangerouslySetInnerHTML={{ __html: s.label }} />
                   </div>
                 ))}
               </div>
             )}
 
              <div className="flex flex-col sm:flex-row gap-4">
-                <a href={primaryButtonLink || '#'} className="px-8 py-3.5 bg-blue-600 text-white rounded-full font-semibold text-sm hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 group">
-                  {displayPrimaryText}
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </a>
-                <a href={secondaryButtonLink || '#'} className="px-8 py-3.5 bg-white text-slate-700 border border-slate-200 rounded-full font-semibold text-sm hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50/50 transition-all flex items-center justify-center shadow-sm hover:shadow-md hover:-translate-y-1 active:translate-y-0">
-                  {displaySecondaryText}
-                </a>
-             </div>
+              <Button
+                to={primaryButtonLink}
+                target={primaryButtonNewTab ? '_blank' : undefined}
+                variant="primary"
+                size="lg"
+                className="rounded-full shadow-xl shadow-blue-600/20"
+              >
+                <div dangerouslySetInnerHTML={{ __html: displayPrimaryText }} />
+                <ArrowRight size={16} className="ml-2" />
+              </Button>
+              <Button
+                to={secondaryButtonLink}
+                target={secondaryButtonNewTab ? '_blank' : undefined}
+                variant="outline"
+                size="lg"
+                className="rounded-full bg-white text-slate-700 border-slate-200"
+              >
+                <div dangerouslySetInnerHTML={{ __html: displaySecondaryText }} />
+              </Button>
+            </div>
           </div>
 
           {/* Right Image - Layered Card Style */}
@@ -97,16 +108,7 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, description, image, badge,
                    loading="eager"
                  />
                  
-                 {/* Floating Badge */}
-                 <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur px-5 py-3 rounded-xl shadow-lg border border-green-50 flex items-center gap-3 animate-fade-in-up">
-                    <div className="bg-green-100 p-2 rounded-full text-green-600">
-                      <ShieldCheck size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">Trusted Care</p>
-                      <p className="text-sm font-bold text-slate-900">For Every Generation</p>
-                    </div>
-                 </div>
+
              </div>
           </div>
 

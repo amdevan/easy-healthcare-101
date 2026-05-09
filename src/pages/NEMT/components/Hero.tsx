@@ -23,19 +23,17 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
               <span className="flex h-2 w-2 bg-teal-500 rounded-full mr-2 animate-pulse"></span>
               <span>Serving Kathmandu Valley & Beyond</span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 mb-6 tracking-tight">
-              {title ? title : (
-                <>
+            {title ? (
+              <div className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 mb-6 tracking-tight" dangerouslySetInnerHTML={{ __html: title }} />
+            ) : (
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 mb-6 tracking-tight">
                   Care That Goes <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600">
                     The Extra Mile
                   </span>
-                </>
-              )}
-            </h1>
-            <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              {subtitle || "Professional Non-Emergency Medical Transportation (NEMT) ensuring safe, comfortable, and dignified travel for you and your loved ones."}
-            </p>
+              </h1>
+            )}
+            <div className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0" dangerouslySetInnerHTML={{ __html: subtitle || "Professional Non-Emergency Medical Transportation (NEMT) ensuring safe, comfortable, and dignified travel for you and your loved ones." }} />
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <a 
@@ -84,7 +82,7 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
                 className="w-full h-full object-cover"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                <p className="text-white font-medium">Trusted by 50+ Hospitals in Kathmandu</p>
+                <div className="text-white font-medium">Trusted by 50+ Hospitals in Kathmandu</div>
               </div>
             </div>
           </div>

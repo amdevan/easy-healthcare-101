@@ -9,7 +9,7 @@ const AIAssistant: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: "Hi there! I'm Devan AI. 👋 <br/>Tell me a bit about yourself or what you're looking for, and I'll help you find the perfect health package." }
+    { role: 'model', text: "Hi there! I'm Easy Health AI. 👋 <br/>Tell me a bit about yourself or what you're looking for, and I'll help you find the perfect health package." }
   ]);
   const [connected, setConnected] = useState<boolean>(isConfigured());
   
@@ -77,7 +77,7 @@ const AIAssistant: React.FC = () => {
             <Bot className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 text-sm">Devan AI</h3>
+            <h3 className="font-bold text-slate-900 text-sm">Easy Health AI</h3>
             <p className={`text-xs font-medium flex items-center gap-1 ${connected ? 'text-teal-600' : 'text-slate-500'}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-teal-500 animate-pulse' : 'bg-slate-400'}`}></span>
               {connected ? 'Online' : 'Offline'}

@@ -18,6 +18,7 @@ class PackageRequest extends Model
         'booking_phone',
         'relation',
         'is_for_self',
+        'add_ons',
         'email',
         'phone',
         'address',
@@ -28,6 +29,7 @@ class PackageRequest extends Model
     protected $casts = [
         'requested_date' => 'date',
         'is_for_self' => 'boolean',
+        'add_ons' => 'array',
     ];
 
     public function patient(): BelongsTo

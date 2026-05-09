@@ -59,12 +59,8 @@ export default function Process({ title, description, steps }: ProcessProps) {
     <section className="bg-white py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-            {title || "How It Works"}
-          </h2>
-          <p className="mt-4 text-lg text-slate-600">
-            {description || "Simple, transparent steps from booking to results."}
-          </p>
+          <div className="text-3xl font-bold tracking-tight text-slate-900" dangerouslySetInnerHTML={{ __html: title || "How It Works" }} />
+          <div className="mt-4 text-lg text-slate-600" dangerouslySetInnerHTML={{ __html: description || "Simple, transparent steps from booking to results." }} />
         </div>
 
         <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -77,9 +73,9 @@ export default function Process({ title, description, steps }: ProcessProps) {
                     <Icon className="h-6 w-6" />
                   </div>
                   <div className="mt-4">
-                    <p className="text-sm text-slate-500">Step {idx + 1}</p>
-                    <h3 className="mt-1 text-lg font-semibold text-slate-900">{step.title}</h3>
-                    <p className="mt-2 text-sm text-slate-600">{step.description}</p>
+                    <div className="text-sm text-slate-500"><div dangerouslySetInnerHTML={{ __html: `Step ${idx + 1}` }} /></div>
+                    <div className="mt-1 text-lg font-semibold text-slate-900" dangerouslySetInnerHTML={{ __html: step.title }} />
+                    <div className="mt-2 text-sm text-slate-600" dangerouslySetInnerHTML={{ __html: step.description }} />
                   </div>
                 </div>
               </li>

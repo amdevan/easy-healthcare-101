@@ -16,10 +16,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ image, category, title, autho
     <img src={image} alt={title} className="w-full h-48 object-cover" />
     <div className="p-6">
       <span className={`text-sm font-semibold ${categoryColor}`}>{category}</span>
-      <Editable tag="h3" id={`article-title-${title.substring(0, 10).replace(/\s+/g, '-')}`} className="mt-2 text-lg font-bold text-brand-gray-900 hover:text-brand-blue transition-colors">
-        <a href="#">{title}</a>
-      </Editable>
-      <Editable tag="p" id={`article-author-${author.replace(/\s+/g, '-')}`} className="mt-3 text-sm text-brand-gray-500">{author}</Editable>
+      <div className="mt-2 text-lg font-bold text-brand-gray-900 hover:text-brand-blue transition-colors">
+                <a href="#"><div dangerouslySetInnerHTML={{ __html: title }} /></a>
+              </div>
+              <div className="mt-3 text-sm text-brand-gray-500" dangerouslySetInnerHTML={{ __html: author }} />
     </div>
   </div>
 );
@@ -40,7 +40,7 @@ const Articles: React.FC<ArticlesProps> = ({ title, subtitle, defaultImage }) =>
     setLoading(true);
     setError(null);
     fetchArticles()
-      .then((res) => { if (!ignore) setArticles(res.data); })
+      .then((res) => { if (!ignore) setArticles(res); })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
     return () => { ignore = true; };
@@ -53,11 +53,11 @@ const Articles: React.FC<ArticlesProps> = ({ title, subtitle, defaultImage }) =>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-10">
           <div>
-            <Editable tag="h2" id="articles-title" className="text-3xl font-extrabold text-brand-gray-900">
-                {title || "Read top articles from health experts"}
+            <Editable tag="div" id="articles-title" className="text-3xl font-extrabold text-brand-gray-900">
+                <div dangerouslySetInnerHTML={{ __html: title || "Read top articles from health experts" }} />
             </Editable>
-            <Editable tag="p" id="articles-subtitle" className="mt-2 text-brand-gray-500">
-                {subtitle || "Health articles that keep you informed about good health practices and achieve your goals."}
+            <Editable tag="div" id="articles-subtitle" className="mt-2 text-brand-gray-500">
+                <div dangerouslySetInnerHTML={{ __html: subtitle || "Health articles that keep you informed about good health practices and achieve your goals." }} />
             </Editable>
           </div>
           <a href="#" className="hidden sm:inline-block px-5 py-2.5 bg-brand-blue text-white font-semibold rounded-lg hover:bg-brand-blue-dark transition-colors">
@@ -78,9 +78,9 @@ const Articles: React.FC<ArticlesProps> = ({ title, subtitle, defaultImage }) =>
               <div className="p-6">
                 <span className={`text-sm font-semibold text-brand-blue`}>Article</span>
                 <Editable tag="h3" id={`article-title-${article.slug}`} className="mt-2 text-lg font-bold text-brand-gray-900 hover:text-brand-blue transition-colors">
-                  <a href="#">{article.title}</a>
+                  <a href="#"><div dangerouslySetInnerHTML={{ __html: article.title }} /></a>
                 </Editable>
-                <Editable tag="p" id={`article-published-${article.id}`} className="mt-3 text-sm text-brand-gray-500">
+                <Editable tag="div" id={`article-published-${article.id}`} className="mt-3 text-sm text-brand-gray-500">
                   {article.published_at ? new Date(article.published_at).toLocaleDateString() : 'Unpublished'}
                 </Editable>
               </div>

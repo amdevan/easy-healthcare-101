@@ -38,11 +38,11 @@ const Ecosystem: React.FC<EcosystemProps> = ({
       <div className="w-full px-6 md:px-10 lg:px-16 max-w-[1600px] mx-auto">
         
         <div className="text-center mb-12 max-w-3xl mx-auto">
-           <span className="text-blue-600 font-bold tracking-widest uppercase text-xs mb-2 block">{subtitle}</span>
-           <h2 className="text-3xl font-bold text-slate-900 mb-2">{title}</h2>
-           <p className="text-slate-600 text-base md:text-lg">
-             {description ? <span dangerouslySetInnerHTML={{ __html: description }} /> : "Easy Health Care operates through a self-owned hybrid healthcare model."}
-           </p>
+           <div className="text-blue-600 font-bold tracking-widest uppercase text-xs mb-2 block" dangerouslySetInnerHTML={{ __html: subtitle }} />
+           <div className="text-3xl font-bold text-slate-900 mb-2" dangerouslySetInnerHTML={{ __html: title }} />
+           <div className="text-slate-600 text-base md:text-lg">
+             {description ? <div dangerouslySetInnerHTML={{ __html: description }} /> : "Easy Health Care operates through a self-owned hybrid healthcare model."}
+           </div>
         </div>
 
         <div className="relative">
@@ -67,8 +67,8 @@ const Ecosystem: React.FC<EcosystemProps> = ({
                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 transition-colors duration-300 shadow-sm ${colors[itemColor]}`}>
                           <Icon size={28} />
                        </div>
-                       <h3 className="font-bold text-lg text-slate-900 mb-2">{item.title}</h3>
-                       <p className="text-slate-500 text-sm leading-relaxed">{item.description}</p>
+                       <div className="font-bold text-lg text-slate-900 mb-2" dangerouslySetInnerHTML={{ __html: item.title }} />
+                       <div className="text-slate-500 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: item.description }} />
                     </div>
                    );
                 })}
@@ -82,9 +82,9 @@ const Ecosystem: React.FC<EcosystemProps> = ({
            </div>
            <div>
              <h4 className="font-bold text-slate-900 text-lg mb-1">A Unified System</h4>
-             <p className="text-slate-600 text-sm md:text-base">
+             <div className="text-slate-600 text-sm md:text-base">
                 Delivering the full continuum of care — from preventive screening to chronic disease management and home recovery.
-             </p>
+             </div>
            </div>
         </div>
 

@@ -70,13 +70,9 @@ const Features: React.FC<FeaturesProps> = ({ title, subtitle, description, items
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
-          <h2 className="text-sm font-bold text-teal-600 tracking-widest uppercase mb-2">{subtitle || "Comprehensive Coverage"}</h2>
-          <p className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-            {title || "Everything Your Parents Need"}
-          </p>
-          <p className="text-xl text-slate-500 leading-relaxed">
-            {description || "We handle the logistics, medical advocacy, and daily coordination so your parents are never alone."}
-          </p>
+          <div className="text-sm font-bold text-teal-600 tracking-widest uppercase mb-2" dangerouslySetInnerHTML={{ __html: subtitle || "Comprehensive Coverage" }} />
+          <div className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight" dangerouslySetInnerHTML={{ __html: title || "Everything Your Parents Need" }} />
+          <div className="text-xl text-slate-500 leading-relaxed" dangerouslySetInnerHTML={{ __html: description || "We handle the logistics, medical advocacy, and daily coordination so your parents are never alone." }} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -110,16 +106,14 @@ const Features: React.FC<FeaturesProps> = ({ title, subtitle, description, items
                   {React.isValidElement(iconNode) ? React.cloneElement(iconNode as React.ReactElement<{ className?: string }>, { className: "w-8 h-8" }) : iconNode}
                 </div>
                 
-                <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-teal-900 transition-colors">{feature.title}</h3>
-                <p className="text-slate-500 mb-6 leading-relaxed">
-                  {feature.description}
-                </p>
+                <div className="text-xl font-bold text-slate-900 mb-3 group-hover:text-teal-900 transition-colors" dangerouslySetInnerHTML={{ __html: feature.title }} />
+                <div className="text-slate-500 mb-6 leading-relaxed" dangerouslySetInnerHTML={{ __html: feature.description }} />
                 
                 <div className="space-y-3 pt-6 border-t border-slate-50">
                   {feature.details.map((detail, i) => (
                     <div key={i} className="flex items-start text-sm text-slate-600 group/item">
                       <CheckCircle2 className={`w-5 h-5 ${colorTheme.text} mr-3 mt-0.5 flex-shrink-0 opacity-70 group-hover/item:opacity-100 transition-opacity`} />
-                      <span className="group-hover/item:text-slate-800 transition-colors">{detail}</span>
+                      <div className="group-hover/item:text-slate-800 transition-colors" dangerouslySetInnerHTML={{ __html: detail }} />
                     </div>
                   ))}
                 </div>

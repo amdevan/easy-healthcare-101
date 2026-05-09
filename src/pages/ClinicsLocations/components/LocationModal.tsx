@@ -36,27 +36,29 @@ const LocationModal: React.FC<LocationModalProps> = ({ selected, onClose }) => {
         <div className="relative h-48">
           <img src={selected.image} alt={selected.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://picsum.photos/1200/500'; }} />
           <div className="absolute top-4 left-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${selected.isPrimary ? 'bg-blue-600 text-white' : 'bg-white/90 text-slate-800 backdrop-blur-sm'}`}>{selected.type}</span>
+            <div className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${selected.isPrimary ? 'bg-blue-600 text-white' : 'bg-white/90 text-slate-800 backdrop-blur-sm'}`}>
+              <div dangerouslySetInnerHTML={{ __html: selected.type }} />
+            </div>
           </div>
         </div>
         <div className="p-6">
-          <h3 className="text-2xl font-bold text-slate-900">{selected.name}</h3>
+          <div className="text-2xl font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: selected.name }} />
           <div className="mt-4 space-y-3 text-slate-700">
-            <div className="flex items-start gap-3"><MapPinIcon className="w-5 h-5 text-blue-500" /><span>{selected.address}</span></div>
-            <div className="flex items-center gap-3"><PhoneIcon className="w-5 h-5 text-blue-500" /><a href={telUrl(selected.phone)} className="font-medium text-blue-700 hover:underline">{selected.phone}</a></div>
-            <div className="flex items-center gap-3"><ClockIcon className="w-5 h-5 text-blue-500" /><span>{selected.hours}</span></div>
+            <div className="flex items-start gap-3"><MapPinIcon className="w-5 h-5 text-blue-500" /><div dangerouslySetInnerHTML={{ __html: selected.address }} /></div>
+            <div className="flex items-center gap-3"><PhoneIcon className="w-5 h-5 text-blue-500" /><a href={telUrl(selected.phone)} className="font-medium text-blue-700 hover:underline"><div className="inline" dangerouslySetInnerHTML={{ __html: selected.phone }} /></a></div>
+            <div className="flex items-center gap-3"><ClockIcon className="w-5 h-5 text-blue-500" /><div dangerouslySetInnerHTML={{ __html: selected.hours }} /></div>
           </div>
           <div className="mt-6">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Available Tech</p>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2"><div dangerouslySetInnerHTML={{ __html: 'Available Tech' }} /></div>
             <div className="flex flex-wrap gap-2">
               {selected.techSpecs.map((t, i) => (
-                <span key={i} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-100 font-medium flex items-center gap-1"><ZapIcon /> {t}</span>
+                <div key={i} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-100 font-medium flex items-center gap-1"><ZapIcon /> <div dangerouslySetInnerHTML={{ __html: t }} /></div>
               ))}
             </div>
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
             {selected.features.map((f, i) => (
-              <span key={i} className="text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded border">{f}</span>
+              <div key={i} className="text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded border"><div dangerouslySetInnerHTML={{ __html: f }} /></div>
             ))}
           </div>
           <div className="mt-8 flex items-center justify-between">

@@ -40,12 +40,8 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ title, subtitle, steps }) => {
     <section id="how-it-works" className="py-20 bg-teal-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            {title || "How It Works"}
-          </h2>
-          <p className="text-lg text-gray-600">
-            {subtitle || "Get quality medical care in 5 simple steps"}
-          </p>
+          <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-4" dangerouslySetInnerHTML={{ __html: title || "How It Works" }} />
+          <div className="text-lg text-gray-600" dangerouslySetInnerHTML={{ __html: subtitle || "Get quality medical care in 5 simple steps" }} />
         </div>
 
         <div className="relative">
@@ -57,8 +53,8 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ title, subtitle, steps }) => {
                 <div className="w-16 h-16 rounded-full bg-teal-600 text-white flex items-center justify-center text-xl font-bold mb-4 shadow-lg border-4 border-white md:border-teal-50">
                   {renderIcon(step.icon, idx)}
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
-                <p className="text-sm text-gray-600">{step.description}</p>
+                <div className="text-lg font-bold text-gray-900 mb-2" dangerouslySetInnerHTML={{ __html: step.title }} />
+                <div className="text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: step.description }} />
               </div>
             ))}
           </div>

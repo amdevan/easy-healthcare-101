@@ -4,6 +4,7 @@ export interface ServiceItem {
   desc: string;
   iconBg: string;
   href: string;
+  new_tab?: boolean;
   decor: string;
   iconName?: string;
   iconImage?: string;

@@ -10,6 +10,10 @@ class UiSettingSeeder extends Seeder
     public function run(): void
     {
         $items = [
+            ['key' => 'general', 'value' => [
+                'home_page_slug' => 'home',
+            ]],
+            ['key' => 'general', 'value' => []],
             ['key' => 'site.name', 'value' => ['text' => 'Easy Healthcare']],
             ['key' => 'site.tagline', 'value' => ['text' => 'Quality care, simplified']],
             ['key' => 'home.cta', 'value' => ['label' => 'Find Doctors', 'href' => '/find-doctors']],
@@ -33,7 +37,7 @@ class UiSettingSeeder extends Seeder
                     'address' => 'Kathmandu, Nepal',
                     'phone' => 'Support: +977 1-4510101',
                     'login_label' => 'Patient Login',
-                    'login_href' => '/patient-login',
+                    'login_href' => '/auth/login',
                     'action_buttons' => [
                         [
                             'label' => 'Book Appointment',
@@ -50,9 +54,9 @@ class UiSettingSeeder extends Seeder
                     ['label' => 'Video Consult', 'href' => '/telemedicine', 'type' => 'link'],
                     ['label' => 'Find Doctors & Clinics', 'href' => '/find-doctors', 'type' => 'link'],
                     ['label' => 'Health Package', 'href' => '/health-package', 'type' => 'link'],
-                    ['label' => 'Membership', 'href' => '/membership', 'type' => 'link'],
-                    ['label' => 'Lab Tests', 'href' => '/lab-tests', 'type' => 'link'],
                     ['label' => 'Easy Pharmacy', 'href' => '/pharmacy', 'type' => 'link'],
+                    ['label' => 'Easy Care 365', 'href' => '/easy-care-365', 'type' => 'link'],
+                    ['label' => 'Lab Tests', 'href' => '/lab-tests', 'type' => 'link'],
                     ['label' => 'Clinics & Locations', 'href' => '/clinics-locations', 'type' => 'link'],
                     ['label' => 'Our Services', 'href' => '#', 'type' => 'services_dropdown'],
                     ['label' => 'About', 'href' => '#', 'type' => 'about_dropdown'],
@@ -63,22 +67,98 @@ class UiSettingSeeder extends Seeder
                     ['label' => 'Digital Health & Telemedicine', 'href' => '/telemedicine'],
                     ['label' => 'Diagnostics & Laboratory', 'href' => '/lab-tests'],
                     ['label' => 'Health Package', 'href' => '/health-package'],
+                    ['label' => 'Easy Pharmacy', 'href' => '/pharmacy'],
                     ['label' => 'Non-Emergency Medical Transport (NEMT)', 'href' => '/nemt'],
                     ['label' => 'Community Health Programs', 'href' => '/community-health'],
                 ],
                 'about_menu' => [
                     ['label' => 'About Us', 'href' => '/about', 'desc' => 'Mission, vision, values and our ecosystem.'],
                     ['label' => 'Board of Director', 'href' => '/about/board-of-director', 'desc' => 'Governance, strategy and oversight.'],
-                    ['label' => 'Management Team', 'href' => '/about/management-team', 'desc' => 'Leadership across operations and innovation.'],
+                    ['label' => 'Meet the Management', 'href' => '/about/management-team', 'desc' => 'Leadership across operations and innovation.'],
+                ],
+            ]],
+            ['key' => 'communication', 'value' => [
+                'mail' => [
+                    'enabled' => false,
+                    'driver' => 'smtp',
+                    'from_name' => '',
+                    'from_address' => '',
+                    'notify_user_on_signup' => true,
+                    'notify_admin_on_signup' => false,
+                    'admin_recipients' => '',
+                    'host' => '',
+                    'port' => 587,
+                    'encryption' => 'tls',
+                    'username' => '',
+                    'password' => '',
+                ],
+                'sms' => [
+                    'enabled' => false,
+                    'provider' => 'twilio',
+                    'notify_user_on_signup' => false,
+                    'notify_admin_on_signup' => false,
+                    'admin_numbers' => '',
+                    'twilio' => [
+                        'account_sid' => '',
+                        'auth_token' => '',
+                        'from_number' => '',
+                    ],
+                    'sparrow' => [
+                        'api_key' => '',
+                        'sender' => '',
+                        'base_url' => 'https://api.sparrowsms.com/v2/sms/',
+                    ],
+                    'other' => [
+                        'api_key' => '',
+                        'api_secret' => '',
+                        'sender' => '',
+                        'base_url' => '',
+                    ],
                 ],
             ]],
             ['key' => 'footer', 'value' => [
-                'text' => '© 2025 Easy Healthcare 101. All rights reserved.',
-                'links' => [
-                    ['label' => 'Privacy Policy', 'href' => '/privacy'],
-                    ['label' => 'Terms of Service', 'href' => '/terms'],
-                    ['label' => 'Contact', 'href' => '/contact'],
+            'logo' => '/logo.svg',
+            'logo_height' => 48,
+            'title' => 'Easy Healthcare 101',
+            'description' => 'Providing quality healthcare services to everyone, everywhere.',
+            'security_label' => 'HIPAA-aware and privacy-focused',
+            'phone' => '+977 1-4510101',
+                'email' => 'info@easyhealthcare101.com',
+                'address' => 'Kathmandu, Nepal',
+                'copyright' => '© 2025 Easy Healthcare 101. All rights reserved.',
+            'download_app_title' => 'Download our App',
+            'columns' => [
+                    [
+                        'title' => 'Quick Links',
+                        'links' => [
+                            ['label' => 'Home', 'url' => '/', 'new_tab' => false],
+                            ['label' => 'About Us', 'url' => '/about', 'new_tab' => false],
+                            ['label' => 'Contact', 'url' => '/contact', 'new_tab' => false],
+                            ['label' => 'Privacy Policy', 'url' => '/privacy', 'new_tab' => false],
+                            ['label' => 'Terms of Service', 'url' => '/terms', 'new_tab' => false],
+                            ['label' => 'Refund Policy', 'url' => '/refund-policy', 'new_tab' => false],
+                        ]
+                    ],
+                    [
+                        'title' => 'Services',
+                        'links' => [
+                            ['label' => 'Telemedicine', 'url' => '/telemedicine', 'new_tab' => false],
+                            ['label' => 'Lab Tests', 'url' => '/lab-tests', 'new_tab' => false],
+                            ['label' => 'Easy Pharmacy', 'url' => '/pharmacy', 'new_tab' => false],
+                            ['label' => 'Health Package', 'url' => '/health-package', 'new_tab' => false],
+                        ]
+                    ]
                 ],
+                'social_links' => [
+                    ['platform' => 'facebook', 'url' => 'https://facebook.com'],
+                    ['platform' => 'twitter', 'url' => 'https://twitter.com'],
+                    ['platform' => 'instagram', 'url' => 'https://instagram.com'],
+                    ['platform' => 'linkedin', 'url' => 'https://linkedin.com'],
+                ],
+                'android_app_link' => 'https://play.google.com/store/apps/details?id=com.easyhealthcare101',
+                'ios_app_link' => 'https://apps.apple.com/app/id123456789',
+                'newsletter_title' => 'Stay Updated',
+                'newsletter_description' => 'Subscribe to our newsletter for latest health tips and updates.',
             ]],
 
             // Pages: initialize default content blocks for management
@@ -89,6 +169,124 @@ class UiSettingSeeder extends Seeder
                     ['key' => 'hero', 'title' => 'Better Care, Faster', 'content' => 'Discover doctors, tests, and services.'],
                     ['key' => 'highlights', 'title' => 'Highlights', 'content' => 'Top services and specialties.'],
                 ],
+                'content' => [
+                    [
+                        'type' => 'pricing_section',
+                        'data' => [
+                            'title' => 'Simple, Transparent Pricing',
+                            'subtitle' => 'Choose the plan that fits your needs',
+                            'description' => 'All plans include our core care coordination services.',
+                            'plans' => [
+                                [
+                                    'id' => 'basic',
+                                    'name' => 'EasyCare 365 Basic',
+                                    'price' => 365,
+                                    'period' => '/year',
+                                    'description' => 'Essential care coordination for peace of mind.',
+                                    'buttonText' => 'Select Basic',
+                                    'features' => [
+                                        ['text' => 'Annual comprehensive health check-up', 'included' => true],
+                                        ['text' => '4 Home health visits per year', 'included' => true],
+                                        ['text' => '2 NEMT trips', 'included' => true],
+                                        ['text' => 'Dedicated Care Coordinator', 'included' => true],
+                                    ],
+                                ],
+                                [
+                                    'id' => 'plus',
+                                    'name' => 'EasyCare 365 Plus',
+                                    'price' => 499,
+                                    'period' => '/year',
+                                    'description' => 'Enhanced coverage with more visits and tele-health.',
+                                    'highlight' => true,
+                                    'buttonText' => 'Select Plus',
+                                    'features' => [
+                                        ['text' => 'Annual comprehensive health check-up', 'included' => true],
+                                        ['text' => '6 Home health visits per year', 'included' => true],
+                                        ['text' => '4 NEMT trips', 'included' => true],
+                                        ['text' => 'Teleconsultation credits', 'included' => true],
+                                    ],
+                                ],
+                                [
+                                    'id' => 'premium',
+                                    'name' => 'EasyCare 365 Premium',
+                                    'price' => 699,
+                                    'period' => '/year',
+                                    'description' => 'Complete healthcare management and regular monitoring.',
+                                    'buttonText' => 'Select Premium',
+                                    'features' => [
+                                        ['text' => 'Annual comprehensive health check-up', 'included' => true],
+                                        ['text' => 'Monthly nurse visits (12/year)', 'included' => true],
+                                        ['text' => '4 NEMT trips', 'included' => true],
+                                        ['text' => 'Pharmacy refill service', 'included' => true],
+                                    ],
+                                ],
+                                [
+                                    'id' => 'elite',
+                                    'name' => 'EasyCare 365 Elite',
+                                    'price' => 999,
+                                    'period' => '/year',
+                                    'description' => 'The ultimate healthcare experience with dedicated concierge.',
+                                    'buttonText' => 'Select Elite',
+                                    'features' => [
+                                        ['text' => 'Annual comprehensive health check-up', 'included' => true],
+                                        ['text' => 'Weekly nurse visits (52/year)', 'included' => true],
+                                        ['text' => 'Unlimited NEMT trips', 'included' => true],
+                                        ['text' => '24/7 Dedicated Medical Concierge', 'included' => true],
+                                    ],
+                                ],
+                            ]
+                        ]
+                    ],
+                    [
+                        'type' => 'health_packages_section',
+                        'data' => [
+                            'title' => 'Health Packages Designed Around Your Life',
+                            'subtitle' => 'Browse preventive, family, and chronic-care packages. Simple, clear inclusions and pricing.',
+                            'packages' => [
+                                [
+                                    'id' => 'pkg_basic',
+                                    'name' => 'Basic Wellness',
+                                    'price' => 2999,
+                                    'priceUsd' => 25,
+                                    'description' => 'Essential health checkup for young adults.',
+                                    'features' => ['CBC', 'Lipid Profile', 'Blood Sugar', 'Urine Routine'],
+                                    'is_popular' => false,
+                                    'category' => 'Preventive'
+                                ],
+                                [
+                                    'id' => 'pkg_comprehensive',
+                                    'name' => 'Comprehensive Care',
+                                    'price' => 5999,
+                                    'priceUsd' => 45,
+                                    'description' => 'Full-body checkup including advanced markers.',
+                                    'features' => ['All Basic Features', 'Thyroid Profile', 'Liver Function', 'Kidney Function', 'ECG'],
+                                    'is_popular' => true,
+                                    'category' => 'Family'
+                                ],
+                                [
+                                    'id' => 'pkg_senior',
+                                    'name' => 'Senior Citizen',
+                                    'price' => 7999,
+                                    'priceUsd' => 60,
+                                    'description' => 'Specialized care for seniors.',
+                                    'features' => ['All Comprehensive Features', 'Bone Density', 'Vitamin D', 'B12', 'Cardiac Risk Markers'],
+                                    'is_popular' => false,
+                                    'category' => 'Senior'
+                                ],
+                                [
+                                    'id' => 'pkg_elite',
+                                    'name' => 'Executive Health',
+                                    'price' => 12999,
+                                    'priceUsd' => 99,
+                                    'description' => 'Ultimate health assessment with premium tests.',
+                                    'features' => ['Full Body Screen', 'HBA1C', 'Iron Profile', 'Calcium', 'Electrolytes', 'Chest X-Ray'],
+                                    'is_popular' => false,
+                                    'category' => 'Executive'
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
             ]],
             ['key' => 'page.find-doctors', 'value' => [
                 'title' => 'Find Doctors & Clinics',
@@ -255,17 +453,50 @@ class UiSettingSeeder extends Seeder
             ['key' => 'page.board-of-director', 'value' => [
                 'title' => 'Board of Director',
                 'subtitle' => 'Leadership team',
-                'sections' => [
-                    ['key' => 'members', 'title' => 'Board Members', 'content' => 'Profiles of board leadership.'],
-                ],
+                'members_title' => 'Meet Our Board of Directors',
+                'members_description' => 'Guided by experienced leaders committed to healthcare accessibility, quality, and patient satisfaction.',
             ]],
             ['key' => 'page.management-team', 'value' => [
-                'title' => 'Management Team',
+                'title' => 'Meet the Management',
                 'subtitle' => 'Executive leadership',
                 'sections' => [
                     ['key' => 'members', 'title' => 'Team Members', 'content' => 'Profiles of management team.'],
                 ],
             ]],
+            // Static content keys
+            ['key' => 'home-top-specialties-title', 'value' => 'Top Specialities'],
+            ['key' => 'testimonials-title', 'value' => 'What our users have to say'],
+            ['key' => 'in-clinic-title', 'value' => 'Book an appointment for an in-clinic consultation'],
+            ['key' => 'in-clinic-subtitle', 'value' => 'Find experienced doctors across all specialties.'],
+            ['key' => 'doctor-home-visit-title', 'value' => 'Doctor Home Visit'],
+            ['key' => 'doctor-home-visit-subtitle', 'value' => 'Get expert medical care at your doorstep.'],
+            ['key' => 'download-app-title', 'value' => 'Download our App'],
+            ['key' => 'download-app-desc', 'value' => 'Get access to healthcare services on the go.'],
+            ['key' => 'download-app-cta', 'value' => 'Download Now'],
+            ['key' => 'articles-title', 'value' => 'Health Articles'],
+            ['key' => 'articles-subtitle', 'value' => 'Read expert health tips and insights.'],
+            ['key' => 'contact-title', 'value' => 'Contact Us'],
+            ['key' => 'contact-desc', 'value' => 'We are here to help.'],
+
+            // Dynamic Services
+            ['key' => 'service-title-Instant-Video-Consultation', 'value' => 'Instant Video Consultation'],
+            ['key' => 'service-desc-Instant-Video-Consultation', 'value' => 'Connect with verified doctors online within 60 seconds from anywhere.'],
+            ['key' => 'service-title-Find-Doctors-Near-You', 'value' => 'Find Doctors Near You'],
+            ['key' => 'service-desc-Find-Doctors-Near-You', 'value' => 'Discover and book confirmed appointments with highly rated doctors in your vicinity.'],
+            ['key' => 'service-title-Surgeries-&-Procedures', 'value' => 'Surgeries & Procedures'],
+            ['key' => 'service-desc-Surgeries-&-Procedures', 'value' => 'Access safe and trusted surgery centers for various medical procedures.'],
+
+            // Dynamic Specialists
+            ['key' => 'specialist-name-Dentist', 'value' => 'Dentist'],
+            ['key' => 'specialist-desc-Dentist', 'value' => 'Teething troubles? Schedule a dental checkup and maintain your oral health.'],
+            ['key' => 'specialist-name-Gynecologist/-Obstetrician', 'value' => 'Gynecologist/ Obstetrician'],
+            ['key' => 'specialist-desc-Gynecologist/-Obstetrician', 'value' => "Explore services for women's health, pregnancy, and infertility treatments with expert care."],
+            ['key' => 'specialist-name-Dietitian/Nutritionist', 'value' => 'Dietitian/Nutritionist'],
+            ['key' => 'specialist-desc-Dietitian/Nutritionist', 'value' => 'Get guidance on eating right, effective weight management, and personalized sports nutrition.'],
+            ['key' => 'specialist-name-Physiotherapist', 'value' => 'Physiotherapist'],
+            ['key' => 'specialist-desc-Physiotherapist', 'value' => 'Pulled a muscle or need rehabilitation? Get it treated by a trained physiotherapist.'],
+            ['key' => 'specialist-name-Neurologist', 'value' => 'Neurologist'],
+            ['key' => 'specialist-desc-Neurologist', 'value' => 'Specializing in disorders of the nervous system. Expert care for complex conditions.'],
         ];
 
         foreach ($items as $i) {

@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { fetchHeaderSetting, HeaderSettingDto, resolveStorageUrl } from '@/controllers/api';
 
-const Logo: React.FC<{ url?: string | null; brandName?: string | null; showBrandName?: boolean | string | number; height?: string | number | null }> = ({ url, brandName, showBrandName, height }) => {
+const Logo: React.FC<{ url?: string | null; href?: string; brandName?: string | null; showBrandName?: boolean | string | number; height?: string | number | null }> = ({ url, href, brandName, showBrandName, height }) => {
   const logoHeight = height ? `${height}px` : '40px';
   // Handle various falsy values from backend (false, 0, "0", "false")
   const isHidden = showBrandName === false || showBrandName === 'false' || showBrandName === 0 || showBrandName === '0';
   const shouldShowBrand = !isHidden && !!brandName;
   
   return (
-    <Link to="/" className="flex items-center space-x-2">
+    <Link to={href || "/"} className="flex items-center space-x-2">
       {url ? (
         <img 
           src={resolveStorageUrl(url)} 
@@ -51,6 +51,7 @@ const Header: React.FC = () => {
       { label: 'Digital Health & Telemedicine', href: '/telemedicine' },
       { label: 'Diagnostics & Laboratory', href: '/lab-tests' },
       { label: 'Health Package', href: '/health-package' },
+      { label: 'Easy Pharmacy', href: '/pharmacy' },
       { label: 'Non-Emergency Medical Transport (NEMT)', href: '/nemt' },
       { label: 'Community Health Programs', href: '/community-health' },
     ];
@@ -62,6 +63,7 @@ const Header: React.FC = () => {
       {
         label: 'About Us',
         href: '/about',
+        new_tab: false,
         desc: 'Mission, vision, values and our ecosystem.',
         icon: (
           <svg className="w-5 h-5 text-brand-blue" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -73,6 +75,7 @@ const Header: React.FC = () => {
       {
         label: 'Board of Director',
         href: '/about/board-of-director',
+        new_tab: false,
         desc: 'Governance, strategy and oversight.',
         icon: (
           <svg className="w-5 h-5 text-brand-blue" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -82,8 +85,9 @@ const Header: React.FC = () => {
         ),
       },
       {
-        label: 'Management Team',
+        label: 'Meet the Management',
         href: '/about/management-team',
+        new_tab: false,
         desc: 'Leadership across operations and innovation.',
         icon: (
           <svg className="w-5 h-5 text-brand-blue" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,7 +99,7 @@ const Header: React.FC = () => {
     ];
 
     if (headerSetting?.about_menu && headerSetting.about_menu.length > 0) {
-      return headerSetting.about_menu.map((item, index) => {
+      return headerSetting.about_menu.map((item: any, index: number) => {
         const defaultItem = defaultAbout.find(d => d.label === item.label) || defaultAbout[index];
         return {
           ...item,
@@ -121,9 +125,9 @@ const Header: React.FC = () => {
       { label: 'Video Consult', href: '/telemedicine' },
       { label: 'Find Doctors & Clinics', href: '/find-doctors' },
       { label: 'Health Package', href: '/health-package' },
-      { label: 'Membership', href: '/membership' },
-      { label: 'Lab Tests', href: '/lab-tests' },
-      { label: 'Easy Pharmacy', href: '/pharmacy' },
+                { label: 'Easy Pharmacy', href: '/pharmacy' },
+                { label: 'Easy Care 365', href: '/easy-care-365' },
+                { label: 'Lab Tests', href: '/lab-tests' },
       { label: 'Clinics & Locations', href: '/clinics-locations' },
       { label: 'Our Services', href: '#' },
       { label: 'About', href: '#' },
@@ -134,7 +138,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     let mounted = true;
     fetchHeaderSetting()
-      .then((data) => {
+      .then((data: HeaderSettingDto) => {
         if (mounted) setHeaderSetting(data);
       })
       .catch(() => {
@@ -192,9 +196,10 @@ const Header: React.FC = () => {
     return false;
   };
 
-  const renderDesktopLink = (link: { label: string; href: string; type?: string }, index: number) => {
-    const isServices = link.type === 'services_dropdown' || (!link.type && link.label.toLowerCase() === 'our services');
-    const isAbout = link.type === 'about_dropdown' || (!link.type && link.label.toLowerCase() === 'about');
+  const renderDesktopLink = (link: { label: string; href: string; type?: string; new_tab?: boolean }, index: number) => {
+    if (!link || !link.label) return null;
+    const isServices = link.type === 'services_dropdown' || (!link.type && link.label?.toLowerCase() === 'our services');
+    const isAbout = link.type === 'about_dropdown' || (!link.type && link.label?.toLowerCase() === 'about');
 
     if (isServices) {
       return (
@@ -214,6 +219,7 @@ const Header: React.FC = () => {
                 <Link
                   key={i}
                   to={item.href}
+                  target={item.new_tab ? '_blank' : undefined}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-brand-blue transition-colors"
                   role="menuitem"
                 >
@@ -244,6 +250,7 @@ const Header: React.FC = () => {
                 <Link
                   key={i}
                   to={item.href}
+                  target={item.new_tab ? '_blank' : undefined}
                   className="flex items-start space-x-3 p-2 rounded-lg hover:bg-blue-50 transition-colors group/item"
                   role="menuitem"
                 >
@@ -262,12 +269,13 @@ const Header: React.FC = () => {
       );
     }
 
-    const isInternal = link.href.startsWith('/');
+    const isInternal = link.href && link.href.startsWith('/');
     if (isInternal) {
       return (
         <Link
           key={index}
           to={link.href}
+          target={link.new_tab ? '_blank' : undefined}
           className={`px-2 py-2 rounded-md text-base transition-colors duration-200 ${isActive(link.href) ? 'text-brand-blue font-semibold bg-blue-50' : 'text-brand-gray-700 hover:text-brand-blue hover:bg-gray-50'}`}
         >
           {link.label}
@@ -278,6 +286,8 @@ const Header: React.FC = () => {
       <a
         key={index}
         href={link.href}
+        target={link.new_tab ? '_blank' : undefined}
+        rel={link.new_tab ? 'noopener noreferrer' : undefined}
         className="px-2 py-2 rounded-md text-base text-brand-gray-700 hover:text-brand-blue hover:bg-gray-50 transition-colors duration-200"
       >
         {link.label}
@@ -313,10 +323,11 @@ const Header: React.FC = () => {
               {headerSetting.top_bar.action_buttons?.map((btn, i) => (
                 <Link 
                   key={i}
-                  to={btn.href} 
+                  to={btn.href || '#'} 
+                  target={btn.new_tab ? '_blank' : undefined}
                   className={`${btn.variant === 'secondary' ? 'bg-white text-blue-600 border border-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-700'} px-4 py-1.5 rounded-md text-xs font-semibold transition-colors`}
                 >
-                  {btn.label}
+                  {btn.label || 'Button'}
                 </Link>
               ))}
               {/* Login */}
@@ -337,6 +348,7 @@ const Header: React.FC = () => {
           <div className="flex-shrink-0 flex items-center">
             <Logo 
               url={headerSetting?.logo_url} 
+              href={headerSetting?.logo_href}
               brandName={headerSetting?.brand_name} 
               showBrandName={headerSetting?.show_brand_name as any}
               height={headerSetting?.logo_height} 
@@ -374,8 +386,9 @@ const Header: React.FC = () => {
         <div className="md:hidden absolute top-20 left-0 w-full bg-white border-b border-gray-100 shadow-lg max-h-[calc(100vh-5rem)] overflow-y-auto">
           <div className="px-4 pt-2 pb-6 space-y-2">
             {effectiveLinks.map((link, i) => {
-              const isServices = link.type === 'services_dropdown' || (!link.type && link.label.toLowerCase() === 'our services');
-              const isAbout = link.type === 'about_dropdown' || (!link.type && link.label.toLowerCase() === 'about');
+              if (!link || !link.label) return null;
+              const isServices = link.type === 'services_dropdown' || (!link.type && link.label?.toLowerCase() === 'our services');
+              const isAbout = link.type === 'about_dropdown' || (!link.type && link.label?.toLowerCase() === 'about');
               
               if (isServices) {
                 return (
@@ -386,6 +399,7 @@ const Header: React.FC = () => {
                          <Link
                            key={j}
                            to={item.href}
+                           target={item.new_tab ? '_blank' : undefined}
                            onClick={closeMobile}
                            className="block px-2 py-2 text-sm text-brand-gray-700 hover:text-brand-blue rounded-md"
                          >
@@ -405,6 +419,7 @@ const Header: React.FC = () => {
                          <Link
                            key={j}
                            to={item.href}
+                           target={item.new_tab ? '_blank' : undefined}
                            onClick={closeMobile}
                            className="block px-2 py-2 text-sm text-brand-gray-700 hover:text-brand-blue rounded-md"
                          >
@@ -416,12 +431,13 @@ const Header: React.FC = () => {
                 );
               }
 
-              const isInternal = link.href.startsWith('/');
+              const isInternal = link.href && link.href.startsWith('/');
               if (isInternal) {
                 return (
                   <Link
                     key={i}
                     to={link.href}
+                    target={link.new_tab ? '_blank' : undefined}
                     onClick={closeMobile}
                     className={`block px-2 py-2 rounded-md transition-colors ${isActive(link.href) ? 'text-brand-blue bg-blue-50 font-medium' : 'text-brand-gray-700 hover:bg-gray-50'}`}
                   >
@@ -433,6 +449,8 @@ const Header: React.FC = () => {
                 <a
                   key={i}
                   href={link.href}
+                  target={link.new_tab ? '_blank' : undefined}
+                  rel={link.new_tab ? 'noopener noreferrer' : undefined}
                   onClick={closeMobile}
                   className="block px-2 py-2 rounded-md text-brand-gray-700 hover:bg-gray-50"
                 >

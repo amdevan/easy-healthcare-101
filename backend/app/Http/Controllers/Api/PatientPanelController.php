@@ -10,6 +10,16 @@ use App\Models\LabAppointment;
 
 class PatientPanelController extends Controller
 {
+    public function profile(Request $request)
+    {
+        $user = $request->user();
+        $user->load('patient');
+        if (!$user->patient) {
+            return response()->json(['message' => 'Patient profile not found'], 404);
+        }
+        return response()->json(['user' => $user, 'patient' => $user->patient]);
+    }
+    
     public function appointments(Request $request)
     {
         $patient = $request->user()->patient;

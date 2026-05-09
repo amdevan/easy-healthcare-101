@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Check, Loader2 } from 'lucide-react';
 import { CountryCodeSelect } from '@/components/ui/CountryCodeSelect';
+import { API_URL } from '@/config/api';
 
 interface MembershipBookingFormProps {
   isOpen: boolean;
@@ -69,7 +70,7 @@ const MembershipBookingForm: React.FC<MembershipBookingFormProps> = ({ isOpen, o
         address: formData.member_address,
       };
 
-      const response = await fetch('/api/memberships', {
+      const response = await fetch(`${API_URL}/memberships`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,9 +101,9 @@ const MembershipBookingForm: React.FC<MembershipBookingFormProps> = ({ isOpen, o
             <Check className="w-8 h-8" />
           </div>
           <h3 className="text-2xl font-bold text-slate-900 mb-2">Request Received!</h3>
-          <p className="text-slate-600 mb-8">
+          <div className="text-slate-600 mb-8">
             Thank you for choosing the {selectedPlan.name}. Our team will contact you shortly to finalize your membership.
-          </p>
+          </div>
           <button
             onClick={() => {
               setSuccess(false);
@@ -128,23 +129,23 @@ const MembershipBookingForm: React.FC<MembershipBookingFormProps> = ({ isOpen, o
         </button>
 
         <div className="p-8 border-b border-slate-100">
-          <h2 className="text-2xl font-bold text-slate-900">Complete Your Membership</h2>
-          <p className="text-slate-500 mt-1">
-            You selected <span className="font-semibold text-teal-600">{selectedPlan.name}</span> (${selectedPlan.price}/year)
-          </p>
+          <h2 className="text-2xl font-bold text-slate-900">Complete Your Easy Care 365 Subscription</h2>
+          <div className="text-slate-500 mt-1">
+            You selected <div className="font-semibold text-teal-600 inline" dangerouslySetInnerHTML={{ __html: selectedPlan.name }} /> (${selectedPlan.price}/year)
+          </div>
         </div>
 
         {error && (
           <div className="mx-8 mt-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 flex items-start gap-3">
             <X className="w-5 h-5 flex-shrink-0 mt-0.5" />
-            <p className="text-sm">{error}</p>
+            <div className="text-sm" dangerouslySetInnerHTML={{ __html: error }} />
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="p-8 space-y-8">
           {/* Toggle Section */}
           <div className="bg-slate-50 p-4 rounded-xl flex items-center justify-between">
-            <span className="font-medium text-slate-700">Who is this membership for?</span>
+            <span className="font-medium text-slate-700">Who is this subscription for?</span>
             <div className="flex bg-white rounded-lg p-1 shadow-sm border border-slate-200">
               <button
                 type="button"

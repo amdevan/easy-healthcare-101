@@ -4,6 +4,7 @@ import { MapPin, Clock, Stethoscope, Building, Calendar, ShieldCheck, User, Acti
 import { CountryCodeSelect } from '@/components/ui/CountryCodeSelect';
 import { resolveSrc } from '@/utils/url';
 import { getDoctorBySlug, DoctorDetailDto, fetchDoctorAvailability, createAppointment, fetchPaymentSettings, PaymentSettings } from '@/controllers/api';
+import Skeleton from '@/components/ui/Skeleton';
 
 const DoctorProfile: React.FC = () => {
   const { slug } = useParams();
@@ -66,8 +67,12 @@ const DoctorProfile: React.FC = () => {
           setTime('');
           setSlotsLoading(true);
           fetchDoctorAvailability(d.id, today)
-            .then((res) => { setSlots(res.slots || []); if (res.slots && res.slots.length) setTime(res.slots[0]); })
-            .catch(() => setSlots([]))
+            .then((res) => { 
+              const s = res.slots || []; 
+              setSlots(s); 
+              setTime(s.length > 0 ? s[0] : ''); 
+            })
+            .catch(() => { setSlots([]); setTime(''); })
             .finally(() => setSlotsLoading(false));
         } 
       })
@@ -80,10 +85,34 @@ const DoctorProfile: React.FC = () => {
   }, [slug, today]);
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-slate-500 font-medium">Loading profile...</p>
+    <div className="min-h-screen bg-slate-50 pb-20">
+      <div className="bg-gradient-to-r from-teal-600 to-emerald-600 h-48 lg:h-64 relative"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10">
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+               <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 overflow-hidden border border-slate-100 p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start">
+                   <Skeleton className="w-40 h-40 rounded-2xl flex-shrink-0" />
+                   <div className="flex-1 pt-2 w-full">
+                      <Skeleton variant="text" height={36} className="w-1/2 mb-4" />
+                      <Skeleton variant="text" height={24} className="w-1/3 mb-2" />
+                      <Skeleton variant="text" height={24} className="w-1/4 mb-4" />
+                      <Skeleton variant="text" height={20} className="w-2/3 mb-2" />
+                      <Skeleton variant="text" height={20} className="w-1/2" />
+                   </div>
+               </div>
+            </div>
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-6">
+                  <Skeleton variant="text" height={24} className="w-1/2 mb-6" />
+                  <div className="grid grid-cols-3 gap-2 mb-6">
+                     <Skeleton height={40} className="rounded-lg" />
+                     <Skeleton height={40} className="rounded-lg" />
+                     <Skeleton height={40} className="rounded-lg" />
+                  </div>
+                  <Skeleton height={200} className="rounded-lg" />
+              </div>
+            </div>
+         </div>
       </div>
     </div>
   );
@@ -92,7 +121,7 @@ const DoctorProfile: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="text-center max-w-md mx-auto p-6 bg-white rounded-xl shadow-sm border border-slate-200">
         <div className="text-rose-500 mb-2 font-bold text-lg">Unable to load profile</div>
-        <p className="text-slate-600">{error}</p>
+        <div className="text-slate-600"><div dangerouslySetInnerHTML={{ __html: error }} /></div>
       </div>
     </div>
   );
@@ -137,43 +166,41 @@ const DoctorProfile: React.FC = () => {
                 <div className="flex-1 pt-2">
                   <div className="flex flex-wrap items-start justify-between gap-4 mb-2">
                     <div>
-                      <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-1">{detail.name}</h1>
+                      <div className="text-3xl font-bold text-slate-900 tracking-tight mb-1" dangerouslySetInnerHTML={{ __html: detail.name }} />
                       
                       {detail.position && (
                         <div className="flex items-center gap-2 text-slate-600 font-medium text-base mb-1">
                           <Briefcase className="w-4 h-4 text-teal-500" />
-                          <span>{detail.position}</span>
+                          <div dangerouslySetInnerHTML={{ __html: detail.position }} />
                         </div>
                       )}
 
                       <div className="flex items-center gap-2 text-teal-600 font-medium text-base">
                         <Stethoscope className="w-4 h-4" />
-                        <span>{detail.specialization || 'General Practitioner'}</span>
+                        <div dangerouslySetInnerHTML={{ __html: detail.specialization || 'General Practitioner' }} />
                       </div>
 
                       {(detail.hospitals?.length || detail.hospital_name) && (
                         <div className="flex items-center gap-2 text-slate-600 font-medium text-base mt-1">
                           <Building className="w-4 h-4 text-teal-500" />
-                          <span>
-                            {detail.hospitals && detail.hospitals.length > 0 
-                              ? detail.hospitals.join(', ') 
-                              : detail.hospital_name}
-                          </span>
+                          <div>
+                            <div dangerouslySetInnerHTML={{ __html: detail.hospitals && detail.hospitals.length > 0 ? detail.hospitals.join(', ') : detail.hospital_name }} />
+                          </div>
                         </div>
                       )}
 
                       {detail.nmc_no && (
-                        <p className="text-xs text-slate-400 font-mono uppercase tracking-wide mt-2 mb-2">NMC: {detail.nmc_no}</p>
+                        <div className="text-xs text-slate-400 font-mono uppercase tracking-wide mt-2 mb-2"><div dangerouslySetInnerHTML={{ __html: `NMC: ${detail.nmc_no}` }} /></div>
                       )}
 
                       <div className="flex flex-col gap-1.5">
                         <div className="flex items-center gap-2 text-slate-600 text-sm font-medium">
                           <Clock className="w-4 h-4 text-slate-400" />
-                          <span>{detail.experience_years ? `${detail.experience_years} Years Experience` : 'Experience not specified'}</span>
+                          <div dangerouslySetInnerHTML={{ __html: detail.experience_years ? `${detail.experience_years} Years Experience` : 'Experience not specified' }} />
                         </div>
                         <div className="flex items-center gap-2 text-slate-600 text-sm font-medium">
                           <MapPin className="w-4 h-4 text-slate-400" />
-                          <span>{detail.location || 'Location not specified'}</span>
+                          <div dangerouslySetInnerHTML={{ __html: detail.location || 'Location not specified' }} />
                         </div>
                         {/* Consultation Fees - Display based on available types */}
                         {(detail.consultation_fee_clinic || detail.consultation_fee_online || detail.consultation_fee_home) && (
@@ -181,19 +208,19 @@ const DoctorProfile: React.FC = () => {
                             {detail.consultation_fee_clinic && (
                                 <div className="flex items-center gap-2 text-blue-900 bg-blue-50 px-2 py-1 rounded border border-blue-100">
                                   <Building className="w-3 h-3 text-brand-blue" />
-                                  <span>Clinic: <span className="font-bold text-brand-blue">NPR {detail.consultation_fee_clinic}</span></span>
+                                  <div>Clinic: <div className="font-bold text-brand-blue inline" dangerouslySetInnerHTML={{ __html: `NPR ${detail.consultation_fee_clinic}` }} /></div>
                                 </div>
                             )}
                             {detail.consultation_fee_online && (
                                 <div className="flex items-center gap-2 text-blue-900 bg-blue-50 px-2 py-1 rounded border border-blue-100">
                                   <Video className="w-3 h-3 text-brand-blue" />
-                                  <span>Online: <span className="font-bold text-brand-blue">NPR {detail.consultation_fee_online}</span></span>
+                                  <div>Online: <div className="font-bold text-brand-blue inline" dangerouslySetInnerHTML={{ __html: `NPR ${detail.consultation_fee_online}` }} /></div>
                                 </div>
                             )}
                             {detail.consultation_fee_home && (
                                 <div className="flex items-center gap-2 text-blue-900 bg-blue-50 px-2 py-1 rounded border border-blue-100">
                                   <Home className="w-3 h-3 text-brand-blue" />
-                                  <span>Home: <span className="font-bold text-brand-blue">NPR {detail.consultation_fee_home}</span></span>
+                                  <div>Home: <div className="font-bold text-brand-blue inline" dangerouslySetInnerHTML={{ __html: `NPR ${detail.consultation_fee_home}` }} /></div>
                                 </div>
                             )}
                           </div>
@@ -201,10 +228,10 @@ const DoctorProfile: React.FC = () => {
                       </div>
                     </div>
                     {detail.is_active && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 uppercase tracking-wide border border-green-200">
-                        <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-                        Active
-                      </span>
+                      <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 uppercase tracking-wide border border-green-200">
+                        <div className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
+                        <div dangerouslySetInnerHTML={{ __html: 'Active' }} />
+                      </div>
                     )}
                   </div>
 
@@ -214,9 +241,7 @@ const DoctorProfile: React.FC = () => {
                         <Building className="w-5 h-5 text-slate-400" />
                         <div>
                           <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Hospitals</p>
-                          <p className="font-medium">
-                             {detail.hospitals && detail.hospitals.length > 0 ? detail.hospitals.join(', ') : detail.hospital_name}
-                          </p>
+                          <div className="font-medium" dangerouslySetInnerHTML={{ __html: detail.hospitals && detail.hospitals.length > 0 ? detail.hospitals.join(', ') : (detail.hospital_name || '') }} />
                         </div>
                       </div>
                     </div>
@@ -238,10 +263,10 @@ const DoctorProfile: React.FC = () => {
                 {detail.content ? (
                   <div dangerouslySetInnerHTML={{ __html: detail.content }} />
                 ) : (
-                  <p>
-                    {detail.name} is a dedicated {detail.specialization || 'healthcare professional'} based in {detail.location || 'our network'}. 
-                    With over {detail.experience_years ?? 0} years of clinical experience, Dr. {detail.name.split(' ').pop()} is committed to providing patient-centered care and ensuring the best medical outcomes for all patients{(detail.hospitals?.length || detail.hospital_name) ? ` at ${detail.hospitals && detail.hospitals.length > 0 ? detail.hospitals.join(', ') : detail.hospital_name}` : ''}.
-                  </p>
+                  <div className="text-slate-600">
+                    <div dangerouslySetInnerHTML={{ __html: `${detail.name} is a dedicated ${detail.specialization || 'healthcare professional'} based in ${detail.location || 'our network'}.` }} />
+                    <div dangerouslySetInnerHTML={{ __html: ` With over ${detail.experience_years ?? 0} years of clinical experience, Dr. ${detail.name.split(' ').pop()} is committed to providing patient-centered care and ensuring the best medical outcomes for all patients${(detail.hospitals?.length || detail.hospital_name) ? ` at ${detail.hospitals && detail.hospitals.length > 0 ? detail.hospitals.join(', ') : detail.hospital_name}` : ''}.` }} />
+                  </div>
                 )}
               </div>
             </div>
@@ -315,10 +340,12 @@ const DoctorProfile: React.FC = () => {
                           try {
                             if (!detail) throw new Error('No doctor');
                             const res = await fetchDoctorAvailability(detail.id, val);
-                            setSlots(res.slots || []);
-                            if (res.slots && res.slots.length) setTime(res.slots[0]);
+                            const s = res.slots || [];
+                            setSlots(s);
+                            setTime(s.length > 0 ? s[0] : '');
                           } catch {
                             setSlots([]);
+                            setTime('');
                           } finally {
                             setSlotsLoading(false);
                           }
@@ -331,10 +358,15 @@ const DoctorProfile: React.FC = () => {
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-slate-700 flex justify-between">
                         <span>Available Slots</span>
-                        {slotsLoading && <span className="text-xs text-teal-600 animate-pulse">Updating...</span>}
                       </label>
                       
-                      {slots.length === 0 && !slotsLoading ? (
+                      {slotsLoading ? (
+                        <div className="grid grid-cols-3 gap-2">
+                          {[...Array(9)].map((_, i) => (
+                            <Skeleton key={i} height={38} className="rounded-lg" />
+                          ))}
+                        </div>
+                      ) : slots.length === 0 ? (
                         <div className="text-center py-8 bg-slate-50 rounded-lg border border-dashed border-slate-300">
                           <p className="text-slate-500 text-sm">No slots available for this date.</p>
                         </div>

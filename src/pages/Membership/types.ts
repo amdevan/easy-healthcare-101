@@ -15,6 +15,8 @@ export interface PricingPlan {
   features: PlanFeature[];
   highlight?: boolean;
   buttonText: string;
+  button_url?: string;
+  button_new_tab?: boolean;
 }
 
 export interface CoreComponent {

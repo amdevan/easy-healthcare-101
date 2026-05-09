@@ -13,6 +13,8 @@ class RoleSeeder extends Seeder
         $roles = [
             ['name' => 'Administrator', 'slug' => 'admin', 'description' => 'Full access to the system'],
             ['name' => 'Board Admin', 'slug' => 'board-admin', 'description' => 'Manage Board Members only'],
+            ['name' => 'Doctor', 'slug' => 'doctor', 'description' => 'Medical practitioner access'],
+            ['name' => 'Patient', 'slug' => 'patient', 'description' => 'Patient access to personal health data'],
         ];
 
         foreach ($roles as $r) {

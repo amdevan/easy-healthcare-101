@@ -16,12 +16,29 @@ const AboutPage: React.FC = () => {
     const t = block?.type;
     const d = block?.data || {};
     if (t === 'hero_section') {
-      return <Hero key={idx} title={d.title} subtitle={d.subtitle} description={d.description} image={d.image} badge={d.badge} primaryButtonText={d.primary_button_text} primaryButtonLink={d.primary_button_link} secondaryButtonText={d.secondary_button_text} secondaryButtonLink={d.secondary_button_link} stats={d.stats} />;
+      return (
+        <Hero
+          key={idx}
+          title={d.title}
+          subtitle={d.subtitle}
+          description={d.description}
+          image={d.image}
+          badge={d.badge}
+          primaryButtonText={d.primary_button_text}
+          primaryButtonLink={d.primary_button_link}
+          primaryButtonNewTab={d.primary_button_new_tab}
+          secondaryButtonText={d.secondary_button_text}
+          secondaryButtonLink={d.secondary_button_link}
+          secondaryButtonNewTab={d.secondary_button_new_tab}
+          stats={d.stats}
+        />
+      );
     }
     if (t === 'about_section') {
-      const images: string[] = Array.isArray(d.images) ? d.images : [];
-      const img1 = images[0] ? resolveSrc(images[0]) : "https://picsum.photos/400/500?grayscale";
-      const img2 = images[1] ? resolveSrc(images[1]) : "https://picsum.photos/400/500?blur=2";
+      // Support new structure (image_1, image_2) and legacy structure (images array)
+      const img1 = d.image_1 ? resolveSrc(d.image_1) : (Array.isArray(d.images) && d.images[0] ? resolveSrc(d.images[0]) : "https://picsum.photos/400/500?grayscale");
+      const img2 = d.image_2 ? resolveSrc(d.image_2) : (Array.isArray(d.images) && d.images[1] ? resolveSrc(d.images[1]) : "https://picsum.photos/400/500?blur=2");
+
       return (
         <section key={idx} className="py-20 bg-slate-50">
           <div className="container mx-auto px-4 md:px-6">
@@ -33,14 +50,10 @@ const AboutPage: React.FC = () => {
                 </div>
               </div>
               <div className="md:w-1/2 space-y-6">
-                <h4 className="text-teal-600 font-bold uppercase tracking-wide">
-                  {d.subtitle || "About Easy Health Care"}
-                </h4>
-                <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-                  {d.title || "Dedicated to Continuous & Affordable Care"}
-                </h2>
+                <div className="text-teal-600 font-bold uppercase tracking-wide" dangerouslySetInnerHTML={{ __html: d.subtitle || "About Easy Health Care" }} />
+                <div className="text-3xl md:text-4xl font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: d.title || "Dedicated to Continuous & Affordable Care" }} />
                 <div className="text-slate-600 text-lg leading-relaxed">
-                  {d.description ? <span dangerouslySetInnerHTML={{ __html: d.description }} /> : "We bring together clinical care, telemedicine, pharmacy, and diagnostics under one seamless ecosystem — making healthcare simple, connected, and patient-centered."}
+                  {d.description ? <div dangerouslySetInnerHTML={{ __html: d.description }} /> : "We bring together clinical care, telemedicine, pharmacy, and diagnostics under one seamless ecosystem — making healthcare simple, connected, and patient-centered."}
                 </div>
               </div>
             </div>
@@ -58,7 +71,7 @@ const AboutPage: React.FC = () => {
       return <Ecosystem key={idx} title={d.title} subtitle={d.subtitle} description={d.description} items={d.items} />;
     }
     if (t === 'impact_section') {
-      return <Impact key={idx} title={d.title} subtitle={d.subtitle} description={d.description} stats={d.stats} areas={d.areas} />;
+      return <Impact key={idx} title={d.title} subtitle={d.subtitle} description={d.description} stats={d.stats} areas={d.areas || d.items} areasTitle={d.areas_title} areasDescription={d.areas_description} />;
     }
     if (t === 'future_section') {
       return <FutureDirection key={idx} title={d.title} subtitle={d.subtitle} description={d.description} steps={d.steps} />;

@@ -30,12 +30,10 @@ const OnlineConsultation: React.FC<OnlineConsultationProps> = ({ title, descript
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-10">
           <div>
-            <h2 id="online-consult-title" className="text-3xl font-extrabold text-brand-gray-900">
-              {title || "Consult top doctors online for any health concern"}
-            </h2>
-            <p id="online-consult-subtitle" className="mt-2 text-brand-gray-500">
-              {description || "Private online consultations with verified doctors in all specialities."}
-            </p>
+            <div id="online-consult-title" className="text-3xl font-extrabold text-brand-gray-900">
+              <div dangerouslySetInnerHTML={{ __html: title || "Consult top doctors online for any health concern" }} />
+            </div>
+            <div id="online-consult-subtitle" className="mt-2 text-brand-gray-500" dangerouslySetInnerHTML={{ __html: description || "Private online consultations with verified doctors in all specialities." }} />
           </div>
           <a href="#" className="hidden sm:inline-block px-5 py-2.5 border border-brand-blue text-brand-blue font-semibold rounded-lg hover:bg-blue-50 transition-colors">
             View All Specialities
@@ -54,7 +52,7 @@ const OnlineConsultation: React.FC<OnlineConsultationProps> = ({ title, descript
                     <Icon name={concern.icon} alt={concern.name} className="w-10 h-10" />
                   )}
                 </div>
-                <p className="font-semibold text-brand-gray-800 flex-grow">{concern.name}</p>
+                <div className="font-semibold text-brand-gray-800 flex-grow" dangerouslySetInnerHTML={{ __html: concern.name }} />
                 <a href="#" className="mt-4 text-brand-blue font-bold text-sm hover:underline">
                   CONSULT NOW
                 </a>

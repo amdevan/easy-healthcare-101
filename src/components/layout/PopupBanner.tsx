@@ -128,7 +128,7 @@ const PopupBanner: React.FC = () => {
               {banner.link_url && (
                 <a 
                   href={banner.link_url}
-                  target={banner.link_url.startsWith('http') ? '_blank' : '_self'}
+                  target={banner.new_tab ? '_blank' : (banner.link_url.startsWith('http') ? '_blank' : '_self')}
                   rel="noopener noreferrer"
                   className="inline-flex px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onClick={handleClose}

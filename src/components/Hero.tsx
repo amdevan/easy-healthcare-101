@@ -26,136 +26,173 @@ interface HeroProps {
   title?: string;
   subtitle?: string;
   image?: string;
+  showSearch?: boolean;
+  primary_button_text?: string;
+  primary_button_link?: string;
+  primary_button_new_tab?: boolean;
+  secondary_button_text?: string;
+  secondary_button_link?: string;
+  secondary_button_new_tab?: boolean;
 }
 
-const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
+const Hero: React.FC<HeroProps> = ({ 
+  title, 
+  subtitle, 
+  image, 
+  showSearch = false,
+  primary_button_text,
+  primary_button_link,
+  primary_button_new_tab,
+  secondary_button_text,
+  secondary_button_link,
+  secondary_button_new_tab
+}) => {
   const navigate = useNavigate();
-  const [city, setCity] = useState('');
-  const [search, setSearch] = useState('');
+  const [location, setLocation] = useState('');
+  const [query, setQuery] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [specialties, setSpecialties] = useState<SpecialtyDto[]>([]);
+
+  const POPULAR_LOCATIONS = [
+    'Kathmandu', 'Lalitpur', 'Bhaktapur', 'Pokhara', 'Biratnagar', 
+    'Birgunj', 'Dharan', 'Bharatpur', 'Janakpur', 'Butwal', 'Hetauda', 
+    'Nepalgunj', 'Itahari', 'Dhangadhi'
+  ];
+
+  useEffect(() => {
+    fetchSpecialties().then(setSpecialties).catch(() => {});
+  }, []);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (location) params.append('location', location);
+    if (query) params.append('q', query);
+    if (specialty) params.append('specialty', specialty);
+    navigate(`/find-doctors?${params.toString()}`);
+  };
 
   // Clear stale hero-title from localStorage to ensure default blue color shows
   useEffect(() => {
     localStorage.removeItem('hero-title');
   }, []);
 
-  useEffect(() => {
-    let ignore = false;
-    fetchSpecialties()
-      .then((list) => {
-        if (!ignore) setSpecialties(list);
-      })
-      .catch(() => { })
-      .finally(() => { });
-    return () => { ignore = true; };
-  }, []);
-  const findDoctorsLink = useMemo(() => {
-    const sp = new URLSearchParams();
-    if (search.trim()) sp.set('q', search.trim());
-    if (city.trim()) sp.set('location', city.trim());
-    if (specialty.trim()) sp.set('specialty', specialty.trim());
-    return `/find-doctors${sp.toString() ? `?${sp.toString()}` : ''}`;
-  }, [search, city, specialty]);
   return (
     <section className="relative py-16 lg:py-24 bg-gradient-to-br from-brand-cyan-light/40 to-white">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
             {title ? (
-              <h1 className="text-4xl md:text-6xl font-extrabold text-brand-gray-900 leading-tight">
-                {title}
-              </h1>
+              <div className="text-4xl md:text-6xl font-extrabold text-brand-gray-900 leading-tight" dangerouslySetInnerHTML={{ __html: title }} />
             ) : (
-              <Editable
-                tag="h1"
-                id="hero-title"
+              <div
                 className="text-4xl md:text-6xl font-extrabold text-brand-gray-900 leading-tight"
               >
                 Your Trusted Partner for <span className="text-brand-blue">Easy Healthcare</span>
-              </Editable>
+              </div>
             )}
 
             {subtitle ? (
-              <p className="mt-6 text-lg text-brand-gray-500 max-w-xl mx-auto lg:mx-0">
-                {subtitle}
-              </p>
+              <div className="mt-6 text-lg text-brand-gray-500 max-w-xl mx-auto lg:mx-0" dangerouslySetInnerHTML={{ __html: subtitle }} />
             ) : (
-              <Editable
-                tag="p"
-                id="hero-subtitle"
+              <div
                 className="mt-6 text-lg text-brand-gray-500 max-w-xl mx-auto lg:mx-0"
               >
                 Connecting you with top doctors, online consultations, and trusted clinics for all your health needs.
-              </Editable>
+              </div>
             )}
 
             <div className="mt-8 space-y-4 max-w-md mx-auto lg:mx-0">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LocationIcon />
+              {showSearch && (
+                <div className="flex flex-col gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <LocationIcon />
+                    </div>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      list="hero-locations"
+                      placeholder="Select your city (e.g., Kathmandu)"
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-blue focus:border-brand-blue sm:text-sm shadow-sm"
+                    />
+                    <datalist id="hero-locations">
+                      {POPULAR_LOCATIONS.map((loc) => (
+                        <option key={loc} value={loc} />
+                      ))}
+                    </datalist>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <SearchIcon />
+                    </div>
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Search doctors, clinics, hospitals etc."
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-blue focus:border-brand-blue sm:text-sm shadow-sm"
+                    />
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <SearchIcon />
+                    </div>
+                    <input
+                      type="text"
+                      value={specialty}
+                      onChange={(e) => setSpecialty(e.target.value)}
+                      list="hero-specialties"
+                      placeholder="Select Specialty"
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-blue focus:border-brand-blue sm:text-sm shadow-sm"
+                    />
+                    <datalist id="hero-specialties">
+                      {specialties.map((s) => (
+                        <option key={s.id} value={s.name} />
+                      ))}
+                    </datalist>
+                  </div>
+                  <button
+                    onClick={handleSearch}
+                    className="w-full bg-brand-blue text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-blue-dark transition-colors shadow-lg shadow-brand-blue/20"
+                  >
+                    Find Doctors
+                  </button>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Select your city (e.g., Kathmandu)"
-                  aria-label="Select your city"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      const sp = new URLSearchParams();
-                      if (search.trim()) sp.set('q', search.trim());
-                      if (city.trim()) sp.set('location', city.trim());
-                      navigate(`/find-doctors${sp.toString() ? `?${sp.toString()}` : ''}`);
-                    }
-                  }}
-                />
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <SearchIcon />
+              )}
+            </div>
+
+            <div className="mt-8 space-y-4 max-w-md mx-auto lg:mx-0">
+              {(primary_button_text || secondary_button_text) ? (
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  {primary_button_text && (
+                    <Button
+                      to={primary_button_link}
+                      target={primary_button_new_tab ? '_blank' : undefined}
+                      variant="primary"
+                      size="lg"
+                      className="w-full sm:w-auto"
+                    >
+                      <div dangerouslySetInnerHTML={{ __html: primary_button_text }} />
+                    </Button>
+                  )}
+                  {secondary_button_text && (
+                    <Button
+                      to={secondary_button_link}
+                      target={secondary_button_new_tab ? '_blank' : undefined}
+                      variant="outline"
+                      size="lg"
+                      className="w-full sm:w-auto"
+                    >
+                      <div dangerouslySetInnerHTML={{ __html: secondary_button_text }} />
+                    </Button>
+                  )}
                 </div>
-                <input
-                  type="text"
-                  placeholder="Search doctors, clinics, hospitals etc."
-                  aria-label="Search healthcare providers and services"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      const sp = new URLSearchParams();
-                      if (search.trim()) sp.set('q', search.trim());
-                      if (city.trim()) sp.set('location', city.trim());
-                      if (specialty.trim()) sp.set('specialty', specialty.trim());
-                      navigate(`/find-doctors${sp.toString() ? `?${sp.toString()}` : ''}`);
-                    }
-                  }}
-                />
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <SearchIcon />
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Button to="/telemedicine" variant="outline" size="lg">Video Consult</Button>
                 </div>
-                <input
-                  list="hero-specialty-list"
-                  value={specialty}
-                  onChange={(e) => setSpecialty(e.target.value)}
-                  placeholder="Select Specialty"
-                  aria-label="Select Specialty"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-blue focus:border-brand-blue"
-                />
-                <datalist id="hero-specialty-list">
-                  {specialties.map((s) => (
-                    <option key={s.id} value={s.name} />
-                  ))}
-                </datalist>
-              </div>
-              <div className="flex items-center gap-3 pt-2">
-                <Button to={findDoctorsLink} variant="primary" size="lg">Find Doctors</Button>
-                <Button to="/telemedicine" variant="outline" size="lg">Video Consult</Button>
-              </div>
+              )}
             </div>
           </div>
           <div className="hidden lg:block">
@@ -179,7 +216,7 @@ export default Hero;
 
 const HomeSlider: React.FC = () => {
   const [slides, setSlides] = useState<Slide[]>([]);
-  const [autoPlay, setAutoPlay] = useState(true);
+  const [autoPlay, setAutoPlay] = useState(false);
   const [intervalMs, setIntervalMs] = useState(4500);
   const [pauseOnHover, setPauseOnHover] = useState(true);
   const [showCaptions, setShowCaptions] = useState(true);
@@ -199,7 +236,7 @@ const HomeSlider: React.FC = () => {
         }
         const opts = (value && !Array.isArray(value) ? (value as any)?.options : null) ?? null;
         if (opts) {
-          setAutoPlay(Boolean(opts.autoPlay ?? true));
+          setAutoPlay(Boolean(opts.autoPlay ?? false));
           const n = Number(opts.intervalMs ?? 4500);
           setIntervalMs(Number.isFinite(n) && n > 0 ? n : 4500);
           setPauseOnHover(Boolean(opts.pauseOnHover ?? true));

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { BookingFormData, VehicleItem } from '../types';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { BookingFormData, VehicleItem, PricingTier } from '../types';
 import { VEHICLES as DEFAULT_VEHICLES } from '../constants';
 import { CountryCodeSelect } from '../../../components/ui/CountryCodeSelect';
 import { Calendar, Clock, MapPin, User, Phone, ChevronRight, ChevronLeft, CheckCircle, Navigation, Loader2, Map as MapIcon, X } from 'lucide-react';
@@ -10,6 +10,7 @@ interface BookingFormProps {
   steps?: {
     journey: string;
     vehicle: string;
+    pricing?: string;
     details: string;
   };
   labels?: {
@@ -21,6 +22,7 @@ interface BookingFormProps {
     contactNumber: string;
     notes: string;
     vehicleSelect: string;
+    pricingSelect?: string;
     patientDetails: string;
   };
   placeholders?: {
@@ -37,6 +39,7 @@ interface BookingFormProps {
     buttonText: string;
   };
   vehicles?: VehicleItem[];
+  pricingTiers?: PricingTier[];
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -68,10 +71,11 @@ const BookingForm: React.FC<BookingFormProps> = ({
   success = {
     title: 'Booking Request Sent!',
     messageTemplate: 'Thank you, {patientName}. Our dispatch team has received your request for {date} at {time}.',
-    contactTemplate: 'We will call you at {contactNumber} within 15 minutes to confirm details and provide a final quote.',
+    contactTemplate: 'We will call you at {contactNumber} shortly to confirm details and provide a final quote.',
     buttonText: 'Book another trip'
   },
-  vehicles = DEFAULT_VEHICLES
+  vehicles = DEFAULT_VEHICLES,
+  pricingTiers = []
 }) => {
   const mergedPlaceholders = {
     pickup: placeholders?.pickup || 'e.g. Home Address',
@@ -90,13 +94,42 @@ const BookingForm: React.FC<BookingFormProps> = ({
     contactNumber: labels?.contactNumber || 'Contact Number',
     notes: labels?.notes || 'Additional Notes',
     vehicleSelect: labels?.vehicleSelect || 'Select the right vehicle',
+    pricingSelect: labels?.pricingSelect || 'Select a Pricing Plan',
     patientDetails: labels?.patientDetails || 'Patient Details'
   };
 
   const mergedSteps = {
         journey: steps?.journey || 'Journey',
         vehicle: steps?.vehicle || 'Vehicle',
+        pricing: steps?.pricing || 'Pricing',
         details: steps?.details || 'Details'
+    };
+
+    const hasPricing = pricingTiers && pricingTiers.length > 0;
+    const totalSteps = hasPricing ? 4 : 3;
+
+    const availableVehicles = useMemo(() => {
+        return vehicles.filter(v => {
+            const btnText = (v.button_text || '').toLowerCase();
+            const btnUrl = v.button_url || '#booking';
+            const isComingSoon = btnText.includes('coming soon');
+            const isExternalLink = btnUrl !== '#booking';
+            return !isComingSoon && !isExternalLink;
+        });
+    }, [vehicles]);
+
+    const defaultSuccess = {
+        title: 'Booking Request Sent!',
+        messageTemplate: 'Thank you, {patientName}. Our dispatch team has received your request for {date} at {time}.',
+        contactTemplate: 'We will call you at {contactNumber} shortly to confirm details and provide a final quote.',
+        buttonText: 'Book another trip'
+    };
+
+    const mergedSuccess = {
+        title: success?.title || defaultSuccess.title,
+        messageTemplate: success?.messageTemplate || defaultSuccess.messageTemplate,
+        contactTemplate: success?.contactTemplate || defaultSuccess.contactTemplate,
+        buttonText: success?.buttonText || defaultSuccess.buttonText
     };
 
     const [step, setStep] = useState(1);
@@ -109,6 +142,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
     date: '',
     time: '',
     vehicleType: '',
+    pricingTier: '',
     notes: ''
   });
   const [submitted, setSubmitted] = useState(false);
@@ -133,7 +167,26 @@ const BookingForm: React.FC<BookingFormProps> = ({
     setFormData(prev => ({ ...prev, vehicleType: id }));
   };
 
-  const nextStep = () => setStep(prev => prev + 1);
+  const selectPricing = (id: string) => {
+    setFormData(prev => ({ ...prev, pricingTier: id }));
+  };
+
+  const isStepValid = () => {
+    if (step === 1) {
+      return formData.pickupLocation && formData.dropoffLocation && formData.date && formData.time;
+    }
+    if (step === 2) {
+      return formData.vehicleType;
+    }
+    if (step === 3 && hasPricing) {
+      return formData.pricingTier;
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    if (isStepValid()) setStep(prev => prev + 1);
+  };
   const prevStep = () => setStep(prev => prev - 1);
 
   const handleGetCurrentLocation = () => {
@@ -144,13 +197,27 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
     setGettingLocation(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
-        setFormData(prev => ({
-          ...prev,
-          pickupLocation: `Current Location (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`
-        }));
-        setGettingLocation(false);
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          const address = data.display_name;
+          const formattedAddress = typeof address === 'string' ? address.replace(', Nepal', '') : `Current Location (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+          
+          setFormData(prev => ({
+            ...prev,
+            pickupLocation: formattedAddress
+          }));
+        } catch (error) {
+          console.error("Geocoding error:", error);
+          setFormData(prev => ({
+            ...prev,
+            pickupLocation: `Current Location (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`
+          }));
+        } finally {
+          setGettingLocation(false);
+        }
       },
       (error) => {
         console.error("Error getting location:", error);
@@ -249,7 +316,10 @@ const BookingForm: React.FC<BookingFormProps> = ({
         const data = await response.json();
         
         const address = data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        setFormData(prev => ({ ...prev, [activeField === 'pickup' ? 'pickupLocation' : 'dropoffLocation']: address }));
+        // Use replace only if address is a string
+        const formattedAddress = typeof address === 'string' ? address.replace(', Nepal', '') : `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+        setFormData(prev => ({ ...prev, [activeField === 'pickup' ? 'pickupLocation' : 'dropoffLocation']: formattedAddress }));
         setIsMapOpen(false);
     } catch (error) {
         console.error("Geocoding error:", error);
@@ -262,36 +332,20 @@ const BookingForm: React.FC<BookingFormProps> = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setIsSubmitting(true);
     setErrorMessage(null);
 
-    try {
-        const response = await fetch('/api/nemt-requests', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                ...formData,
-                contactNumber: `${countryCode} ${formData.contactNumber}`
-            })
-        });
-
-        if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.message || 'Failed to submit booking');
-        }
-
-        setSubmitted(true);
-    } catch (err: any) {
-        console.error("Booking submission error:", err);
-        setErrorMessage(err.message || 'Something went wrong. Please try again.');
-    } finally {
-        setIsSubmitting(false);
-    }
+    // Simulate API call
+    setTimeout(() => {
+      setSubmitted(true);
+      setIsSubmitting(false);
+      // In a real app, you would send formData to your backend here
+      console.log('Form Submitted:', formData);
+    }, 1500);
   };
 
   if (submitted) {
@@ -302,66 +356,35 @@ const BookingForm: React.FC<BookingFormProps> = ({
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="h-10 w-10 text-green-600" />
                 </div>
-                <h3 className="text-3xl font-bold text-slate-900 mb-4">{success.title}</h3>
-                <p className="text-lg text-slate-600 mb-8">
-                    {success.messageTemplate
+                <div className="text-3xl font-bold text-slate-900 mb-4" dangerouslySetInnerHTML={{ __html: mergedSuccess.title }} />
+                <div className="text-lg text-slate-600 mb-8" dangerouslySetInnerHTML={{ __html: mergedSuccess.messageTemplate
                       .replace('{patientName}', formData.patientName)
                       .replace('{date}', formData.date)
-                      .replace('{time}', formData.time)
-                      .split(formData.patientName).map((part, i, arr) => (
-                        <React.Fragment key={i}>
-                            {part}
-                            {i < arr.length - 1 && <span className="font-semibold text-teal-700">{formData.patientName}</span>}
-                        </React.Fragment>
-                      ))
-                      // This split logic is a bit complex for simple replacement, let's simplify for now or use a proper formatter if needed.
-                      // Actually, the original code had bold spans. 
-                      // Let's keep it simple: just text replacement for now, or assume the user wants the same styling.
-                      // To keep styling, I might need to parse the template or just accept that the dynamic version might lose specific bolding unless I implement a mini-parser.
-                      // For now, I'll just render the text with replacement.
-                    }
-                </p>
-                {/* 
-                   Wait, the original code had:
-                   Thank you, <span className="font-semibold text-teal-700">{formData.patientName}</span>. 
-                   Our dispatch team has received your request for <span className="font-semibold text-teal-700">{formData.date}</span> at <span className="font-semibold text-teal-700">{formData.time}</span>.
-                   
-                   If I use a string template from CMS, I lose the spans unless I use HTML parsing or a custom parser.
-                   Let's stick to the prop but maybe just use the prop as text for now to satisfy the "dynamic" requirement.
-                   Or better, I can keep the hardcoded structure but use the labels/titles.
-                   The success message is quite specific.
-                   Let's try to preserve the structure but use the text from props where possible.
-                   
-                   Actually, if the user provides a template like "Thank you, {patientName}...", I can replace it.
-                   But for the spans, it's tricky.
-                   Let's just use the prop text with replacement and wrap the whole thing in a p tag.
-                   I will improve this later if needed.
-                */}
-                <p className="text-lg text-slate-600 mb-8">
-                   {success.messageTemplate
-                      .replace('{patientName}', formData.patientName)
-                      .replace('{date}', formData.date)
-                      .replace('{time}', formData.time)}
-                </p>
-                <p className="text-slate-500 mb-8">
-                    {success.contactTemplate.replace('{contactNumber}', formData.contactNumber)}
-                </p>
+                      .replace('{time}', formData.time) }} />
+                <div className="text-slate-500 mb-8" dangerouslySetInnerHTML={{ __html: mergedSuccess.contactTemplate.replace('{contactNumber}', formData.contactNumber) }} />
                 <button 
                 onClick={() => {
                     setSubmitted(false);
                     setStep(1);
                     setFormData({
-                        patientName: '', contactNumber: '', pickupLocation: '', dropoffLocation: '', 
-                        date: '', time: '', vehicleType: '', notes: ''
+                        patientName: '',
+                        contactNumber: '',
+                        pickupLocation: '',
+                        dropoffLocation: '',
+                        date: '',
+                        time: '',
+                        vehicleType: '',
+                        pricingTier: '',
+                        notes: ''
                     });
                 }}
                 className="inline-flex items-center text-teal-600 hover:text-teal-800 font-semibold underline"
                 >
-                {success.buttonText}
+                <div dangerouslySetInnerHTML={{ __html: mergedSuccess.buttonText }} />
                 </button>
             </div>
         </div>
-      </section>
+    </section>
     );
   }
 
@@ -373,8 +396,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-white">{title}</h2>
-          <p className="mt-3 text-slate-300">{subtitle}</p>
+          <div className="text-3xl md:text-4xl font-bold text-white" dangerouslySetInnerHTML={{ __html: title }} />
+          <div className="mt-3 text-slate-300" dangerouslySetInnerHTML={{ __html: subtitle }} />
         </div>
 
         {/* Progress Bar */}
@@ -382,16 +405,24 @@ const BookingForm: React.FC<BookingFormProps> = ({
             <div className="flex items-center justify-between relative">
                 <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-slate-700 -z-10 rounded"></div>
                 
-                {[1, 2, 3].map((num) => (
-                    <div key={num} className={`flex flex-col items-center ${step >= num ? 'text-teal-400' : 'text-slate-500'}`}>
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${step >= num ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/50' : 'bg-slate-800 border-2 border-slate-600'}`}>
-                            {step > num ? <CheckCircle className="w-6 h-6" /> : num}
+                {Array.from({ length: totalSteps }, (_, i) => i + 1).map((num) => {
+                    let label = '';
+                    if (num === 1) label = mergedSteps.journey;
+                    else if (num === 2) label = mergedSteps.vehicle;
+                    else if (num === 3 && hasPricing) label = mergedSteps.pricing;
+                    else label = mergedSteps.details;
+
+                    return (
+                        <div key={num} className={`flex flex-col items-center ${step >= num ? 'text-teal-400' : 'text-slate-500'}`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${step >= num ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/50' : 'bg-slate-800 border-2 border-slate-600'}`}>
+                                {step > num ? <CheckCircle className="w-6 h-6" /> : num}
+                            </div>
+                            <div className="text-xs font-medium mt-2 bg-slate-900 px-2 rounded inline-block">
+                                <div dangerouslySetInnerHTML={{ __html: label }} />
+                            </div>
                         </div>
-                        <span className="text-xs font-medium mt-2 bg-slate-900 px-2 rounded">
-                            {num === 1 ? mergedSteps.journey : num === 2 ? mergedSteps.vehicle : mergedSteps.details}
-                        </span>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
 
@@ -401,11 +432,16 @@ const BookingForm: React.FC<BookingFormProps> = ({
             {/* Step 1: Journey Details */}
             {step === 1 && (
                 <div className="p-8 md:p-12 animate-fadeIn">
-                    <h3 className="text-2xl font-bold mb-6 flex items-center"><MapPin className="mr-2 text-teal-600"/> Where are we going?</h3>
+                    <div className="text-2xl font-bold mb-6 flex items-center">
+                        <MapPin className="mr-2 text-teal-600"/> 
+                        <div dangerouslySetInnerHTML={{ __html: "Where are we going?" }} />
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">{mergedLabels.pickup}</label>
+                                <div className="block text-sm font-medium text-slate-700 mb-1">
+                                    <div dangerouslySetInnerHTML={{ __html: mergedLabels.pickup }} />
+                                </div>
                                 <div className="relative">
                                     <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
                                     <input 
@@ -439,7 +475,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">{mergedLabels.dropoff}</label>
+                                <div className="block text-sm font-medium text-slate-700 mb-1">
+                                    <div dangerouslySetInnerHTML={{ __html: mergedLabels.dropoff }} />
+                                </div>
                                 <div className="relative">
                                     <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
                                     <input 
@@ -462,7 +500,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">{mergedLabels.date}</label>
+                                <div className="block text-sm font-medium text-slate-700 mb-1" dangerouslySetInnerHTML={{ __html: mergedLabels.date }} />
                                 <div className="relative">
                                     <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
                                     <input 
@@ -472,7 +510,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">{mergedLabels.time}</label>
+                                <div className="block text-sm font-medium text-slate-700 mb-1" dangerouslySetInnerHTML={{ __html: mergedLabels.time }} />
                                 <div className="relative">
                                     <Clock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
                                     <input 
@@ -489,9 +527,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
             {/* Step 2: Vehicle Selection */}
             {step === 2 && (
                 <div className="p-8 md:p-12 animate-fadeIn">
-                    <h3 className="text-2xl font-bold mb-6 text-center">{mergedLabels.vehicleSelect}</h3>
+                    <div className="text-2xl font-bold mb-6 text-center" dangerouslySetInnerHTML={{ __html: mergedLabels.vehicleSelect }} />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {vehicles.map(v => (
+                        {availableVehicles.map(v => (
                             <div 
                                 key={v.id}
                                 onClick={() => selectVehicle(v.id)}
@@ -501,24 +539,60 @@ const BookingForm: React.FC<BookingFormProps> = ({
                                     <img src={v.image} alt={v.name} className="w-full h-32 object-cover" />
                                 </div>
                                 <div className="flex justify-between items-start">
-                                    <h4 className="font-bold text-slate-900">{v.name}</h4>
+                                    <div className="font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: v.name }} />
                                     {formData.vehicleType === v.id && <CheckCircle className="h-5 w-5 text-teal-600" />}
                                 </div>
-                                <p className="text-xs text-slate-500 mt-1">{v.description}</p>
+                                <div className="text-xs text-slate-500 mt-1" dangerouslySetInnerHTML={{ __html: v.description }} />
                             </div>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Step 3: Personal Details */}
-            {step === 3 && (
+            {/* Step 3: Pricing Selection (Optional) */}
+            {step === 3 && hasPricing && (
                 <div className="p-8 md:p-12 animate-fadeIn">
-                    <h3 className="text-2xl font-bold mb-6 text-center">{mergedLabels.patientDetails}</h3>
+                    <div className="text-2xl font-bold mb-6 text-center" dangerouslySetInnerHTML={{ __html: mergedLabels.pricingSelect || 'Select Pricing Plan' }} />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {pricingTiers?.map((tier, index) => {
+                             const tierId = tier.service || `tier-${index}`;
+                             return (
+                                <div 
+                                    key={index}
+                                    onClick={() => selectPricing(tierId)}
+                                    className={`cursor-pointer rounded-2xl border-2 p-4 transition-all hover:shadow-lg ${formData.pricingTier === tierId ? 'border-teal-500 bg-teal-50' : 'border-slate-100 hover:border-teal-200'}`}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: tier.service }} />
+                                        {formData.pricingTier === tierId && <CheckCircle className="h-5 w-5 text-teal-600" />}
+                                    </div>
+                                    <div className="text-2xl font-bold text-teal-600 mb-2" dangerouslySetInnerHTML={{ __html: String(typeof tier.price === 'number' ? `$${tier.price}` : tier.price) }} />
+                                    <div className="text-sm text-slate-600 mb-3" dangerouslySetInnerHTML={{ __html: tier.details }} />
+                                    {tier.features && (
+                                        <ul className="space-y-1">
+                                            {tier.features.slice(0, 3).map((feature, i) => (
+                                                <li key={i} className="text-xs text-slate-500 flex items-center">
+                                                    <CheckCircle className="h-3 w-3 mr-1 text-teal-500" />
+                                                    <div dangerouslySetInnerHTML={{ __html: feature }} />
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                             );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Step 4 (or 3): Personal Details */}
+            {step === totalSteps && (
+                <div className="p-8 md:p-12 animate-fadeIn">
+                    <div className="text-2xl font-bold mb-6 text-center" dangerouslySetInnerHTML={{ __html: mergedLabels.patientDetails }} />
                     <div className="max-w-2xl mx-auto space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">{mergedLabels.patientName}</label>
+                                <div className="block text-sm font-medium text-slate-700 mb-1" dangerouslySetInnerHTML={{ __html: mergedLabels.patientName }} />
                                 <div className="relative">
                                     <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
                                     <input 
@@ -529,7 +603,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">{mergedLabels.contactNumber}</label>
+                                <div className="block text-sm font-medium text-slate-700 mb-1" dangerouslySetInnerHTML={{ __html: mergedLabels.contactNumber }} />
                                 <div className="flex gap-2">
                                     <CountryCodeSelect
                                         value={countryCode}
@@ -549,7 +623,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">{mergedLabels.notes}</label>
+                            <div className="block text-sm font-medium text-slate-700 mb-1" dangerouslySetInnerHTML={{ __html: mergedLabels.notes }} />
                             <textarea 
                                 name="notes" value={formData.notes} onChange={handleChange}
                                 placeholder={mergedPlaceholders.notes}
@@ -571,7 +645,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                     <ChevronLeft className="h-5 w-5 mr-2" />
                     Back
                 </button>
-                {step < 3 ? (
+                {step < totalSteps ? (
                     <button 
                         type="button"
                         onClick={nextStep}

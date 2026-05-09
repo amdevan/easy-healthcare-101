@@ -98,7 +98,7 @@ const GitHubContent: React.FC<GitHubContentProps> = ({
   return (
     <div className={className}>
       {title ? (
-        <h2 className="text-2xl font-bold text-brand-gray-900">{title}</h2>
+        <div className="text-2xl font-bold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: title }} />
       ) : null}
       {loading && (
         <p className="mt-4 text-brand-gray-600">Loading content from GitHub…</p>
@@ -112,6 +112,7 @@ const GitHubContent: React.FC<GitHubContentProps> = ({
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw]}
             components={{
+              p: ({node, ...props}) => <div {...props} className="mb-4 last:mb-0" />,
               img: ({ src, alt }) => (
                 <img src={resolveRemoteImage(src)} alt={alt as string} />
               ),

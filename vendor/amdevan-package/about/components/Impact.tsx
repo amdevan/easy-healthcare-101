@@ -140,9 +140,6 @@ const Impact: React.FC = () => {
                 <p className="text-slate-300 text-sm leading-relaxed mb-6">
                   We focus our efforts where they matter most—bridging the gap between urban medical excellence and rural accessibility needs.
                 </p>
-                <button className="text-white text-sm font-semibold underline decoration-blue-400 underline-offset-4 hover:text-blue-300 transition-colors">
-                  View annual report
-                </button>
              </div>
              <div className="lg:col-span-2 grid sm:grid-cols-2 gap-y-4 gap-x-8">
                 {[

@@ -7,6 +7,8 @@ export interface HealthPackage {
   features: string[];
   is_popular?: boolean;
   category?: string;
+  button_url?: string;
+  button_new_tab?: boolean;
 }
 
 export interface ProductPageData {

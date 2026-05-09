@@ -14,6 +14,9 @@ export interface VehicleItem {
   description: string;
   features: string[];
   image: string;
+  verified_text?: string;
+  button_text?: string;
+  button_url?: string;
 }
 
 export interface PricingTier {
@@ -38,5 +41,6 @@ export interface BookingFormData {
   date: string;
   time: string;
   vehicleType: string;
+  pricingTier: string;
   notes: string;
 }

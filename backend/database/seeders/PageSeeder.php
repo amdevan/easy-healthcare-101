@@ -218,9 +218,9 @@ class PageSeeder extends Seeder
                             'title' => 'Specialized Programs',
                             'description' => 'Targeted care for specific health needs.',
                             'items' => [
-                                ['title' => 'Mental Health', 'description' => 'Therapy and counseling sessions.'],
-                                ['title' => 'Chronic Care', 'description' => 'Ongoing management for diabetes and hypertension.'],
-                                ['title' => 'Dermatology', 'description' => 'Skin consultations and follow-ups.']
+                                ['title' => 'Mental Health', 'description' => 'Therapy and counseling sessions.', 'icon' => 'brain'],
+                                ['title' => 'Chronic Care', 'description' => 'Ongoing management for diabetes and hypertension.', 'icon' => 'heart-pulse'],
+                                ['title' => 'Dermatology', 'description' => 'Skin consultations and follow-ups.', 'icon' => 'search']
                             ]
                         ]
                     ],
@@ -254,8 +254,8 @@ class PageSeeder extends Seeder
                         'data' => [
                             'title' => 'Making a Real Impact',
                             'items' => [
-                                ['title' => 'Rural Access', 'description' => 'Bringing care to remote areas.'],
-                                ['title' => 'Wait Times', 'description' => 'Reducing average wait to under 15 mins.']
+                                ['value' => '50+', 'label' => 'Rural Districts', 'description' => 'Bringing care to remote areas across the country.'],
+                                ['value' => '15m', 'label' => 'Avg Wait Time', 'description' => 'Reducing average wait to under 15 mins.']
                             ]
                         ]
                     ],
@@ -342,29 +342,51 @@ class PageSeeder extends Seeder
                     [
                         'type' => 'services_section',
                         'data' => [
-                            'label' => 'Our Services',
-                            'title' => 'Comprehensive Transportation Solutions',
-                            'description' => 'We provide more than just a ride; we provide care.',
+                            'label' => 'OUR EXPERTISE',
+                            'title' => 'Comprehensive Medical Logistics',
+                            'description' => 'More than just a ride. We provide a continuum of care from your doorstep to the doctor\'s office and back.',
                             'items' => [
                                 [
-                                    'title' => 'Licensed & Insured',
-                                    'description' => 'Fully compliant with safety regulations.',
-                                    'icon' => 'heroicon-o-check-badge',
+                                    'id' => 1,
+                                    'title' => 'Routine Medical Visits',
+                                    'description' => 'Scheduled transport for regular doctor visits, check-ups, and consultations.',
+                                    'idealFor' => 'Outpatient & follow-up patients',
+                                    'icon' => 'Activity',
                                 ],
                                 [
-                                    'title' => '24/7 Availability',
-                                    'description' => 'Round-the-clock transportation support.',
-                                    'icon' => 'heroicon-o-clock',
+                                    'id' => 2,
+                                    'title' => 'Hospital Discharge',
+                                    'description' => 'Safe and comfortable transport from hospital to home after surgery or treatment.',
+                                    'idealFor' => 'Post-surgery patients',
+                                    'icon' => 'Home',
                                 ],
                                 [
-                                    'title' => 'BLS Trained Staff',
-                                    'description' => 'Drivers trained in Basic Life Support.',
-                                    'icon' => 'heroicon-o-heart',
+                                    'id' => 3,
+                                    'title' => 'Dialysis & Chemo',
+                                    'description' => 'Reliable round-trip transport for recurring treatments.',
+                                    'idealFor' => 'Renal & cancer patients',
+                                    'icon' => 'Heart',
                                 ],
                                 [
-                                    'title' => 'Door-to-Door Service',
-                                    'description' => 'We assist you from your door to the vehicle and into your appointment.',
-                                    'icon' => 'heroicon-o-home',
+                                    'id' => 4,
+                                    'title' => 'Rehab & Physio',
+                                    'description' => 'Assistance for repeated rehabilitation sessions with mobility support.',
+                                    'idealFor' => 'Stroke & ortho cases',
+                                    'icon' => 'User',
+                                ],
+                                [
+                                    'id' => 5,
+                                    'title' => 'Home-to-Hospital',
+                                    'description' => 'Non-emergency assistance for elderly or bedridden patients requiring transfer.',
+                                    'idealFor' => 'Elderly or bedridden',
+                                    'icon' => 'Ambulance',
+                                ],
+                                [
+                                    'id' => 6,
+                                    'title' => 'Long-Distance Trips',
+                                    'description' => 'Intercity supervised transport for rural-to-urban transfers.',
+                                    'idealFor' => 'Rural-to-Kathmandu transfers',
+                                    'icon' => 'MapPin',
                                 ]
                             ],
                         ],
@@ -440,6 +462,9 @@ class PageSeeder extends Seeder
                         'data' => [
                             'title' => 'Book Your Ride',
                             'description' => 'Schedule your transportation easily online.',
+                            'step_journey_label' => 'Journey',
+                            'step_vehicle_label' => 'Vehicle',
+                            'step_details_label' => 'Details',
                             'labels' => [
                                 'pickup' => 'Pickup Location',
                                 'dropoff' => 'Drop-off Location',
@@ -455,10 +480,10 @@ class PageSeeder extends Seeder
                                 'time' => 'Select time',
                                 'vehicle' => 'Select a vehicle type'
                             ],
-                            'success' => [
-                                'title' => 'Booking Received!',
-                                'message' => 'We will confirm your ride shortly.'
-                            ]
+                            'success_title' => 'Booking Received!',
+                            'success_message' => 'Thank you, {patientName}. Our dispatch team has received your request for {date} at {time}.',
+                            'success_contact' => 'We will call you at {contactNumber} shortly to confirm details and provide a final quote.',
+                            'success_button' => 'Book another trip'
                         ]
                     ]
                 ],
@@ -566,10 +591,8 @@ class PageSeeder extends Seeder
                             'title' => 'About Easy Health Care Pvt. Ltd.',
                             'subtitle' => 'Who We Are',
                             'description' => 'Bringing together clinical care, telemedicine, pharmacy, and diagnostics under one seamless ecosystem — making healthcare simple, connected, and patient-centered.',
-                            'images' => [
-                                'https://picsum.photos/400/500?grayscale',
-                                'https://picsum.photos/400/500?blur=2'
-                            ],
+                            'image_1' => 'https://picsum.photos/400/500?grayscale',
+                            'image_2' => 'https://picsum.photos/400/500?blur=2'
                         ],
                     ],
                     [
@@ -704,6 +727,22 @@ class PageSeeder extends Seeder
                                 ['text' => 'Call Support', 'link' => 'tel:+97714510101', 'icon' => 'Phone']
                             ]
                         ]
+                    ],
+                ],
+            ],
+            [
+                'title' => 'Meet the Management',
+                'slug' => 'management-team',
+                'seo_title' => 'Management Team - Easy Healthcare 101',
+                'seo_description' => 'Meet our leadership team.',
+                'hero_image' => 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1920&q=80',
+                'content' => [
+                    [
+                        'type' => 'value_prop_section',
+                        'data' => [
+                            'title' => 'Meet the Management',
+                            'subtitle' => 'Our leadership team drives execution across clinical, digital, operations, and partnerships.',
+                        ],
                     ],
                 ],
             ],
@@ -846,6 +885,10 @@ class PageSeeder extends Seeder
                             'title' => 'Lab Testing, Reimagined',
                             'subtitle' => 'Book lab tests from trusted NABL-certified labs, get home sample collection, and receive digital reports—fast, secure, and hassle-free.',
                             'image' => 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1920&q=80',
+                            'primary_button_text' => 'Explore Tests',
+                            'primary_button_link' => '#test-catalog',
+                            'secondary_button_text' => 'Ask AI Assistant',
+                            'secondary_button_link' => '#assistant',
                             'stats' => [
                                 ['value' => '500+', 'label' => 'Tests Available'],
                                 ['value' => '50+', 'label' => 'Partner Labs'],
@@ -1001,16 +1044,16 @@ class PageSeeder extends Seeder
                 ],
             ],
             [
-                'title' => 'Pharmacy',
+                'title' => 'Easy Pharmacy',
                 'slug' => 'pharmacy',
-                'seo_title' => 'Pharmacy - Easy Healthcare 101',
-                'seo_description' => 'Order medicines online and get them delivered to your doorstep.',
+                'seo_title' => 'Easy Pharmacy - Order Medicines Online',
+                'seo_description' => 'Order genuine medicines online and get them delivered to your doorstep.',
                 'hero_image' => 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1920&q=80',
                 'content' => [
                     [
                         'type' => 'hero_section',
                         'data' => [
-                            'title' => 'Online Pharmacy',
+                            'title' => 'Easy Pharmacy',
                             'subtitle' => 'Genuine medicines delivered to your doorstep. Upload your prescription and we handle the rest.',
                             'image' => 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1920&q=80',
                         ],
@@ -1253,25 +1296,64 @@ class PageSeeder extends Seeder
                         ]
                     ],
                     [
+                        'type' => 'testimonials_section',
+                        'data' => [
+                            'title' => 'Success Stories',
+                            'subtitle' => 'Trusted by Families',
+                            'limit' => 3,
+                            'testimonials' => [
+                                [
+                                    'content' => 'Booking an appointment was quick and easy. Highly recommend!',
+                                    'author_name' => 'Priya S.',
+                                    'author_role' => 'Patient',
+                                    'location' => 'Kathmandu',
+                                    'image' => null,
+                                    'rating' => 5,
+                                ],
+                                [
+                                    'content' => 'Affordable lab tests with home collection. Great service!',
+                                    'author_name' => 'Rahul K.',
+                                    'author_role' => 'Patient',
+                                    'location' => 'Lalitpur',
+                                    'image' => null,
+                                    'rating' => 5,
+                                ],
+                                [
+                                    'content' => 'The care coordinator kept our family informed every step.',
+                                    'author_name' => 'Anita M.',
+                                    'author_role' => 'Family Member',
+                                    'location' => 'Bhaktapur',
+                                    'image' => null,
+                                    'rating' => 5,
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
                         'type' => 'value_prop_section',
                         'data' => [
-                            'title' => 'Why Choose Our Membership?',
-                            'subtitle' => 'Designed for your peace of mind',
+                            'title' => 'Why Families Trust EasyCare 365',
+                            'subtitle' => 'Bridging the distance with technology, compassion, and reliable human touch.',
                             'items' => [
                                 [
-                                    'title' => 'Peace of Mind',
-                                    'icon' => 'Heart',
-                                    'points' => ['24/7 Support', 'Emergency coordination']
-                                ],
-                                [
-                                    'title' => 'Convenience',
-                                    'icon' => 'PhoneCall',
-                                    'points' => ['Home visits', 'Medicine delivery']
-                                ],
-                                [
-                                    'title' => 'Global Standards',
+                                    'title' => 'For the Nepali Diaspora',
                                     'icon' => 'Globe',
-                                    'points' => ['Certified professionals', 'International protocols']
+                                    'points' => [
+                                        'Peace of mind with supervised care',
+                                        'Transparent updates on vitals & reports',
+                                        'Trusted healthcare network across Nepal',
+                                        'Comprehensive support for just $1/day'
+                                    ]
+                                ],
+                                [
+                                    'title' => 'For Parents in Nepal',
+                                    'icon' => 'Heart',
+                                    'points' => [
+                                        'Regular monitoring and early intervention',
+                                        'Comfortable home-based care services',
+                                        'Easy access to hospitals',
+                                        'Compassionate, personalized experience'
+                                    ]
                                 ]
                             ]
                         ]
@@ -1344,7 +1426,371 @@ class PageSeeder extends Seeder
                             ]
                         ]
                     ]
+                    ,
+                    [
+                        'type' => 'faq_section',
+                        'data' => [
+                            'title' => 'Frequently Asked Questions',
+                            'subtitle' => 'Everything you need to know about Easy Care 365.',
+                            'items' => [
+                                [
+                                    'question' => "How does the 'Dedicated Care Coordinator' work?",
+                                    'answer' => 'You are assigned a specific Care Coordinator who acts as your primary point of contact. They manage appointments, coordinate with doctors, handle hospital logistics, and update you regularly. You can reach them via WhatsApp or our platform.',
+                                ],
+                                [
+                                    'question' => 'Can I add more family members to a plan?',
+                                    'answer' => 'The standard plans cover one individual. However, we offer discounted add-on rates for spouses or additional family members. Please contact our support team for a custom family quote.',
+                                ],
+                                [
+                                    'question' => 'What happens if there is a medical emergency?',
+                                    'answer' => "In an emergency, our team coordinates immediate ambulance dispatch and hospital admission. While we are not an ambulance service ourselves, our network ensures the fastest possible response, and your Care Coordinator manages the hospital admission process so you don't have to worry about paperwork during a crisis.",
+                                ],
+                                [
+                                    'question' => 'Are the home health visits performed by doctors?',
+                                    'answer' => 'Home health visits are typically conducted by registered nurses (RNs) or health assistants who monitor vitals, review medications, and perform general screenings. Doctor visits can be arranged as an add-on service or if deemed medically necessary during a nurse visit.',
+                                ],
+                                [
+                                    'question' => 'Is the subscription refundable?',
+                                    'answer' => 'We offer a 30-day money-back guarantee if you are not satisfied with our initial service setup. After that, subscriptions are non-refundable but can be transferred to another family member.',
+                                ],
+                            ],
+                            'cta_text' => 'Contact our support team',
+                            'cta_link' => '/contact',
+                        ],
+                    ],
                 ],
+            ],
+            [
+                'title' => 'Easy Care 365',
+                'slug' => 'easy-care-365',
+                'seo_title' => 'Easy Care 365 - Easy Healthcare 101',
+                'seo_description' => 'Join Easy Care 365 for exclusive healthcare benefits.',
+                'hero_image' => 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1920&q=80',
+                'content' => [
+                    [
+                        'type' => 'hero_section',
+                        'data' => [
+                            'title' => 'Healthcare That Revolves Around You',
+                            'description' => 'Join our membership plans for priority access, home visits, and comprehensive care coordination.',
+                            'image' => 'https://images.unsplash.com/photo-1576091160550-21733e99db29?auto=format&fit=crop&w=800&q=80',
+                        ],
+                    ],
+                    [
+                        'type' => 'features_section',
+                        'data' => [
+                            'title' => 'Core Components',
+                            'subtitle' => 'What makes our membership unique',
+                            'items' => [
+                                [
+                                    'title' => 'Preventive & Primary Care',
+                                    'description' => 'A structured care plan designed to monitor overall health.',
+                                    'icon' => 'Stethoscope',
+                                    'details' => [
+                                        'Comprehensive health check-up at partner clinics',
+                                        'Follow-up visits with lab tests',
+                                        'Digital health records maintained & shared'
+                                    ]
+                                ],
+                                [
+                                    'title' => 'Medical Logistics Support',
+                                    'description' => 'End-to-end support for all medical visits and coordination.',
+                                    'icon' => 'UserCheck',
+                                    'details' => [
+                                        'Dedicated Care Coordinator',
+                                        'Appointment booking with specialists',
+                                        'Non-Emergency Medical Transport (NEMT)',
+                                        'Medication refill & lab sample collection'
+                                    ]
+                                ],
+                                [
+                                    'title' => 'Home Health Visits',
+                                    'description' => 'Regular wellness monitoring right at home.',
+                                    'icon' => 'Home',
+                                    'details' => [
+                                        'Nurse visits for vitals & screening',
+                                        'Medication reviews',
+                                        'Optional physiotherapy & wound care'
+                                    ]
+                                ],
+                                [
+                                    'title' => 'Digital Connectivity',
+                                    'description' => 'Real-time updates and communication platform.',
+                                    'icon' => 'Smartphone',
+                                    'details' => [
+                                        'Online dashboard & mobile app',
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        'type' => 'testimonials_section',
+                        'data' => [
+                            'title' => 'Success Stories',
+                            'subtitle' => 'Trusted by Families',
+                            'limit' => 3,
+                            'testimonials' => [
+                                [
+                                    'content' => 'Booking an appointment was quick and easy. Highly recommend!',
+                                    'author_name' => 'Priya S.',
+                                    'author_role' => 'Patient',
+                                    'location' => 'Kathmandu',
+                                    'image' => null,
+                                    'rating' => 5,
+                                ],
+                                [
+                                    'content' => 'Affordable lab tests with home collection. Great service!',
+                                    'author_name' => 'Rahul K.',
+                                    'author_role' => 'Patient',
+                                    'location' => 'Lalitpur',
+                                    'image' => null,
+                                    'rating' => 5,
+                                ],
+                                [
+                                    'content' => 'The care coordinator kept our family informed every step.',
+                                    'author_name' => 'Anita M.',
+                                    'author_role' => 'Family Member',
+                                    'location' => 'Bhaktapur',
+                                    'image' => null,
+                                    'rating' => 5,
+                                ],
+                                [
+                                    'content' => 'Regular health monitoring has given us peace of mind.',
+                                    'author_name' => 'Sunita G.',
+                                    'author_role' => 'Daughter',
+                                    'location' => 'Pokhara',
+                                    'image' => null,
+                                    'rating' => 5,
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
+                        'type' => 'value_prop_section',
+                        'data' => [
+                            'title' => 'Why Families Trust EasyCare 365',
+                            'subtitle' => 'Bridging the distance with technology, compassion, and reliable human touch.',
+                            'items' => [
+                                [
+                                    'title' => 'For the Nepali Diaspora',
+                                    'icon' => 'Globe',
+                                    'points' => [
+                                        'Peace of mind with supervised care',
+                                        'Transparent updates on vitals & reports',
+                                        'Trusted healthcare network across Nepal',
+                                        'Comprehensive support for just $1/day'
+                                    ]
+                                ],
+                                [
+                                    'title' => 'For Parents in Nepal',
+                                    'icon' => 'Heart',
+                                    'points' => [
+                                        'Regular monitoring and early intervention',
+                                        'Comfortable home-based care services',
+                                        'Easy access to hospitals',
+                                        'Compassionate, personalized experience'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        'type' => 'pricing_section',
+                        'data' => [
+                            'title' => 'Simple, Transparent Pricing',
+                            'subtitle' => 'Choose the plan that fits your needs',
+                            'description' => 'All plans include our core care coordination services.',
+                            'customPackageTitle' => 'Need a Custom Plan?',
+                            'customPackageDescription' => 'We can tailor a package to your specific requirements.',
+                            'customPackageButtonText' => 'Contact Us',
+                            'plans' => [
+                                [
+                                    'id' => 'basic',
+                                    'name' => 'EasyCare 365 Basic',
+                                    'price' => 365,
+                                    'period' => '/year',
+                                    'description' => 'Essential care coordination for peace of mind.',
+                                    'buttonText' => 'Select Basic',
+                                    'features' => [
+                                        ['text' => 'Annual comprehensive health check-up', 'included' => true],
+                                        ['text' => '4 Home health visits per year', 'included' => true],
+                                        ['text' => '2 Non-Emergency Transport (NEMT) trips', 'included' => true],
+                                        ['text' => 'Dedicated Care Coordinator', 'included' => true],
+                                        ['text' => 'Digital health records dashboard', 'included' => true],
+                                        ['text' => 'Medication refill management', 'included' => true],
+                                        ['text' => 'Monthly Nurse Visits', 'included' => false],
+                                        ['text' => 'Chronic disease monitoring', 'included' => false],
+                                    ],
+                                ],
+                                [
+                                    'id' => 'plus',
+                                    'name' => 'EasyCare 365 Plus',
+                                    'price' => 499,
+                                    'period' => '/year',
+                                    'description' => 'Enhanced coverage with more visits and tele-health.',
+                                    'highlight' => true,
+                                    'buttonText' => 'Select Plus',
+                                    'features' => [
+                                        ['text' => 'Annual comprehensive health check-up', 'included' => true],
+                                        ['text' => '6 Home health visits per year', 'included' => true],
+                                        ['text' => '4 Non-Emergency Transport (NEMT) trips', 'included' => true],
+                                        ['text' => 'Dedicated Care Coordinator', 'included' => true],
+                                        ['text' => 'Digital health records dashboard', 'included' => true],
+                                        ['text' => 'Medication refill management', 'included' => true],
+                                        ['text' => 'Teleconsultation credits', 'included' => true],
+                                        ['text' => 'Chronic disease monitoring', 'included' => false],
+                                    ],
+                                ],
+                                [
+                                    'id' => 'premium',
+                                    'name' => 'EasyCare 365 Premium',
+                                    'price' => 699,
+                                    'period' => '/year',
+                                    'description' => 'Complete healthcare management and regular monitoring.',
+                                    'buttonText' => 'Select Premium',
+                                    'features' => [
+                                        ['text' => 'Annual comprehensive health check-up', 'included' => true],
+                                        ['text' => 'Monthly nurse visits (12/year)', 'included' => true],
+                                        ['text' => '4 Non-Emergency Transport (NEMT) trips', 'included' => true],
+                                        ['text' => 'Dedicated Care Manager', 'included' => true],
+                                        ['text' => 'Digital health records dashboard', 'included' => true],
+                                        ['text' => 'Pharmacy refill service included', 'included' => true],
+                                        ['text' => 'Teleconsultation credits', 'included' => true],
+                                        ['text' => 'Active chronic disease monitoring', 'included' => true],
+                                    ],
+                                ],
+                            ]
+                        ]
+                    ],
+                    [
+                        'type' => 'faq_section',
+                        'data' => [
+                            'title' => 'Frequently Asked Questions',
+                            'subtitle' => 'Everything you need to know about Easy Care 365.',
+                            'items' => [
+                                [
+                                    'question' => "How does the 'Dedicated Care Coordinator' work?",
+                                    'answer' => 'You are assigned a specific Care Coordinator who acts as your primary point of contact. They manage appointments, coordinate with doctors, handle hospital logistics, and update you regularly. You can reach them via WhatsApp or our platform.',
+                                ],
+                                [
+                                    'question' => 'Can I add more family members to a plan?',
+                                    'answer' => 'The standard plans cover one individual. However, we offer discounted add-on rates for spouses or additional family members. Please contact our support team for a custom family quote.',
+                                ],
+                                [
+                                    'question' => 'What happens if there is a medical emergency?',
+                                    'answer' => "In an emergency, our team coordinates immediate ambulance dispatch and hospital admission. While we are not an ambulance service ourselves, our network ensures the fastest possible response, and your Care Coordinator manages the hospital admission process so you don't have to worry about paperwork during a crisis.",
+                                ],
+                                [
+                                    'question' => 'Are the home health visits performed by doctors?',
+                                    'answer' => 'Home health visits are typically conducted by registered nurses (RNs) or health assistants who monitor vitals, review medications, and perform general screenings. Doctor visits can be arranged as an add-on service or if deemed medically necessary during a nurse visit.',
+                                ],
+                                [
+                                    'question' => 'Is the subscription refundable?',
+                                    'answer' => 'We offer a 30-day money-back guarantee if you are not satisfied with our initial service setup. After that, subscriptions are non-refundable but can be transferred to another family member.',
+                                ],
+                            ],
+                            'cta_text' => 'Contact our support team',
+                            'cta_link' => '/contact',
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'title' => 'Privacy Policy',
+                'slug' => 'privacy',
+                'seo_title' => 'Privacy Policy - Easy Healthcare 101',
+                'seo_description' => 'Our privacy policy explains how we collect and use your information.',
+                'content' => [
+                    [
+                        'type' => 'text_block',
+                        'data' => [
+                            'content' => '<h1 class="text-4xl font-bold text-brand-gray-900 mb-8">Privacy Policy</h1>
+                            <p class="mb-4">Last updated: ' . date('Y-m-d') . '</p>
+                            <p class="mb-6">At Easy Healthcare 101, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our mobile application.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">1. Information We Collect</h2>
+                            <p class="mb-4">We may collect information about you in a variety of ways. The information we may collect on the Site includes:</p>
+                            <ul class="list-disc pl-6 mb-6 space-y-2">
+                            <li><strong>Personal Data:</strong> Personally identifiable information, such as your name, shipping address, email address, and telephone number.</li>
+                            <li><strong>Health Data:</strong> Information related to your health status, medical history, and treatments.</li>
+                            <li><strong>Derivative Data:</strong> Information our servers automatically collect when you access the Site.</li>
+                            </ul>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">2. Use of Your Information</h2>
+                            <p class="mb-4">Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">3. Contact Us</h2>
+                            <p class="mb-4">If you have questions or comments about this Privacy Policy, please contact us at privacy@easyhealthcare101.com.</p>'
+                        ]
+                    ]
+                ]
+            ],
+            [
+                'title' => 'Terms & Conditions',
+                'slug' => 'terms',
+                'seo_title' => 'Terms & Conditions - Easy Healthcare 101',
+                'seo_description' => 'Terms and conditions for using Easy Healthcare 101 services.',
+                'content' => [
+                    [
+                        'type' => 'text_block',
+                        'data' => [
+                            'content' => '<h1 class="text-4xl font-bold text-brand-gray-900 mb-8">Terms & Conditions</h1>
+                            <p class="mb-4">Last updated: ' . date('Y-m-d') . '</p>
+                            <p class="mb-6">These Terms and Conditions constitute a legally binding agreement made between you and Easy Healthcare 101.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">1. Agreement to Terms</h2>
+                            <p class="mb-6">By accessing the Site, you have read, understood, and agree to be bound by all of these Terms and Conditions.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">2. Intellectual Property Rights</h2>
+                            <p class="mb-6">The Site is our proprietary property and all source code, databases, functionality, software, website designs, audio, video, text, photographs, and graphics on the Site are owned or controlled by us.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">3. Medical Disclaimer</h2>
+                            <p class="mb-6">The Site cannot and does not contain medical advice. The medical information is provided for general informational and educational purposes only.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">4. Contact Us</h2>
+                            <p class="mb-4">In order to resolve a complaint regarding the Site, please contact us at legal@easyhealthcare101.com.</p>'
+                        ]
+                    ]
+                ]
+            ],
+            [
+                'title' => 'Refund Policy',
+                'slug' => 'refund-policy',
+                'seo_title' => 'Refund Policy - Easy Healthcare 101',
+                'seo_description' => 'Refund and cancellation policy for Easy Healthcare 101 services.',
+                'content' => [
+                    [
+                        'type' => 'text_block',
+                        'data' => [
+                            'content' => '<h1 class="text-4xl font-bold text-brand-gray-900 mb-8">Refund Policy</h1>
+                            <p class="mb-4">Last updated: ' . date('Y-m-d') . '</p>
+                            <p class="mb-6">Thank you for choosing Easy Healthcare 101. We are committed to providing you with the best healthcare services.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">1. Appointments</h2>
+                            <p class="mb-4">You may cancel your appointment up to 24 hours before the scheduled time for a full refund. Cancellations made within 24 hours of the appointment are non-refundable.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">2. Medicine Orders</h2>
+                            <p class="mb-4">We accept returns of unopened and unused medicines within 7 days of delivery. Please contact our support team to initiate a return.</p>
+                            <h2 class="text-2xl font-bold text-brand-gray-900 mt-8 mb-4">3. Contact Us</h2>
+                            <p class="mb-4">If you have any questions about our Returns and Refunds Policy, please contact us at support@easyhealthcare101.com.</p>'
+                        ]
+                    ]
+                ]
+            ],
+            [
+                'title' => 'Board of Directors',
+                'slug' => 'board-of-director',
+                'seo_title' => 'Board of Directors - Easy Healthcare 101',
+                'seo_description' => 'Meet our leadership team committed to healthcare excellence.',
+                'hero_image' => 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1920&q=80',
+                'content' => [
+                    [
+                        'type' => 'hero_section',
+                        'data' => [
+                            'title' => 'Board of Directors',
+                            'subtitle' => 'Leadership team',
+                            'image' => 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1920&q=80',
+                        ],
+                    ],
+                    [
+                        'type' => 'board_members_section',
+                        'data' => [
+                            'title' => 'Meet Our Board of Directors',
+                            'description' => 'Guided by experienced leaders committed to healthcare accessibility, quality, and patient satisfaction.',
+                        ],
+                    ],
+                ]
             ],
         ];
 

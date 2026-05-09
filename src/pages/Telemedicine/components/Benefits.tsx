@@ -71,18 +71,12 @@ const Benefits: React.FC<BenefitsProps> = ({ title, description, image, imageCap
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex flex-col lg:flex-row gap-16">
           <div className="lg:w-1/3">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {title || "Why Patients Trust Us"}
-            </h2>
-            <p className="text-teal-100 text-lg leading-relaxed mb-8">
-              {description || "We have built our platform with the patient at the center. Every feature is designed to make healthcare simpler, faster, and more effective for you and your family."}
-            </p>
+            <div className="text-3xl md:text-4xl font-bold mb-6" dangerouslySetInnerHTML={{ __html: title || "Why Patients Trust Us" }} />
+            <div className="text-teal-100 text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: description || "We have built our platform with the patient at the center. Every feature is designed to make healthcare simpler, faster, and more effective for you and your family." }} />
             <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-2xl border border-teal-700">
               <img src={imgSrc} alt="Happy family" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
               <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
-                <p className="font-semibold text-white">
-                  {imageCaption || "Serving over 10,000 families"}
-                </p>
+                <div className="font-semibold text-white" dangerouslySetInnerHTML={{ __html: imageCaption || "Serving over 10,000 families" }} />
               </div>
             </div>
           </div>
@@ -94,8 +88,8 @@ const Benefits: React.FC<BenefitsProps> = ({ title, description, image, imageCap
                   {renderIcon(item.icon, idx)}
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                  <p className="text-teal-100/80">{item.description}</p>
+                  <div className="text-xl font-bold mb-2" dangerouslySetInnerHTML={{ __html: item.title }} />
+                  <div className="text-teal-100/80" dangerouslySetInnerHTML={{ __html: item.description }} />
                 </div>
               </div>
             ))}

@@ -37,12 +37,27 @@ class FooterSettingResource extends Resource
                 ->tabs([
                     Tab::make('General Info')
                         ->schema([
+                            Forms\Components\FileUpload::make('value.logo')
+                                ->label('Footer Logo')
+                                ->image()
+                                ->directory('ui-settings')
+                                ->visibility('public')
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('value.logo_height')
+                                ->label('Logo Height (px)')
+                                ->numeric()
+                                ->default(48)
+                                ->minValue(20)
+                                ->maxValue(200)
+                                ->suffix('px'),
                             Forms\Components\TextInput::make('value.title')
                                 ->label('Company Title')
                                 ->default('Easy Healthcare 101'),
-                            Forms\Components\Textarea::make('value.description')
-                                ->label('Description')
-                                ->rows(3),
+                            Forms\Components\RichEditor::make('value.description')
+                                ->label('Description'),
+                            Forms\Components\TextInput::make('value.security_label')
+                                ->label('Security Label')
+                                ->default('HIPAA-aware and privacy-focused'),
                             Forms\Components\TextInput::make('value.phone')
                                 ->label('Phone')
                                 ->tel(),
@@ -96,12 +111,26 @@ class FooterSettingResource extends Resource
                             
                             Section::make('App Links')
                                 ->schema([
+                                    Forms\Components\TextInput::make('value.download_app_title')
+                                        ->label('App Download Title')
+                                        ->default('Download our App')
+                                        ->columnSpanFull(),
                                     Forms\Components\TextInput::make('value.android_app_link')
                                         ->label('Google Play Store Link')
                                         ->url(),
                                     Forms\Components\TextInput::make('value.ios_app_link')
                                         ->label('Apple App Store Link')
                                         ->url(),
+                                    Forms\Components\FileUpload::make('value.android_app_badge')
+                                        ->label('Google Play Badge (Optional)')
+                                        ->image()
+                                        ->directory('ui-settings')
+                                        ->visibility('public'),
+                                    Forms\Components\FileUpload::make('value.ios_app_badge')
+                                        ->label('App Store Badge (Optional)')
+                                        ->image()
+                                        ->directory('ui-settings')
+                                        ->visibility('public'),
                                 ])->columns(2),
                         ]),
                         
@@ -110,9 +139,8 @@ class FooterSettingResource extends Resource
                             Forms\Components\TextInput::make('value.newsletter_title')
                                 ->label('Title')
                                 ->default('Stay Updated'),
-                            Forms\Components\Textarea::make('value.newsletter_description')
-                                ->label('Description')
-                                ->rows(2),
+                            Forms\Components\RichEditor::make('value.newsletter_description')
+                                ->label('Description'),
                         ]),
                 ])->columnSpanFull(),
         ]);

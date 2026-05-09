@@ -67,14 +67,12 @@ const Overview: React.FC<OverviewProps> = ({ title, description, items }) => {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-            {title || "Redefining Healthcare Accessibility"}
-          </h2>
+          <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-6" dangerouslySetInnerHTML={{ __html: title || "Redefining Healthcare Accessibility" }} />
           <div className="text-lg text-gray-600 mb-12 leading-relaxed">
             {description ? (
               <div dangerouslySetInnerHTML={{ __html: description }} />
             ) : (
-              <p>At <span className="font-semibold text-teal-600">Easy Health Care</span>, we believe quality medical attention shouldn't be limited by geography. Our telemedicine platform bridges the gap between patients and certified doctors, designed specifically to serve the diverse terrain of Nepal. Whether you are in the heart of Kathmandu or a remote village in the Himalayas, we bring the clinic to you.</p>
+              <div>At <span className="font-semibold text-teal-600">Easy Health Care</span>, we believe quality medical attention shouldn't be limited by geography. Our telemedicine platform bridges the gap between patients and certified doctors, designed specifically to serve the diverse terrain of Nepal. Whether you are in the heart of Kathmandu or a remote village in the Himalayas, we bring the clinic to you.</div>
             )}
           </div>
         </div>
@@ -83,10 +81,8 @@ const Overview: React.FC<OverviewProps> = ({ title, description, items }) => {
           {displayItems.map((item, idx) => (
             <div key={idx} className="p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:border-teal-100 hover:shadow-lg transition-all text-center">
               {renderIcon(item.icon, item.color)}
-              <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-              <p className="text-gray-600">
-                {item.description}
-              </p>
+              <div className="text-xl font-bold text-gray-900 mb-3" dangerouslySetInnerHTML={{ __html: item.title }} />
+              <div className="text-gray-600" dangerouslySetInnerHTML={{ __html: item.description }} />
             </div>
           ))}
         </div>

@@ -1,8 +1,14 @@
 import React from 'react';
-import { HandHeart, School, Baby, Activity, Leaf, Megaphone } from 'lucide-react';
+import { HandHeart, School, Baby, Activity, Leaf, Megaphone, ArrowRight } from 'lucide-react';
 import { getIcon } from '@/utils/iconMapper';
 
-interface ProgramItem { icon?: string; title: string; description: string; }
+interface ProgramItem { 
+  icon?: string; 
+  title: string; 
+  description: string; 
+  link?: string;
+  new_tab?: boolean;
+}
 
 const programsList: ProgramItem[] = [
   { icon: 'hand-heart', title: 'Free Health Camps', description: 'Neighborhood-based camps offering basic checkups, BP and sugar tests.' },
@@ -37,9 +43,9 @@ const ProgramsGrid: React.FC<ProgramsGridProps> = ({ title, subtitle, descriptio
     <section id="programs" className="py-20 bg-white">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-sm font-bold text-teal-600 uppercase tracking-wide mb-2">{subtitle || "Our Initiatives"}</h2>
-          <h3 className="text-3xl md:text-4xl font-bold text-slate-900">{title || "Programs That Create Impact"}</h3>
-          <p className="text-slate-600 text-lg">{description || "Designed with local communities to improve access, awareness, and outcomes."}</p>
+          <div className="text-sm font-bold text-teal-600 uppercase tracking-wide mb-2" dangerouslySetInnerHTML={{ __html: subtitle || "Our Initiatives" }} />
+          <div className="text-3xl md:text-4xl font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: title || "Programs That Create Impact" }} />
+          <div className="text-slate-600 text-lg" dangerouslySetInnerHTML={{ __html: description || "Designed with local communities to improve access, awareness, and outcomes." }} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayPrograms.map((p, i) => (
@@ -47,8 +53,20 @@ const ProgramsGrid: React.FC<ProgramsGridProps> = ({ title, subtitle, descriptio
               <div className="w-14 h-14 bg-teal-600 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-teal-200">
                 {renderIcon(p.icon, i)}
               </div>
-              <h4 className="text-xl font-bold text-slate-900 mb-2">{p.title}</h4>
-              <p className="text-slate-600">{p.description}</p>
+              <div className="text-xl font-bold text-slate-900 mb-2" dangerouslySetInnerHTML={{ __html: p.title }} />
+              <div className="text-slate-600 mb-4" dangerouslySetInnerHTML={{ __html: p.description }} />
+              
+              {p.link && (
+                <a 
+                  href={p.link} 
+                  target={p.new_tab ? "_blank" : undefined}
+                  rel={p.new_tab ? "noopener noreferrer" : undefined}
+                  className="inline-flex items-center text-teal-600 font-semibold hover:text-teal-700 group/link"
+                >
+                  Learn More 
+                  <ArrowRight size={16} className="ml-1.5 group-hover/link:translate-x-1 transition-transform" />
+                </a>
+              )}
             </div>
           ))}
         </div>

@@ -1,18 +1,31 @@
 import React, { useState } from 'react';
 import { usePageContent } from '@/hooks/usePageContent';
-import { resolveSrc } from '@/utils/url';
+import { normalizeHref, resolveSrc } from '@/utils/url';
 import { getIcon } from '@/utils/iconMapper';
-import { ArrowRight, CheckCircle2, HeartPulse, Stethoscope, Pill, Baby, Activity, Heart, ShieldCheck, Microscope, UserPlus, Calendar, Clock, User, Mail, Phone, FileText, Check } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Stethoscope, Pill, Baby, Activity, Heart, ShieldCheck, Microscope, UserPlus } from 'lucide-react';
+import AppointmentForm from './components/AppointmentForm';
 
 interface HeroProps {
   title?: string;
   subtitle?: string;
   image?: string;
+  primaryButtonText?: string;
+  primaryButtonLink?: string;
+  primaryButtonNewTab?: boolean;
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
+  secondaryButtonNewTab?: boolean;
 }
 
-const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
+const Hero: React.FC<HeroProps> = ({ title, subtitle, image, primaryButtonText, primaryButtonLink, primaryButtonNewTab, secondaryButtonText, secondaryButtonLink, secondaryButtonNewTab }) => {
   const defaultImage = 'https://plus.unsplash.com/premium_photo-1663050906605-faa2aa0e5ff8?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0';
   const imgSrc = image ? resolveSrc(image) : defaultImage;
+  const primaryHref = normalizeHref(primaryButtonLink) || '#appointment';
+  const secondaryHref = normalizeHref(secondaryButtonLink) || '#services';
+  const primaryTarget = primaryButtonNewTab ? '_blank' : undefined;
+  const secondaryTarget = secondaryButtonNewTab ? '_blank' : undefined;
+  const primaryRel = primaryButtonNewTab ? 'noopener noreferrer' : undefined;
+  const secondaryRel = secondaryButtonNewTab ? 'noopener noreferrer' : undefined;
 
   return (
     <section id="home" className="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden bg-slate-50">
@@ -34,23 +47,21 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
               </span>
               <span>Accepting New Patients</span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-              {title ? title : (
-                <>
-                  Primary Care Built on <span className="text-teal-600">Trust</span> & <span className="text-teal-600">Continuity</span>
-                </>
-              )}
-            </h1>
-            <p className="text-lg text-slate-600 max-w-xl">
-              {subtitle || "Accessible, affordable, and high-quality general outpatient services. We believe in building long-term relationships for better health outcomes."}
-            </p>
+            {title ? (
+              <div className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight" dangerouslySetInnerHTML={{ __html: title }} />
+            ) : (
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
+                Primary Care Built on <span className="text-teal-600">Trust</span> & <span className="text-teal-600">Continuity</span>
+              </h1>
+            )}
+            <div className="text-lg text-slate-600 max-w-xl" dangerouslySetInnerHTML={{ __html: subtitle || "Accessible, affordable, and high-quality general outpatient services. We believe in building long-term relationships for better health outcomes." }} />
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="#appointment" className="inline-flex justify-center items-center px-8 py-3.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-all shadow-lg hover:shadow-teal-200">
-                Schedule Visit
+              <a href={primaryHref} target={primaryTarget} rel={primaryRel} className="inline-flex justify-center items-center px-8 py-3.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-all shadow-lg hover:shadow-teal-200">
+                {primaryButtonText ? <div dangerouslySetInnerHTML={{ __html: primaryButtonText }} /> : 'Schedule Visit'}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </a>
-              <a href="#services" className="inline-flex justify-center items-center px-8 py-3.5 bg-white text-slate-700 border border-slate-200 font-semibold rounded-lg hover:bg-slate-50 transition-all">
-                View Services
+              <a href={secondaryHref} target={secondaryTarget} rel={secondaryRel} className="inline-flex justify-center items-center px-8 py-3.5 bg-white text-slate-700 border border-slate-200 font-semibold rounded-lg hover:bg-slate-50 transition-all">
+                {secondaryButtonText ? <div dangerouslySetInnerHTML={{ __html: secondaryButtonText }} /> : 'View Services'}
               </a>
             </div>
             <div className="pt-4 flex flex-col sm:flex-row gap-6 text-sm text-slate-500 font-medium">
@@ -69,8 +80,8 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
                 onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://plus.unsplash.com/premium_photo-1663050906605-faa2aa0e5ff8?q=60&w=1600&auto=format&fit=crop'; }}
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6 text-white">
-                <p className="font-medium">"Continuous care is the cornerstone of lifelong health."</p>
-                <p className="text-sm opacity-80 mt-1">- Lead Physician</p>
+                <div className="font-medium">"Continuous care is the cornerstone of lifelong health."</div>
+                <div className="text-sm opacity-80 mt-1">- Lead Physician</div>
               </div>
             </div>
             <div className="absolute -bottom-6 -left-6 md:bottom-8 md:-left-12 bg-white p-4 rounded-xl shadow-xl border border-slate-100 max-w-xs hidden md:block">
@@ -79,8 +90,8 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900">Comprehensive Care</p>
-                  <p className="text-xs text-slate-500">From diagnosis to recovery</p>
+                  <div className="text-sm font-bold text-slate-900">Comprehensive Care</div>
+                  <div className="text-xs text-slate-500">From diagnosis to recovery</div>
                 </div>
               </div>
             </div>
@@ -130,22 +141,16 @@ const Services: React.FC<ServicesProps> = ({ title, subtitle, description, items
     <section id="services" className="py-20 bg-white">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-sm font-bold text-teal-600 uppercase tracking-wide mb-2">
-            {subtitle || "Our Capabilities"}
-          </h2>
-          <h3 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            {title || "Holistic Clinical Services"}
-          </h3>
-          <p className="text-slate-600 text-lg">
-            {description || "We provide a wide range of primary care services designed to be affordable and accessible. Our focus is on your continuous well-being."}
-          </p>
+          <div className="text-sm font-bold text-teal-600 uppercase tracking-wide mb-2" dangerouslySetInnerHTML={{ __html: subtitle || "Our Capabilities" }} />
+          <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-4" dangerouslySetInnerHTML={{ __html: title || "Holistic Clinical Services" }} />
+          <div className="text-slate-600 text-lg" dangerouslySetInnerHTML={{ __html: description || "We provide a wide range of primary care services designed to be affordable and accessible. Our focus is on your continuous well-being." }} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {displayItems.map((service, index) => (
             <div key={index} className="group p-6 bg-slate-50 rounded-2xl border border-slate-100 hover:border-teal-200 hover:shadow-xl hover:shadow-teal-50 transition-all duration-300">
               <div className="w-14 h-14 bg-teal-600 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-teal-200 group-hover:scale-110 transition-transform">{service.icon}</div>
-              <h4 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h4>
-              <p className="text-slate-600 leading-relaxed">{service.description}</p>
+              <div className="text-xl font-bold text-slate-900 mb-3" dangerouslySetInnerHTML={{ __html: service.title }} />
+              <div className="text-slate-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: service.description }} />
             </div>
           ))}
         </div>
@@ -187,25 +192,21 @@ const About: React.FC<AboutProps> = ({ title, subtitle, description, images }) =
             </div>
           </div>
           <div className="md:w-1/2 space-y-6">
-            <h4 className="text-teal-600 font-bold uppercase tracking-wide">
-              {subtitle || "About Primary Health Care"}
-            </h4>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              {title || "Dedicated to Continuous & Affordable Care"}
-            </h2>
+            <div className="text-teal-600 font-bold uppercase tracking-wide" dangerouslySetInnerHTML={{ __html: subtitle || "About Primary Health Care" }} />
+            <div className="text-3xl md:text-4xl font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: title || "Dedicated to Continuous & Affordable Care" }} />
             <div className="text-slate-600 text-lg leading-relaxed">
               {description ? (
                 <div dangerouslySetInnerHTML={{ __html: description }} />
               ) : (
                 <>
-                  <p className="mb-4">Founded on the belief that healthcare should be a right, not a privilege, our Primary Health Care service focuses on reducing barriers to quality medical attention. We specialize in general outpatient services designed to fit your busy life.</p>
-                  <p>Our "Continuity of Care" model ensures you see the same team of professionals who know your history, preferences, and health goals. From minor check-ups to managing complex chronic conditions, we walk the journey with you.</p>
+                  <div className="mb-4">Founded on the belief that healthcare should be a right, not a privilege, our Primary Health Care service focuses on reducing barriers to quality medical attention. We specialize in general outpatient services designed to fit your busy life.</div>
+                  <div>Our "Continuity of Care" model ensures you see the same team of professionals who know your history, preferences, and health goals. From minor check-ups to managing complex chronic conditions, we walk the journey with you.</div>
                 </>
               )}
             </div>
             <div className="grid grid-cols-2 gap-6 pt-4">
-              <div><h3 className="text-3xl font-bold text-teal-600">15k+</h3><p className="text-slate-500">Patients Served</p></div>
-              <div><h3 className="text-3xl font-bold text-teal-600">98%</h3><p className="text-slate-500">Satisfaction Rate</p></div>
+              <div><h3 className="text-3xl font-bold text-teal-600">15k+</h3><div className="text-slate-500">Patients Served</div></div>
+              <div><h3 className="text-3xl font-bold text-teal-600">98%</h3><div className="text-slate-500">Satisfaction Rate</div></div>
             </div>
           </div>
         </div>
@@ -214,126 +215,25 @@ const About: React.FC<AboutProps> = ({ title, subtitle, description, images }) =
   );
 };
 
-interface AppointmentFormProps {
-  title?: string;
-  subtitle?: string;
-  successTitle?: string;
-  successMessage?: string;
-  contactInfo?: {
-    hoursTitle?: string;
-    hoursWeek?: string;
-    hoursSat?: string;
-    hoursSun?: string;
-    supportTitle?: string;
-    supportEmergency?: string;
-    supportLine?: string;
-  };
-  labels?: {
-    name?: string;
-    phone?: string;
-    email?: string;
-    date?: string;
-    time?: string;
-    reason?: string;
-    submit?: string;
-  };
-  placeholders?: {
-    name?: string;
-    phone?: string;
-    email?: string;
-    reason?: string;
-  };
-}
 
-const AppointmentForm: React.FC<AppointmentFormProps> = ({ 
-  title, 
-  subtitle, 
-  successTitle, 
-  successMessage, 
-  contactInfo,
-  labels,
-  placeholders
-}) => {
-  const [submitted, setSubmitted] = useState(false);
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setTimeout(() => setSubmitted(true), 800);
-  };
-  if (submitted) {
-    return (
-      <section id="appointment" className="py-20 bg-slate-50">
-        <div className="container mx-auto px-4 max-w-4xl">
-           <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"><Check className="w-10 h-10 text-green-600" /></div>
-             <h3 className="text-3xl font-bold text-slate-900 mb-4">{successTitle || "Request Received!"}</h3>
-             <p className="text-lg text-slate-600 mb-8">{successMessage || "Thank you for your request. Our team will contact you shortly to confirm your appointment time."}</p>
-             <button onClick={() => setSubmitted(false)} className="text-teal-600 font-semibold hover:underline">Book another appointment</button>
-           </div>
-        </div>
-      </section>
-    );
-  }
-  return (
-    <section id="appointment" className="py-20 bg-slate-50">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col lg:flex-row gap-12 max-w-6xl mx-auto">
-          <div className="lg:w-5/12 space-y-6">
-            <h2 className="text-3xl font-bold text-slate-900">{title || "Book Your Consultation"}</h2>
-            <p className="text-slate-600">{subtitle || "Prioritize your health with our flexible scheduling. We offer same-day appointments for acute needs and convenient slots for routine check-ups."}</p>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
-              <div className="flex items-start gap-4"><div className="bg-teal-50 p-3 rounded-lg text-teal-600"><Clock size={24} /></div><div><h4 className="font-bold text-slate-900">{contactInfo?.hoursTitle || "Clinic Hours"}</h4><p className="text-sm text-slate-500 mt-1">{contactInfo?.hoursWeek || "Mon - Fri: 8:00 AM - 8:00 PM"}</p><p className="text-sm text-slate-500">{contactInfo?.hoursSat || "Sat: 9:00 AM - 5:00 PM"}</p><p className="text-sm text-slate-500">{contactInfo?.hoursSun || "Sun: Closed"}</p></div></div>
-              <div className="w-full h-px bg-slate-100 my-4"></div>
-              <div className="flex items-start gap-4"><div className="bg-teal-50 p-3 rounded-lg text-teal-600"><Phone size={24} /></div><div><h4 className="font-bold text-slate-900">{contactInfo?.supportTitle || "Support Contact"}</h4><p className="text-sm text-slate-500 mt-1">{contactInfo?.supportEmergency || "For life-threatening emergencies, please call local emergency services."}</p><p className="text-sm text-slate-500 mt-1">{contactInfo?.supportLine || "Clinic Line: (555) 019-2834"}</p></div></div>
-            </div>
-          </div>
-          <div className="lg:w-7/12">
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 md:p-10 border-t-4 border-teal-600">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.name || "Full Name"}</label>
-                  <div className="relative"><User className="absolute left-3 top-3 text-slate-400" size={18} /><input required type="text" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none" placeholder={placeholders?.name || "John Doe"} /></div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.phone || "Phone Number"}</label>
-                  <div className="relative"><Phone className="absolute left-3 top-3 text-slate-400" size={18} /><input required type="tel" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none" placeholder={placeholders?.phone || "(555) 000-0000"} /></div>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.email || "Email Address"}</label>
-                  <div className="relative"><Mail className="absolute left-3 top-3 text-slate-400" size={18} /><input required type="email" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none" placeholder={placeholders?.email || "john@example.com"} /></div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.date || "Preferred Date"}</label>
-                  <div className="relative"><Calendar className="absolute left-3 top-3 text-slate-400" size={18} /><input required type="date" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none" /></div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.time || "Time Slot"}</label>
-                  <div className="relative"><Clock className="absolute left-3 top-3 text-slate-400" size={18} /><select className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none appearance-none"><option>Morning (8am - 12pm)</option><option>Afternoon (12pm - 4pm)</option><option>Evening (4pm - 8pm)</option></select></div>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.reason || "Reason for Visit"}</label>
-                  <div className="relative"><FileText className="absolute left-3 top-3 text-slate-400" size={18} /><textarea className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none h-24 resize-none" placeholder={placeholders?.reason || "Briefly describe your symptoms or check-up needs..."}></textarea></div>
-                </div>
-              </div>
-              <button type="submit" className="w-full py-3.5 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition-colors shadow-lg shadow-teal-100">{labels?.submit || "Confirm Appointment"}</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
 
 const PrimaryHealth: React.FC = () => {
   const { data: pageData } = usePageContent('primary-health');
-  const heroBlock = pageData?.content?.find(b => b.type === 'hero_section');
-  const servicesBlock = pageData?.content?.find(b => b.type === 'services_section');
-  const aboutBlock = pageData?.content?.find(b => b.type === 'about_section');
-  const appointmentBlock = pageData?.content?.find(b => b.type === 'appointment_section');
+  const heroBlock = pageData?.content?.find((b: any) => b.type === 'hero_section');
+  const servicesBlock = pageData?.content?.find((b: any) => b.type === 'services_section');
+  const aboutBlock = pageData?.content?.find((b: any) => b.type === 'about_section');
+  const appointmentBlock = pageData?.content?.find((b: any) => b.type === 'appointment_section');
 
   const heroProps = {
     title: heroBlock?.data?.title,
     subtitle: heroBlock?.data?.subtitle,
     image: heroBlock?.data?.image,
+    primaryButtonText: heroBlock?.data?.primary_button_text,
+    primaryButtonLink: heroBlock?.data?.primary_button_link,
+    primaryButtonNewTab: heroBlock?.data?.primary_button_new_tab,
+    secondaryButtonText: heroBlock?.data?.secondary_button_text,
+    secondaryButtonLink: heroBlock?.data?.secondary_button_link,
+    secondaryButtonNewTab: heroBlock?.data?.secondary_button_new_tab,
   };
 
   const servicesProps = {

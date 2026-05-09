@@ -26,7 +26,13 @@ const Telemedicine: React.FC = () => {
   const heroProps = {
     title: heroBlock?.data?.title,
     subtitle: heroBlock?.data?.subtitle || heroBlock?.data?.description,
-    image: heroBlock?.data?.image
+    image: heroBlock?.data?.image,
+    primary_button_text: heroBlock?.data?.primary_button_text,
+    primary_button_link: heroBlock?.data?.primary_button_link,
+    primary_button_new_tab: heroBlock?.data?.primary_button_new_tab,
+    secondary_button_text: heroBlock?.data?.secondary_button_text,
+    secondary_button_link: heroBlock?.data?.secondary_button_link,
+    secondary_button_new_tab: heroBlock?.data?.secondary_button_new_tab
   };
 
   const overviewProps = {

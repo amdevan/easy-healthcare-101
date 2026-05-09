@@ -5,6 +5,7 @@ import { usePageContent } from '@/hooks/usePageContent';
 import { CountryCodeSelect } from '@/components/ui/CountryCodeSelect';
 import { resolveSrc } from '@/utils/url';
 import { MapPin, Stethoscope, Clock, Search, Briefcase, Building, Video, Home } from 'lucide-react';
+import Skeleton from '@/components/ui/Skeleton';
 
 type Doctor = {
   id: number;
@@ -124,26 +125,35 @@ const FindDoctors: React.FC = () => {
 
   useEffect(() => {
     let ignore = false;
+    // Initial fetch for static data
+    fetchPaymentSettings()
+      .then(settings => { if (!ignore) setPaymentSettings(settings); })
+      .catch(console.error);
+
+    fetchSpecialties()
+      .then(res => { if (!ignore) setSpecialties(res); })
+      .catch(console.error);
+
+    return () => { ignore = true; };
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
     setLoading(true);
     setError(null);
 
-    fetchPaymentSettings()
-      .then(settings => {
-        if (!ignore) setPaymentSettings(settings);
+    fetchDoctors({ location: location || undefined, q: query || undefined })
+      .then(res => {
+         if (ignore) return;
+         setDoctors(res.data.map(toDoctor));
       })
-      .catch(console.error);
-
-    Promise.all([
-      fetchDoctors({ location: location || undefined, q: query || undefined }),
-      fetchSpecialties(),
-    ])
-      .then(([docRes, specRes]) => {
-        if (ignore) return;
-        setDoctors(docRes.data.map(toDoctor));
-        setSpecialties(specRes);
+      .catch(e => {
+        if (!ignore) setError(e.message);
       })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+      
     return () => { ignore = true; };
   }, [query, location]);
 
@@ -177,8 +187,8 @@ const FindDoctors: React.FC = () => {
             </div>
           )}
           <div className="p-6 md:p-8 relative z-10">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-brand-gray-900">{heroTitle}</h1>
-            <p className="mt-3 text-brand-gray-600">{heroSubtitle}</p>
+            <div className="text-3xl md:text-4xl font-extrabold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: heroTitle }} />
+            <div className="mt-3 text-brand-gray-600" dangerouslySetInnerHTML={{ __html: heroSubtitle }} />
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
 
@@ -214,13 +224,29 @@ const FindDoctors: React.FC = () => {
               </div>
             </div>
 
-            {loading && (
-              <div className="mt-6 text-brand-gray-600">Loading doctors...</div>
-            )}
-            {error && (
-              <div className="mt-6 text-red-600">{error}</div>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <div className="flex items-start gap-4">
+                      <Skeleton className="w-20 h-20 rounded-xl flex-shrink-0" />
+                      <div className="flex-1">
+                        <Skeleton variant="text" height={24} className="w-3/4 mb-2" />
+                        <Skeleton variant="text" height={16} className="w-1/2 mb-1" />
+                        <Skeleton variant="text" height={16} className="w-2/3" />
+                      </div>
+                    </div>
+                    <div className="mt-6 grid grid-cols-2 gap-3">
+                      <Skeleton height={40} className="rounded-xl" />
+                      <Skeleton height={40} className="rounded-xl" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : error ? (
+              <div className="mt-6 text-red-600" dangerouslySetInnerHTML={{ __html: error }} />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map(d => (
                 <div key={d.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden group">
                   <div className="p-6">
@@ -260,35 +286,33 @@ const FindDoctors: React.FC = () => {
                         {d.position && (
                           <div className="flex items-center gap-1.5 text-slate-600 mb-1">
                             <Briefcase className="w-3.5 h-3.5 flex-shrink-0 text-teal-500" />
-                            <p className="text-xs font-medium truncate">{d.position}</p>
+                            <div className="text-xs font-medium truncate" dangerouslySetInnerHTML={{ __html: d.position }} />
                           </div>
                         )}
 
                         <div className="flex items-center gap-1.5 text-slate-600 mb-1">
                           <Stethoscope className="w-3.5 h-3.5 flex-shrink-0 text-teal-500" />
-                          <p className="text-xs font-medium truncate">{d.specialization || 'General Practitioner'}</p>
+                          <div className="text-xs font-medium truncate" dangerouslySetInnerHTML={{ __html: d.specialization || 'General Practitioner' }} />
                         </div>
 
                         <div className="flex items-center gap-1.5 text-slate-600 mb-1">
                           <Building className="w-3.5 h-3.5 flex-shrink-0 text-teal-500" />
-                          <p className="text-xs font-medium truncate">
-                            {d.hospitals && d.hospitals.length > 0 ? d.hospitals.join(', ') : 'Hospital not specified'}
-                          </p>
+                          <div className="text-xs font-medium truncate" dangerouslySetInnerHTML={{ __html: d.hospitals && d.hospitals.length > 0 ? d.hospitals.join(', ') : 'Hospital not specified' }} />
                         </div>
 
                         {d.nmcNo && (
-                          <p className="text-[10px] text-slate-400 font-mono uppercase tracking-wide mb-2">NMC: {d.nmcNo}</p>
+                          <div className="text-[10px] text-slate-400 font-mono uppercase tracking-wide mb-2"><div dangerouslySetInnerHTML={{ __html: `NMC: ${d.nmcNo}` }} /></div>
                         )}
 
                         <div className="flex flex-col gap-1.5 mt-1">
                           <div className="flex items-center gap-1.5 text-slate-600">
                             <Clock className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
-                            <span className="text-xs font-medium truncate">{d.experienceYears} Years Experience</span>
+                            <div className="text-xs font-medium truncate" dangerouslySetInnerHTML={{ __html: `${d.experienceYears} Years Experience` }} />
                           </div>
 
                           <div className="flex items-center gap-1.5 text-slate-600">
                             <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
-                            <span className="text-xs font-medium truncate">{d.location || 'Location not specified'}</span>
+                            <div className="text-xs font-medium truncate" dangerouslySetInnerHTML={{ __html: d.location || 'Location not specified' }} />
                           </div>
 
 
@@ -386,19 +410,20 @@ const FindDoctors: React.FC = () => {
                           }
                         }}
                       >
-                        Book Now
+                        <div dangerouslySetInnerHTML={{ __html: 'Book Now' }} />
                       </button>
                       <button
                         className="flex items-center justify-center px-4 py-2.5 text-sm font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-all"
                         onClick={() => navigate(`/find-doctors/${toSlug(d.name)}`)}
                       >
-                        View Profile
+                        <div dangerouslySetInnerHTML={{ __html: 'View Profile' }} />
                       </button>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+            )}
 
             {profileOpen && selectedDoctor && (
               <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -450,7 +475,7 @@ const FindDoctors: React.FC = () => {
                           <div className="space-y-1">
                             <div className="text-brand-gray-900 font-semibold">Professional Journey</div>
                             <div className="prose max-w-none text-brand-gray-700">
-                              <span dangerouslySetInnerHTML={{ __html: doctorDetail.content }} />
+                              <div dangerouslySetInnerHTML={{ __html: doctorDetail.content }} />
                             </div>
                           </div>
                         )}
@@ -588,7 +613,7 @@ const FindDoctors: React.FC = () => {
                           </div>
                         )}
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="w-full">
                           <input
                             type="date"
                             value={date}
@@ -615,15 +640,7 @@ const FindDoctors: React.FC = () => {
                                 }
                               }
                             }}
-                            className={`border rounded-md p-2 ${dateError ? 'border-red-500' : 'border-gray-300'}`}
-                          />
-                          <input
-                            type="time"
-                            value={time}
-                            step={900}
-                            min={date && serverToday && date === serverToday ? (serverNextQuarter || nextQuarter) : undefined}
-                            onChange={e => { setTime(e.target.value); setTimeError(null); }}
-                            className={`border rounded-md p-2 ${timeError ? 'border-red-500' : 'border-gray-300'}`}
+                            className={`w-full border rounded-md p-2 ${dateError ? 'border-red-500' : 'border-gray-300'}`}
                           />
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -741,8 +758,8 @@ const FindDoctors: React.FC = () => {
                       {bookingStep === 'payment' ? 'Back' : 'Cancel'}
                     </button>
                     <button
-                      className="px-4 py-2 text-sm font-semibold text-white bg-brand-blue rounded-md hover:bg-brand-blue-dark"
-                      disabled={actionLoading}
+                      className={`px-4 py-2 text-sm font-semibold text-white bg-brand-blue rounded-md hover:bg-brand-blue-dark ${actionLoading || (bookingStep === 'details' && slots.length === 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={actionLoading || (bookingStep === 'details' && slots.length === 0)}
                       onClick={async () => {
                         setActionError(null);
                         if (bookingStep === 'details') {

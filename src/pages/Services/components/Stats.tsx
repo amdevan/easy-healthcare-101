@@ -11,8 +11,8 @@ const Stats: React.FC<StatsProps> = ({ items }) => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
         {items.map((stat, idx) => (
           <div key={idx}>
-            <div className="text-2xl md:text-3xl font-extrabold text-brand-gray-900">{stat.value}</div>
-            <div className="mt-1 text-xs md:text-sm text-brand-gray-500">{stat.label}</div>
+            <div className="text-2xl md:text-3xl font-extrabold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: stat.value }} />
+            <div className="mt-1 text-xs md:text-sm text-brand-gray-500" dangerouslySetInnerHTML={{ __html: stat.label }} />
           </div>
         ))}
       </div>

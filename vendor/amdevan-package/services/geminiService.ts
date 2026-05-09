@@ -3,7 +3,12 @@ import { HEALTH_PACKAGES, ADDITIONAL_SERVICES } from "../constants";
 
 // Safely access the API key (supports Vite env and Node env)
 const getApiKey = (): string => {
-  // Prefer Vite-style env when available (browser builds)
+  // 1. Check global config (Runtime Injection for cPanel/Docker)
+  if (typeof window !== 'undefined' && (window as any).APP_CONFIG?.GEMINI_API_KEY) {
+    return (window as any).APP_CONFIG.GEMINI_API_KEY;
+  }
+
+  // 2. Prefer Vite-style env when available (Build-time)
   const viteEnv = (typeof import.meta !== 'undefined' && (import.meta as any)?.env) || undefined;
   const viteKey = viteEnv?.VITE_GEMINI_API_KEY || viteEnv?.VITE_API_KEY;
   if (typeof viteKey === 'string' && viteKey.length > 0) return viteKey;
@@ -24,11 +29,9 @@ export const isConfigured = (): boolean => {
   return getApiKey().length > 0;
 };
 
-const apiKey = getApiKey();
-
 // Context for the AI to understand the product catalog
 const SYSTEM_INSTRUCTION = `
-You are 'Devan AI', a helpful and empathetic AI health consultant for 'Vitality Health'.
+You are 'Easy Health AI', a helpful and empathetic AI health consultant for 'Easy Healthcare 101'.
 Your goal is to help users find the best health package for their needs based on the following catalog:
 
 ${JSON.stringify(HEALTH_PACKAGES.map(p => ({ id: p.id, title: p.title, target: p.target, purpose: p.purpose })))}
@@ -46,6 +49,7 @@ Rules:
 let aiClient: GoogleGenAI | null = null;
 
 export const initializeAI = () => {
+  const apiKey = getApiKey();
   if (!apiKey) {
     console.warn("Gemini API Key is missing.");
     return;

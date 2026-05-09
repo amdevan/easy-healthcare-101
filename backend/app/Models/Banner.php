@@ -15,6 +15,7 @@ class Banner extends Model
         'image',
         'image_url',
         'link_url',
+        'new_tab',
         'button_text',
         'pages',
         'show_on_all_pages',
@@ -26,6 +27,7 @@ class Banner extends Model
         'pages' => 'array',
         'show_on_all_pages' => 'boolean',
         'is_active' => 'boolean',
+        'new_tab' => 'boolean',
     ];
 protected $appends = [
         'display_image_url',

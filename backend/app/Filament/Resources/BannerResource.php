@@ -53,6 +53,9 @@ class BannerResource extends Resource
                         ->maxLength(1024)
                         ->url()
                         ->helperText('Where the button should link to.'),
+                    Forms\Components\Toggle::make('new_tab')
+                        ->label('Open in New Tab')
+                        ->default(false),
                 ])->columns(2),
 
             Section::make('Display Settings')

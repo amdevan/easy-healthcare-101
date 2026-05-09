@@ -25,17 +25,15 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
               <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-teal-200 bg-white text-teal-700 text-xs font-bold uppercase tracking-wide mb-6 shadow-sm animate-fade-in-up">
                 <ShieldCheck className="w-4 h-4 mr-2 text-teal-500" /> Trusted by the Nepali Diaspora
               </div>
-              <h1 className="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl leading-tight animate-fade-in-up animate-delay-100">
-                {title ? title : (
-                  <>
+              {title ? (
+                <div className="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl leading-tight animate-fade-in-up animate-delay-100" dangerouslySetInnerHTML={{ __html: title }} />
+              ) : (
+                <h1 className="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl leading-tight animate-fade-in-up animate-delay-100">
                     <span className="block">Care for your parents,</span>{' '}
                     <span className="block text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-500">from miles away.</span>
-                  </>
-                )}
-              </h1>
-              <p className="mt-4 text-base text-slate-600 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0 leading-relaxed animate-fade-in-up animate-delay-200">
-                {subtitle || "EasyCare 365 ensures your loved ones in Nepal receive medical attention, preventative care, and health coordination. Reliable, compassionate, and always there when you can't be."}
-              </p>
+                </h1>
+              )}
+              <div className="mt-4 text-base text-slate-600 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0 leading-relaxed animate-fade-in-up animate-delay-200" dangerouslySetInnerHTML={{ __html: subtitle || "Easy Care 365 ensures your loved ones in Nepal receive medical attention, preventative care, and health coordination. Reliable, compassionate, and always there when you can't be." }} />
               <div className="mt-8 sm:mt-10 sm:flex sm:justify-center lg:justify-start gap-4 animate-fade-in-up animate-delay-300">
                 <div className="rounded-full shadow-lg shadow-teal-200/50">
                   <a
@@ -50,27 +48,8 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
                     href="#features"
                     className="w-full flex items-center justify-center px-8 py-4 border border-slate-200 text-base font-bold rounded-full text-slate-700 bg-white hover:bg-slate-50 hover:text-teal-600 md:text-lg transition-all shadow-sm hover:shadow-lg hover:-translate-y-0.5"
                   >
-                    How it Works <ArrowRight className="ml-2 w-5 h-5" />
+                    Core Components <ArrowRight className="ml-2 w-5 h-5" />
                   </a>
-                </div>
-              </div>
-              
-              <div className="mt-10 flex items-center gap-4 sm:justify-center lg:justify-start animate-fade-in-up animate-delay-300">
-                <div className="flex -space-x-2">
-                  <img className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://randomuser.me/api/portraits/men/32.jpg" alt=""/>
-                  <img className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://randomuser.me/api/portraits/women/44.jpg" alt=""/>
-                  <img className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://randomuser.me/api/portraits/men/86.jpg" alt=""/>
-                  <div className="h-10 w-10 rounded-full ring-2 ring-white bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">+2k</div>
-                </div>
-                <div className="text-sm text-slate-500 font-medium">
-                  <div className="flex items-center text-amber-400 mb-0.5">
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                  </div>
-                  Happy families connected
                 </div>
               </div>
             </div>
@@ -86,9 +65,9 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Starting Plan</span>
-                <p className="font-bold text-slate-800 text-sm sm:text-base leading-tight">
+                <div className="font-bold text-slate-800 text-sm sm:text-base leading-tight">
                   Care for your parents for just <span className="text-teal-600 text-lg">$1/day</span>.
-                </p>
+                </div>
               </div>
             </div>
           </div>

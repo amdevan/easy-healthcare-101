@@ -113,7 +113,7 @@ import {
 
 // Additional icons referenced by CMS content but missing in the default map
 import { Building, Building2 } from 'lucide-react';
-import { Users, GraduationCap } from 'lucide-react';
+import { Users, GraduationCap, Package } from 'lucide-react';
 
 export const iconMap: Record<string, React.ElementType> = {
   'ArrowRight': ArrowRight,
@@ -229,7 +229,8 @@ export const iconMap: Record<string, React.ElementType> = {
   'Building': Building,
   'Building2': Building2,
   'Users': Users,
-  'GraduationCap': GraduationCap
+  'GraduationCap': GraduationCap,
+  'Package': Package
 };
 
 export const getIcon = (name: string | undefined): React.ElementType | null => {

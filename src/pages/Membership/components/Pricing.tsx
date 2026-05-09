@@ -1,23 +1,12 @@
 import React, { useState } from 'react';
 import { PRICING_PLANS } from '../constants';
-import { Check, X as XIcon, Zap, Star, Shield, ArrowRight } from 'lucide-react';
+import { Check, X as XIcon, Zap, Star, Shield, ArrowRight, Crown } from 'lucide-react';
 import MembershipBookingForm from './MembershipBookingForm';
+import { PricingPlan } from '../types';
 
 interface PricingFeature {
   text: string;
   included: boolean;
-}
-
-interface PricingPlan {
-  id: string;
-  name: string;
-  price: number;
-  priceNpr?: number;
-  period: string;
-  description: string;
-  buttonText: string;
-  highlight?: boolean;
-  features: PricingFeature[];
 }
 
 interface PricingProps {
@@ -104,6 +93,19 @@ const Pricing: React.FC<PricingProps> = ({
           shadow: 'shadow-xl shadow-rose-200/80 hover:shadow-2xl hover:shadow-rose-500/60',
           ring: 'group-hover:ring-2 group-hover:ring-rose-400 group-hover:ring-offset-2',
         };
+      case 'elite':
+        return {
+          border: 'border-amber-200 hover:border-amber-400',
+          bg: 'bg-white',
+          badgeBg: 'bg-amber-50',
+          badgeText: 'text-amber-700',
+          priceText: 'text-slate-900',
+          button: 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:scale-[1.02] hover:from-amber-400 hover:to-yellow-400',
+          iconBg: 'bg-amber-100',
+          iconColor: 'text-amber-600',
+          shadow: 'shadow-2xl shadow-amber-200/80 hover:shadow-2xl hover:shadow-amber-500/60',
+          ring: 'ring-1 ring-amber-500 ring-offset-0',
+        };
       default:
         return {
           border: 'border-slate-200',
@@ -129,13 +131,9 @@ const Pricing: React.FC<PricingProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-20 animate-fade-in-up">
-          <h2 className="text-teal-600 font-bold tracking-wide uppercase text-sm mb-3">{subtitle || "Simple, Transparent Pricing"}</h2>
-          <h1 className="text-4xl font-extrabold text-slate-900 sm:text-5xl mb-6 tracking-tight">
-            {title || "Choose the Perfect Care Plan"}
-          </h1>
-          <p className="text-xl text-slate-500 leading-relaxed">
-            {description || "Invest in your parents' health and your peace of mind. No hidden fees, just comprehensive care."}
-          </p>
+          <div className="text-teal-600 font-bold tracking-wide uppercase text-sm mb-3" dangerouslySetInnerHTML={{ __html: subtitle || "Simple, Transparent Pricing" }} />
+          <div className="text-4xl font-extrabold text-slate-900 sm:text-5xl mb-6 tracking-tight" dangerouslySetInnerHTML={{ __html: title || "Choose the Perfect Care Plan" }} />
+          <div className="text-xl text-slate-500 leading-relaxed" dangerouslySetInnerHTML={{ __html: description || "Invest in your parents' health and your peace of mind. No hidden fees, just comprehensive care." }} />
         </div>
 
         {showCurrencyToggle && (
@@ -161,7 +159,7 @@ const Pricing: React.FC<PricingProps> = ({
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 items-stretch">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 items-stretch">
           {displayPlans.map((plan, index) => {
             const theme = getTheme(plan.id);
             const isHighlighted = plan.highlight;
@@ -190,12 +188,13 @@ const Pricing: React.FC<PricingProps> = ({
                 <div className={`p-8 ${isHighlighted ? 'pt-12' : ''} flex-1 flex flex-col h-full`}>
                   <div className="flex justify-between items-center mb-6">
                     <div className={`inline-block px-4 py-1.5 rounded-xl text-sm font-bold tracking-wide uppercase ${theme.badgeBg} ${theme.badgeText}`}>
-                      {plan.name.replace('EasyCare 365 ', '')}
+                      {plan.name.replace(/Easy\s?Care\s?365\s/i, '').replace('Membership ', '')}
                     </div>
                     <div className={`p-2 rounded-full ${theme.iconBg} transition-transform duration-500 group-hover:rotate-12`}>
                       {plan.id === 'premium' && <Star className={`w-6 h-6 ${theme.iconColor} fill-current opacity-50`} />}
                       {plan.id === 'basic' && <Shield className={`w-6 h-6 ${theme.iconColor} fill-current opacity-50`} />}
                       {plan.id === 'plus' && <Zap className={`w-6 h-6 ${theme.iconColor} fill-current opacity-50`} />}
+                      {plan.id === 'elite' && <Crown className={`w-6 h-6 ${theme.iconColor} fill-current opacity-50`} />}
                     </div>
                   </div>
 
@@ -203,9 +202,9 @@ const Pricing: React.FC<PricingProps> = ({
                     <span className={`text-5xl font-extrabold tracking-tighter ${theme.priceText}`}>
                       {symbol}{price.toLocaleString()}
                     </span>
-                    <span className="ml-2 text-lg font-medium text-slate-400">{plan.period}</span>
+                    <div className="ml-2 text-lg font-medium text-slate-400" dangerouslySetInnerHTML={{ __html: plan.period }} />
                   </div>
-                  <p className="text-slate-500 text-sm mb-8">{plan.description}</p>
+                  <div className="text-slate-500 text-sm mb-8" dangerouslySetInnerHTML={{ __html: plan.description }} />
 
                   <div className={`border-t border-dashed ${plan.id === 'plus' ? 'border-teal-200' : 'border-slate-100'} mb-8`}></div>
 
@@ -219,24 +218,41 @@ const Pricing: React.FC<PricingProps> = ({
                             <XIcon className="h-3.5 w-3.5 text-slate-300" aria-hidden="true" />
                           )}
                         </div>
-                        <p className={`ml-3 text-sm font-medium transition-colors duration-300 ${feature.included ? 'text-slate-700' : 'text-slate-400 line-through opacity-60'}`}>
-                          {feature.text}
-                        </p>
+                        <div 
+                          className={`ml-3 text-sm font-medium transition-colors duration-300 ${feature.included ? 'text-slate-700' : 'text-slate-400 line-through opacity-60'}`}
+                          dangerouslySetInnerHTML={{ __html: feature.text }}
+                        />
                       </li>
                     ))}
                   </ul>
 
-                  <button
-                    onClick={() => handlePlanSelect(plan)}
-                    className={`
-                      w-full flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-lg font-bold border
-                      transition-all duration-300 transform active:scale-95 group/btn
-                      ${theme.button}
-                    `}
-                  >
-                    {plan.buttonText}
-                    <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                  </button>
+                  {plan.button_url ? (
+                    <a
+                      href={plan.button_url}
+                      target={plan.button_new_tab ? "_blank" : undefined}
+                      rel={plan.button_new_tab ? "noopener noreferrer" : undefined}
+                      className={`
+                        w-full flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-lg font-bold border
+                        transition-all duration-300 transform active:scale-95 group/btn
+                        ${theme.button}
+                      `}
+                    >
+                      {plan.buttonText}
+                      <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => handlePlanSelect(plan)}
+                      className={`
+                        w-full flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-lg font-bold border
+                        transition-all duration-300 transform active:scale-95 group/btn
+                        ${theme.button}
+                      `}
+                    >
+                      {plan.buttonText}
+                      <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                    </button>
+                  )}
                 </div>
               </div>
             );
@@ -249,8 +265,8 @@ const Pricing: React.FC<PricingProps> = ({
               <Shield className="w-6 h-6" />
             </div>
             <div className="text-left">
-              <h3 className="font-bold text-slate-900">{customPackageTitle || "Need a custom family package?"}</h3>
-              <p className="text-slate-500 text-sm">{customPackageDescription || "We offer special discounts for multiple family members."}</p>
+              <div className="font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: customPackageTitle || "Need a custom family package?" }} />
+              <div className="text-slate-500 text-sm" dangerouslySetInnerHTML={{ __html: customPackageDescription || "We offer special discounts for multiple family members." }} />
             </div>
             <a href="#" className="md:ml-4 px-6 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors">
               {customPackageButtonText || "Contact Support"}

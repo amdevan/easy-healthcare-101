@@ -75,12 +75,8 @@ const TechPlatform: React.FC<TechPlatformProps> = ({ title, description, image, 
           </div>
 
           <div className="lg:w-1/2 order-1 lg:order-2">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              {title || "Built on Advanced Technology"}
-            </h2>
-            <p className="text-lg text-gray-600 mb-10">
-              {description || "Our platform combines ease of use with powerful medical tools, ensuring a seamless experience for both patients and providers."}
-            </p>
+            <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-6" dangerouslySetInnerHTML={{ __html: title || "Built on Advanced Technology" }} />
+            <div className="text-lg text-gray-600 mb-10" dangerouslySetInnerHTML={{ __html: description || "Our platform combines ease of use with powerful medical tools, ensuring a seamless experience for both patients and providers." }} />
 
             <div className="space-y-8">
               {displayItems.map((item, idx) => (
@@ -89,8 +85,8 @@ const TechPlatform: React.FC<TechPlatformProps> = ({ title, description, image, 
                     {renderIcon(item.icon, idx)}
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
-                    <p className="text-gray-600">{item.description}</p>
+                    <div className="text-lg font-bold text-gray-900" dangerouslySetInnerHTML={{ __html: item.title }} />
+                    <div className="text-gray-600" dangerouslySetInnerHTML={{ __html: item.description }} />
                   </div>
                 </div>
               ))}

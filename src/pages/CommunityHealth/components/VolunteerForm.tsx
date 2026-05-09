@@ -61,8 +61,8 @@ const VolunteerForm: React.FC<VolunteerFormProps> = ({
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"><Check className="w-10 h-10 text-green-600" /></div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-4">{successTitle || "Thanks for joining!"}</h3>
-            <p className="text-lg text-slate-600 mb-8">{successMessage || "We will reach out with upcoming events and roles."}</p>
+            <div className="text-3xl font-bold text-slate-900 mb-4" dangerouslySetInnerHTML={{ __html: successTitle || "Thanks for joining!" }} />
+            <div className="text-lg text-slate-600 mb-8" dangerouslySetInnerHTML={{ __html: successMessage || "We will reach out with upcoming events and roles." }} />
             <button onClick={() => setSubmitted(false)} className="text-teal-600 font-semibold hover:underline">Submit another response</button>
           </div>
         </div>
@@ -74,8 +74,8 @@ const VolunteerForm: React.FC<VolunteerFormProps> = ({
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           <div className="space-y-6">
-            <h3 className="text-3xl font-bold text-slate-900">{title || "Volunteer With Us"}</h3>
-            <p className="text-slate-600">{subtitle || "Support screenings, registrations, logistics, and awareness. Together we amplify impact."}</p>
+            <div className="text-3xl font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: title || "Volunteer With Us" }} />
+            <div className="text-slate-600" dangerouslySetInnerHTML={{ __html: subtitle || "Support screenings, registrations, logistics, and awareness. Together we amplify impact." }} />
             <div className="grid grid-cols-2 gap-6">
               <div className="rounded-2xl border p-4 flex items-center gap-3"><Users className="h-5 w-5 text-teal-600" /><span className="text-slate-700">On-ground support</span></div>
               <div className="rounded-2xl border p-4 flex items-center gap-3"><Megaphone className="h-5 w-5 text-teal-600" /><span className="text-slate-700">Awareness drives</span></div>
@@ -87,23 +87,27 @@ const VolunteerForm: React.FC<VolunteerFormProps> = ({
             <form onSubmit={submit} className="bg-white rounded-2xl shadow-xl p-8 md:p-10 border-t-4 border-teal-600">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.name || "Full Name"}</label>
+                  <div className="block text-sm font-medium text-slate-700 mb-2" dangerouslySetInnerHTML={{ __html: labels?.name || "Full Name" }} />
                   <div className="relative"><User className="absolute left-3 top-3 text-slate-400" size={18} /><input required name="name" type="text" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none" placeholder={placeholders?.name || "Jane Doe"} /></div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.phone || "Phone Number"}</label>
+                  <div className="block text-sm font-medium text-slate-700 mb-2" dangerouslySetInnerHTML={{ __html: labels?.phone || "Phone Number" }} />
                   <div className="relative"><Phone className="absolute left-3 top-3 text-slate-400" size={18} /><input required name="phone" type="tel" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none" placeholder={placeholders?.phone || "(555) 000-0000"} /></div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.email || "Email Address"}</label>
+                  <div className="block text-sm font-medium text-slate-700 mb-2" dangerouslySetInnerHTML={{ __html: labels?.email || "Email Address" }} />
                   <div className="relative"><Mail className="absolute left-3 top-3 text-slate-400" size={18} /><input required name="email" type="email" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none" placeholder={placeholders?.email || "jane@example.com"} /></div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{labels?.address || "Address"}</label>
+                  <div className="block text-sm font-medium text-slate-700 mb-2" dangerouslySetInnerHTML={{ __html: labels?.address || "Address" }} />
                   <div className="relative"><MapPin className="absolute left-3 top-3 text-slate-400" size={18} /><input name="address" type="text" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none" placeholder={placeholders?.address || "123 Main St, City"} /></div>
                 </div>
               </div>
-              <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-70">{isSubmitting ? 'Submitting...' : (labels?.submit || "Submit")}</button>
+              <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-70">
+                {isSubmitting ? 'Submitting...' : (
+                   labels?.submit ? <div dangerouslySetInnerHTML={{ __html: labels.submit }} /> : "Submit"
+                )}
+              </button>
             </form>
           </div>
         </div>

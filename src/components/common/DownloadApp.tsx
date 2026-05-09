@@ -22,16 +22,10 @@ const DownloadApp: React.FC<DownloadAppProps> = ({ title, description, cta_text,
         <div className="bg-cyan-50 rounded-2xl p-8 md:p-12 lg:p-16">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Editable tag="h2" id="download-app-title" className="text-4xl font-extrabold text-brand-gray-900">
-                  {title || "Download the Easy Healthcare 101 App"}
-              </Editable>
-              <Editable tag="p" id="download-app-desc" className="mt-4 text-lg text-brand-gray-500">
-                {description || "Access video consultation with top doctors on the Easy Healthcare 101 app. Connect with doctors online, available 24/7, from the comfort of your home."}
-              </Editable>
+              <div className="text-4xl font-extrabold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: title || "Download the Easy Healthcare 101 App" }} />
+              <div className="mt-4 text-lg text-brand-gray-500" dangerouslySetInnerHTML={{ __html: description || "Access video consultation with top doctors on the Easy Healthcare 101 app. Connect with doctors online, available 24/7, from the comfort of your home." }} />
               <div className="mt-8">
-                <Editable tag="p" id="download-app-cta" className="font-semibold text-brand-gray-700">
-                    {cta_text || "Get the link to download the app"}
-                </Editable>
+                <div className="font-semibold text-brand-gray-700" dangerouslySetInnerHTML={{ __html: cta_text || "Get the link to download the app" }} />
                 <div className="mt-3 flex flex-col sm:flex-row gap-3">
                   <div className="flex-grow flex">
                     <span className="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-l-md">+977</span>

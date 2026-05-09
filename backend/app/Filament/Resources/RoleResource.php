@@ -36,9 +36,10 @@ class RoleResource extends Resource
             'users', 'roles', 'patients', 'doctors', 'appointments',
             'prescriptions', 'lab_appointments', 'nemt_requests',
             'memberships', 'packages', 'media', 'pages',
-            'ui_settings', 'board_members', 'testimonials',
+            'ui_settings', 'board_members', 'management_teams', 'testimonials',
             'articles', 'banners', 'specialties', 'payment_settings',
-            'system', 'inquiries'
+            'system', 'inquiries',
+            'drivers', 'vehicles', 'lab_tests', 'pharmacy_orders', 'staff', 'faqs'
         ];
         $actions = ['view', 'create', 'edit', 'delete'];
         $options = [];

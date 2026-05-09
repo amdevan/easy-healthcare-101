@@ -36,7 +36,7 @@ class AppointmentController extends Controller
         $data = $request->validate([
             'patient_id' => ['nullable', 'integer', 'exists:patients,id', 'required_without:patient_name'],
             'patient_name' => ['nullable', 'string', 'max:255', 'required_without:patient_id'],
-            'doctor_id' => ['required', 'integer', 'exists:doctors,id'],
+            'doctor_id' => ['nullable', 'integer', 'exists:doctors,id'],
             'scheduled_at' => ['required', 'date', 'after:now'],
             'status' => ['nullable', 'in:pending,confirmed,cancelled,completed'],
             'notes' => ['nullable', 'string'],
@@ -67,7 +67,7 @@ class AppointmentController extends Controller
         $data = $request->validate([
             'patient_id' => ['sometimes', 'nullable', 'integer', 'exists:patients,id'],
             'patient_name' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'doctor_id' => ['sometimes', 'required', 'integer', 'exists:doctors,id'],
+            'doctor_id' => ['sometimes', 'nullable', 'integer', 'exists:doctors,id'],
             'scheduled_at' => ['sometimes', 'required', 'date', 'after:now'],
             'status' => ['sometimes', 'required', 'in:pending,confirmed,cancelled,completed'],
             'notes' => ['nullable', 'string'],

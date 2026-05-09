@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { normalizeHref } from '@/utils/url';
 
 type ButtonVariant = 'primary' | 'outline' | 'subtle';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -34,21 +35,39 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   to,
   href,
+  target,
   ...rest
 }) => {
   const cls = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`.trim();
 
+  // Helper to check if a URL is external
+  const isExternal = (url: string) => {
+    return url.startsWith('http') || url.startsWith('//') || url.startsWith('mailto:') || url.startsWith('tel:');
+  };
+
+  const linkTarget = target;
+  const linkRel = target === '_blank' ? 'noopener noreferrer' : undefined;
+
   if (to) {
+    const normalizedTo = normalizeHref(to) ?? to;
+    if (isExternal(normalizedTo)) {
+      return (
+        <a href={normalizedTo} className={cls} target={linkTarget} rel={linkRel} {...(rest as any)}>
+          {children}
+        </a>
+      );
+    }
     return (
-      <Link to={to} className={cls} {...(rest as any)}>
+      <Link to={normalizedTo} className={cls} target={linkTarget} {...(rest as any)}>
         {children}
       </Link>
     );
   }
 
   if (href) {
+    const normalizedHref = normalizeHref(href) ?? href;
     return (
-      <a href={href} className={cls} {...(rest as any)}>
+      <a href={normalizedHref} className={cls} target={linkTarget} rel={linkRel} {...(rest as any)}>
         {children}
       </a>
     );

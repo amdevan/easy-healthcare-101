@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->navigationGroups([
                 NavigationGroup::make()->label('Main'),
+                NavigationGroup::make()->label('Pharmacy'),
                 NavigationGroup::make()->label('NEMT (Transport)'),
                 NavigationGroup::make()->label('UI Setting'),
                 NavigationGroup::make()->label('Home Slider Setting'),

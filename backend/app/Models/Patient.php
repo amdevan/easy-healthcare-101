@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Patient extends Model
 {
     protected $fillable = [
+        'user_id',
         'name',
         'email',
         'phone',
@@ -32,6 +33,11 @@ class Patient extends Model
         'conditions' => 'array',
         'documents' => 'array',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function appointments(): HasMany
     {

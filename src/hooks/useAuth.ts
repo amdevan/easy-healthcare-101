@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, type ContextType } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 
 export const useAuth = () => {
@@ -6,8 +6,12 @@ export const useAuth = () => {
   if (!ctx) {
     return {
       isAuthenticated: false,
-      login: () => {},
-      logout: () => {},
+      user: null,
+      token: null,
+      login: async (_credentials?: any) => {},
+      register: async (_data: any) => {},
+      logout: async () => {},
+      isLoading: false,
     };
   }
   return ctx;

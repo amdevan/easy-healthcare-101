@@ -30,9 +30,16 @@ class TestimonialResource extends Resource
                 ->required()
                 ->maxLength(255)
                 ->placeholder('Author’s full name'),
+            Forms\Components\TextInput::make('location')
+                ->maxLength(255)
+                ->placeholder('e.g., Sydney, Australia'),
             Forms\Components\TextInput::make('author_role')
                 ->maxLength(255)
                 ->placeholder('e.g., CEO at Example Co.'),
+            Forms\Components\FileUpload::make('image')
+                ->image()
+                ->directory('testimonials')
+                ->columnSpanFull(),
             Forms\Components\Textarea::make('content')
                 ->required()
                 ->columnSpanFull()
@@ -58,6 +65,7 @@ class TestimonialResource extends Resource
     {
         return $table->columns([
             Tables\Columns\TextColumn::make('id')->sortable(),
+            Tables\Columns\ImageColumn::make('image'),
             Tables\Columns\TextColumn::make('author_name')->searchable()->sortable(),
             Tables\Columns\TextColumn::make('rating'),
             Tables\Columns\TextColumn::make('order')->sortable(),

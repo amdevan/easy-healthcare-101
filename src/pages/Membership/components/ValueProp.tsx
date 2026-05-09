@@ -28,12 +28,10 @@ const ValueProp: React.FC<ValuePropProps> = ({ title, subtitle, items }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-extrabold text-white sm:text-4xl tracking-tight">
-            {title || (<span>Why Families Trust <span className="text-teal-400">EasyCare 365</span></span>)}
-          </h2>
-          <p className="mt-4 text-xl text-teal-100 max-w-2xl mx-auto font-light">
-            {subtitle || "Bridging the distance with technology, compassion, and reliable human touch."}
-          </p>
+          <div className="text-3xl font-extrabold text-white sm:text-4xl tracking-tight">
+            {title ? <div dangerouslySetInnerHTML={{ __html: title }} /> : (<span>Why Families Trust <span className="text-teal-400">EasyCare 365</span></span>)}
+          </div>
+          <div className="mt-4 text-xl text-teal-100 max-w-2xl mx-auto font-light" dangerouslySetInnerHTML={{ __html: subtitle || "Bridging the distance with technology, compassion, and reliable human touch." }} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
@@ -53,13 +51,13 @@ const ValueProp: React.FC<ValuePropProps> = ({ title, subtitle, items }) => {
                   <div className="p-4 bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl shadow-lg text-white transform -rotate-3">
                     {iconNode}
                   </div>
-                  <h3 className="text-2xl font-bold text-white">{prop.title}</h3>
+                  <div className="text-2xl font-bold text-white" dangerouslySetInnerHTML={{ __html: prop.title }} />
                 </div>
                 <ul className="space-y-5">
                   {prop.points.map((point, i) => (
                     <li key={i} className="flex items-start text-teal-50">
                       <span className="flex items-center justify-center h-6 w-6 rounded-full bg-teal-500/30 border border-teal-400/50 mr-4 flex-shrink-0 text-teal-300 text-xs">✓</span>
-                      <span className="text-lg leading-snug">{point}</span>
+                      <div className="text-lg leading-snug" dangerouslySetInnerHTML={{ __html: point }} />
                     </li>
                   ))}
                 </ul>

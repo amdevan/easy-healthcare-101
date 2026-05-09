@@ -94,6 +94,25 @@
                     {{ $this->restoreAction }}
                 </div>
             </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 p-2 bg-warning-50 dark:bg-warning-900/20 rounded-lg text-warning-600 dark:text-warning-400">
+                        <x-heroicon-o-server class="w-6 h-6" style="width: 1.5rem; height: 1.5rem;" />
+                    </div>
+                    <div>
+                        <h4 class="text-base font-medium text-gray-950 dark:text-white">Restore from Server File</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl">
+                            Select a backup file manually uploaded to the server.
+                            <br>
+                            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">backend_app/storage/app/manual_backups</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    {{ $this->restoreLocalAction }}
+                </div>
+            </div>
         </x-filament::section>
     </div>
 </x-filament-panels::page>

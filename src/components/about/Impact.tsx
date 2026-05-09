@@ -100,6 +100,8 @@ export interface ImpactProps {
     description?: string;
     stats?: ImpactStat[];
     areas?: ImpactArea[];
+    areasTitle?: string;
+    areasDescription?: string;
 }
 
 const Impact: React.FC<ImpactProps> = ({
@@ -107,10 +109,11 @@ const Impact: React.FC<ImpactProps> = ({
     subtitle = "Our Reach",
     description,
     stats = [],
-    areas = []
+    areas = [],
+    areasTitle = "Key Impact Areas",
+    areasDescription,
 }) => {
     
-    // Fallback data
     const displayStats = stats.length > 0 ? stats : [
         { icon: "Users", value: "10000+", label: "Patients Served" },
         { icon: "Building", value: "15+", label: "Municipal Partners" },
@@ -118,13 +121,23 @@ const Impact: React.FC<ImpactProps> = ({
         { icon: "Home", value: "5000+", label: "Home Visits" }
     ];
 
-    const displayAreas = areas.length > 0 ? areas : [
+    const normalizedAreas = Array.isArray(areas) ? areas.map(a => ({
+        title: ((a as any).title || (a as any).name || (a as any).text || "").trim(),
+        description: ((a as any).description || (a as any).desc || "").trim()
+    })) : [];
+    const validAreas = normalizedAreas.filter(a => a.title || a.description);
+    const displayAreas = validAreas.length > 0 ? validAreas : [
         { title: "Urban & Semi-urban Access", description: "Improved healthcare access in urban & semi-urban regions" },
         { title: "Elderly Support", description: "Specialized support for elderly and urban poor communities" },
         { title: "Professional Training", description: "Employment & training for healthcare professionals" },
         { title: "PHC Strengthening", description: "Strengthened municipal Primary Health Centers (PHCs)" },
         { title: "Chronic Care", description: "Medication delivery & transport for chronic patients" }
     ];
+
+    const effectiveAreasTitle = (areasTitle && areasTitle.trim()) ? areasTitle : "Key Impact Areas";
+    const effectiveAreasDescription = (areasDescription && areasDescription.trim()) 
+        ? areasDescription 
+        : "We focus our efforts where they matter most - bridging the gap between MEDICAL needs in URBAN and SEMI URBAN areas.";
 
     const parseValue = (valStr: string) => {
         const lower = valStr.toLowerCase();
@@ -157,13 +170,11 @@ const Impact: React.FC<ImpactProps> = ({
       <div className="w-full px-6 md:px-10 lg:px-16 max-w-[1600px] mx-auto relative z-10">
         
         <div className="text-center mb-12">
-           <div className="inline-block p-1.5 px-3 rounded-full bg-green-50 text-green-700 text-[10px] font-bold tracking-widest uppercase mb-2">
-              {subtitle}
+           <div className="inline-block p-1.5 px-3 rounded-full bg-green-50 text-green-700 text-[10px] font-bold tracking-widest uppercase mb-2" dangerouslySetInnerHTML={{ __html: subtitle }} />
+          <div className="text-3xl font-bold text-slate-900 mb-2"><div dangerouslySetInnerHTML={{ __html: title }} /></div>
+           <div className="text-slate-600 text-sm md:text-base max-w-2xl mx-auto">
+             {description ? <div dangerouslySetInnerHTML={{ __html: description }} /> : "Since inception, Easy Health Care has served thousands of patients through its clinics and digital services."}
            </div>
-           <h2 className="text-3xl font-bold text-slate-900 mb-2">{title}</h2>
-           <p className="text-slate-600 text-sm md:text-base max-w-2xl mx-auto">
-             {description ? <span dangerouslySetInnerHTML={{ __html: description }} /> : "Since inception, Easy Health Care has served thousands of patients through its clinics and digital services."}
-           </p>
         </div>
 
         {/* Stats Grid */}
@@ -187,7 +198,7 @@ const Impact: React.FC<ImpactProps> = ({
                    <h3 className="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-2 tracking-tight">
                      <Counter end={val} suffix={suffix} />
                    </h3>
-                   <p className="text-slate-500 font-bold text-xs uppercase tracking-wider">{stat.label}</p>
+                   <div className="text-slate-500 font-bold text-xs uppercase tracking-wider" dangerouslySetInnerHTML={{ __html: stat.label }} />
                 </div>
              );
            })}
@@ -201,13 +212,10 @@ const Impact: React.FC<ImpactProps> = ({
 
            <div className="relative z-10 grid lg:grid-cols-3 gap-8 lg:gap-12">
              <div className="lg:col-span-1">
-                <h3 className="text-2xl font-bold mb-4">Key Impact Areas</h3>
-                <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                  We focus our efforts where they matter most—bridging the gap between urban medical excellence and rural accessibility needs.
-                </p>
-                <button className="text-white text-sm font-semibold underline decoration-blue-400 underline-offset-4 hover:text-blue-300 transition-colors">
-                  View annual report
-                </button>
+              <h3 className="text-2xl font-bold mb-4"><span dangerouslySetInnerHTML={{ __html: effectiveAreasTitle }} /></h3>
+              <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                <span dangerouslySetInnerHTML={{ __html: effectiveAreasDescription }} />
+              </p>
              </div>
              <div className="lg:col-span-2 grid sm:grid-cols-2 gap-y-4 gap-x-8">
                 {displayAreas.map((item, i) => (
@@ -216,8 +224,8 @@ const Impact: React.FC<ImpactProps> = ({
                         <CheckCircle2 size={16} />
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-white font-medium text-sm">{item.title}</span>
-                        <span className="text-slate-400 text-xs leading-relaxed group-hover:text-slate-300 transition-colors">{item.description}</span>
+                        <div className="text-white font-medium text-sm" dangerouslySetInnerHTML={{ __html: item.title }} />
+                        <div className="text-slate-400 text-xs leading-relaxed group-hover:text-slate-300 transition-colors" dangerouslySetInnerHTML={{ __html: item.description }} />
                       </div>
                    </div>
                 ))}

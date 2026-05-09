@@ -3,6 +3,8 @@ import { usePageContent } from '@/hooks/usePageContent';
 import { resolveSrc } from '@/utils/url';
 import { getIcon } from '@/utils/iconMapper';
 import { Pill, Stethoscope, Truck, Heart, Store, ShieldCheck } from 'lucide-react';
+import { API_URL } from '@/config/api';
+import Skeleton from '@/components/ui/Skeleton';
 
 type ViewState = 'HOME' | 'SHOP' | 'UPLOAD';
 
@@ -45,7 +47,7 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [step, setStep] = useState<'SELECT' | 'DETAILS'>('SELECT');
-  const [details, setDetails] = useState({ name: '', phone: '', address: '', email: '' });
+  const [details, setDetails] = useState({ name: '', phone: '', address: '', email: '', note: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,33 +78,56 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) return;
     if (step !== 'DETAILS') return;
     if (!validateDetails()) return;
 
     setIsUploading(true);
-    setTimeout(() => {
-      setIsUploading(false);
+    
+    try {
+      const formData = new FormData();
+      formData.append('name', details.name);
+      formData.append('phone', details.phone);
+      formData.append('address', details.address);
+      if (details.email) formData.append('email', details.email);
+      if (details.note) formData.append('note', details.note);
+      formData.append('prescription', file);
+
+      const response = await fetch(`${API_URL}/pharmacy-orders`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
       setUploadStatus('success');
       setTimeout(() => {
         setFile(null);
         setPreview(null);
         setUploadStatus('idle');
         setStep('SELECT');
-        setDetails({ name: '', phone: '', address: '', email: '' });
+        setDetails({ name: '', phone: '', address: '', email: '', note: '' });
         setErrors({});
       }, 3000);
-    }, 2000);
+    } catch (error) {
+      console.error(error);
+      alert('Failed to upload prescription. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-md border border-slate-100 my-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-slate-800">{title || "Upload Prescription"}</h2>
-        <p className="text-slate-500 mt-2">
-          {subtitle || "Upload a clear photo of your doctor's prescription. Our pharmacists will verify and process your order."}
-        </p>
+        <div className="text-2xl font-bold text-slate-800" dangerouslySetInnerHTML={{ __html: title || "Upload Prescription" }} />
+        <div className="text-slate-500 mt-2" dangerouslySetInnerHTML={{ __html: subtitle || "Upload a clear photo of your doctor's prescription. Our pharmacists will verify and process your order." }} />
       </div>
 
       <div className="space-y-6">
@@ -120,20 +145,20 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
                   setPreview(null);
                   setUploadStatus('idle');
                   setStep('SELECT');
-                  setDetails({ name: '', phone: '', address: '', email: '' });
+                  setDetails({ name: '', phone: '', address: '', email: '', note: '' });
                   setErrors({});
                 }}
                 className="absolute top-2 right-2 bg-white/80 px-2 py-1 rounded-md text-red-600 hover:text-red-700"
               >
-                {labels?.remove || "Remove"}
+                <div dangerouslySetInnerHTML={{ __html: labels?.remove || "Remove" }} />
               </button>
             </div>
           ) : (
             <>
               <label htmlFor="file-upload" className="cursor-pointer">
-                <span className="bg-blue-50 text-brand-blue font-semibold px-4 py-2 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
-                  {labels?.selectFile || "Select a file"}
-                </span>
+                <div className="bg-blue-50 text-brand-blue font-semibold px-4 py-2 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors inline-block">
+                  <div dangerouslySetInnerHTML={{ __html: labels?.selectFile || "Select a file" }} />
+                </div>
                 <input
                   id="file-upload"
                   type="file"
@@ -142,7 +167,7 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
                   onChange={handleFileChange}
                 />
               </label>
-              <p className="mt-2 text-sm text-slate-400">{labels?.supported || "Supported: JPG, PNG, PDF"}</p>
+              <div className="mt-2 text-sm text-slate-400" dangerouslySetInnerHTML={{ __html: labels?.supported || "Supported: JPG, PNG, PDF" }} />
             </>
           )}
         </div>
@@ -151,7 +176,7 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700">{labels?.name || "Full Name"}</label>
+                <div className="block text-sm font-medium text-slate-700" dangerouslySetInnerHTML={{ __html: labels?.name || "Full Name" }} />
                 <input
                   type="text"
                   value={details.name}
@@ -162,7 +187,7 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700">{labels?.phone || "Phone Number"}</label>
+                <div className="block text-sm font-medium text-slate-700" dangerouslySetInnerHTML={{ __html: labels?.phone || "Phone Number" }} />
                 <input
                   type="tel"
                   value={details.phone}
@@ -174,7 +199,7 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">{labels?.address || "Address"}</label>
+              <div className="block text-sm font-medium text-slate-700" dangerouslySetInnerHTML={{ __html: labels?.address || "Address" }} />
               <input
                 type="text"
                 value={details.address}
@@ -185,7 +210,7 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
               {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">{labels?.email || "Email (optional)"}</label>
+              <div className="block text-sm font-medium text-slate-700" dangerouslySetInnerHTML={{ __html: labels?.email || "Email (optional)" }} />
               <input
                 type="email"
                 value={details.email}
@@ -195,12 +220,22 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
               />
               {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Note (optional)</label>
+              <textarea
+                value={details.note}
+                onChange={(e) => setDetails({ ...details, note: e.target.value })}
+                className="mt-1 w-full rounded-md border border-slate-300 p-2 focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                placeholder="Any specific instructions..."
+                rows={3}
+              />
+            </div>
           </div>
         )}
 
         {uploadStatus === 'success' ? (
           <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center justify-center gap-2">
-            <span>{messages?.success || "Prescription uploaded successfully! We will contact you shortly."}</span>
+            <div dangerouslySetInnerHTML={{ __html: messages?.success || "Prescription uploaded successfully! We will contact you shortly." }} />
           </div>
         ) : (
           <div className="flex flex-col md:flex-row gap-3">
@@ -214,7 +249,7 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
                     : 'bg-brand-blue text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
                 }`}
               >
-                {labels?.next || "Next"}
+                <div dangerouslySetInnerHTML={{ __html: labels?.next || "Next" }} />
               </button>
             )}
             {step === 'DETAILS' && (
@@ -237,15 +272,15 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-500">
         <div className="flex flex-col items-center text-center">
           <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 font-bold">1</div>
-          <p>{messages?.steps?.step1 || "Upload clear image"}</p>
+          <div dangerouslySetInnerHTML={{ __html: messages?.steps?.step1 || "Upload clear image" }} />
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 font-bold">2</div>
-          <p>{messages?.steps?.step2 || "Pharmacist verifies"}</p>
+          <div dangerouslySetInnerHTML={{ __html: messages?.steps?.step2 || "Pharmacist verifies" }} />
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 font-bold">3</div>
-          <p>{messages?.steps?.step3 || "Delivery to Doorstep"}</p>
+          <div dangerouslySetInnerHTML={{ __html: messages?.steps?.step3 || "Delivery to Doorstep" }} />
         </div>
       </div>
     </div>
@@ -254,7 +289,7 @@ const PrescriptionUpload: React.FC<PrescriptionUploadProps> = ({
 
 const Pharmacy: React.FC = () => {
   const [view, setView] = useState<ViewState>('HOME');
-  const { data: pageData } = usePageContent('pharmacy');
+  const { data: pageData, loading } = usePageContent('pharmacy');
   const heroBlock = pageData?.content?.find(b => b.type === 'hero_section');
   const featuresBlock = pageData?.content?.find(b => b.type === 'features_list');
   const comingSoonBlock = pageData?.content?.find(b => b.type === 'coming_soon_section');
@@ -286,6 +321,33 @@ const Pharmacy: React.FC = () => {
     return Icon ? <Icon className="h-6 w-6" /> : <Heart className="h-6 w-6" />;
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <div className="relative bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <div className="relative z-10 pb-8 sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+               <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                  <div className="sm:text-center lg:text-left space-y-6">
+                    <Skeleton className="w-48 h-10 rounded-lg mb-6" />
+                    <Skeleton className="w-full h-16 rounded-lg" />
+                    <Skeleton className="w-2/3 h-16 rounded-lg" />
+                    <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start gap-4">
+                      <Skeleton className="w-40 h-12 rounded-lg" />
+                      <Skeleton className="w-40 h-12 rounded-lg" />
+                    </div>
+                  </div>
+               </main>
+            </div>
+          </div>
+          <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-slate-100 flex items-center justify-center">
+             <Skeleton className="w-full h-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const ComingSoonSection = ({ isPage = false }: { isPage?: boolean }) => {
     const title = comingSoonBlock?.data?.title || "Online Pharmacy Store Coming Soon";
     const description = comingSoonBlock?.data?.description || "We are building a comprehensive digital pharmacy experience. Soon you will be able to browse thousands of OTC medicines, wellness products, and medical devices directly from our app.";
@@ -312,9 +374,7 @@ const Pharmacy: React.FC = () => {
             </>
         ) : title}
       </h2>
-      <p className="text-xl text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed">
-        {description}
-      </p>
+      <div className="text-xl text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed" dangerouslySetInnerHTML={{ __html: description }} />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mb-12">
         {features.map((feature: any, idx: number) => (
           <div key={idx} className="p-8 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
@@ -322,7 +382,7 @@ const Pharmacy: React.FC = () => {
                {renderIcon(feature.icon)} 
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
-            <p className="text-slate-500">{feature.description}</p>
+            <div className="text-slate-500" dangerouslySetInnerHTML={{ __html: feature.description }} />
           </div>
         ))}
       </div>
@@ -374,9 +434,7 @@ const Pharmacy: React.FC = () => {
                     </>
                   )}
                 </h1>
-                <p className="mt-3 text-base text-slate-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                  {heroBlock?.data?.description || "Easy Health Care connects you to licensed pharmacies for fast, verified, and safe medicine delivery. Upload your prescription or shop OTC essentials today."}
-                </p>
+                <div className="mt-3 text-base text-slate-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0" dangerouslySetInnerHTML={{ __html: heroBlock?.data?.description || "Easy Health Care connects you to licensed pharmacies for fast, verified, and safe medicine delivery. Upload your prescription or shop OTC essentials today." }} />
                 <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                   <div className="rounded-md shadow">
                     <button onClick={scrollToUpload} className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brand-blue hover:bg-blue-700 md:py-4 md:text-lg transition-all">
@@ -408,10 +466,8 @@ const Pharmacy: React.FC = () => {
       <div className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:text-center">
-            <p className="text-base text-primary-600 font-semibold tracking-wide uppercase">{featuresSubtitle}</p>
-            <h3 className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-              {featuresTitle}
-            </h3>
+            <div className="text-base text-primary-600 font-semibold tracking-wide uppercase" dangerouslySetInnerHTML={{ __html: featuresSubtitle }} />
+            <div className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-slate-900 sm:text-4xl" dangerouslySetInnerHTML={{ __html: featuresTitle }} />
           </div>
           <div className="mt-10">
             <dl className="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
@@ -421,9 +477,7 @@ const Pharmacy: React.FC = () => {
                   {renderIcon(feature.icon)}
                 </div>
                 <dt className="mt-4 text-lg leading-6 font-medium text-slate-900">{feature.title}</dt>
-                <dd className="mt-2 text-base text-slate-500">
-                  {feature.description}
-                </dd>
+                <dd className="mt-2 text-base text-slate-500" dangerouslySetInnerHTML={{ __html: feature.description }} />
               </div>
               ))}
             </dl>

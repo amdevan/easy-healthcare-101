@@ -14,9 +14,10 @@ const VideoConsult: React.FC = () => {
           <h1 className="text-3xl md:text-4xl font-extrabold text-brand-gray-900">
             {heroBlock?.data?.title || "Instant Video Consultation"}
           </h1>
-          <p className="mt-4 text-brand-gray-600">
-            {heroBlock?.data?.description || "Connect with verified doctors online within minutes for private, secure consultations."}
-          </p>
+          <div 
+            className="mt-4 text-brand-gray-600"
+            dangerouslySetInnerHTML={{ __html: heroBlock?.data?.description || "Connect with verified doctors online within minutes for private, secure consultations." }}
+          />
         </div>
         <div className="mt-8">
           <OnlineConsultation 

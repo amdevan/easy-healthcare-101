@@ -40,9 +40,9 @@ const Testimonials: React.FC<TestimonialsProps> = ({ title, items }) => {
     <section className="bg-gray-50 py-16 lg:py-24">
       <div className="container mx-auto px-4 text-center">
         {title ? (
-           <h2 className="text-3xl font-extrabold text-brand-gray-900">{title}</h2>
+           <div className="text-3xl font-extrabold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: title }} />
         ) : (
-           <Editable tag="h2" id="testimonials-title" className="text-3xl font-extrabold text-brand-gray-900">What our users have to say</Editable>
+           <div className="text-3xl font-extrabold text-brand-gray-900">What our users have to say</div>
         )}
         
         <div className="mt-10 max-w-3xl mx-auto relative">
@@ -56,14 +56,14 @@ const Testimonials: React.FC<TestimonialsProps> = ({ title, items }) => {
           )}
           
           <div className="p-8 bg-white rounded-2xl shadow-sm">
-            <p className="text-lg text-brand-gray-700 italic">"{current.quote}"</p>
+            <div className="text-lg text-brand-gray-700 italic" dangerouslySetInnerHTML={{ __html: `"${current.quote}"` }} />
             <div className="mt-8 flex items-center justify-center space-x-3">
               <div className="w-12 h-12 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-lg">
                 {initials}
               </div>
               <div className="text-left">
-                <p className="font-bold text-brand-gray-900">{current.author}</p>
-                {current.role && <p className="text-sm text-brand-gray-500">{current.role}</p>}
+                <div className="font-bold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: current.author }} />
+                {current.role && <div className="text-sm text-brand-gray-500" dangerouslySetInnerHTML={{ __html: current.role }} />}
               </div>
             </div>
             {testimonials.length > 1 && (

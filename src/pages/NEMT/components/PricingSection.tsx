@@ -44,13 +44,9 @@ const PricingSection: React.FC<PricingSectionProps> = ({
     <section id="pricing" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="text-teal-600 font-bold tracking-wider uppercase text-sm bg-teal-50 px-3 py-1 rounded-full">{label || 'Fair Pricing'}</span>
-          <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
-            {title || 'Transparent & Affordable'}
-          </h2>
-          <p className="mt-4 max-w-2xl text-lg text-slate-600 mx-auto">
-            {description || 'No hidden fees. Indicative rates for Kathmandu Valley. Long-distance and corporate packages available upon request.'}
-          </p>
+          <div className="inline-block text-teal-600 font-bold tracking-wider uppercase text-sm bg-teal-50 px-3 py-1 rounded-full" dangerouslySetInnerHTML={{ __html: label || 'Fair Pricing' }} />
+          <div className="mt-4 text-3xl md:text-4xl font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: title || 'Transparent & Affordable' }} />
+          <div className="mt-4 max-w-2xl text-lg text-slate-600 mx-auto" dangerouslySetInnerHTML={{ __html: description || 'No hidden fees. Indicative rates for Kathmandu Valley. Long-distance and corporate packages available upon request.' }} />
         </div>
 
         {showCurrencyToggle && (
@@ -107,17 +103,17 @@ const PricingSection: React.FC<PricingSectionProps> = ({
                     Most Popular
                   </div>
                 )}
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{tier.service}</h3>
+                <div className="text-lg font-bold text-slate-900 mb-2" dangerouslySetInnerHTML={{ __html: tier.service }} />
                 <div className="mb-4">
-                  <span className="text-2xl font-bold text-teal-600">{displayPrice}</span>
+                  <div className="text-2xl font-bold text-teal-600" dangerouslySetInnerHTML={{ __html: String(displayPrice) }} />
                 </div>
-                <p className="text-sm text-slate-500 mb-6 flex-grow">{tier.details}</p>
+                <div className="text-sm text-slate-500 mb-6 flex-grow" dangerouslySetInnerHTML={{ __html: tier.details }} />
  
                 <ul className="space-y-3 mb-6 text-sm text-slate-600">
                   {features.map((feature, idx) => (
                     <li key={idx} className="flex items-start">
                         <CheckCircle2 className="h-4 w-4 text-teal-500 mr-2 mt-0.5" />
-                        <span>{feature}</span>
+                        <div dangerouslySetInnerHTML={{ __html: feature }} />
                     </li>
                   ))}
                 </ul>
@@ -130,15 +126,13 @@ const PricingSection: React.FC<PricingSectionProps> = ({
                   }}
                   className={`w-full py-2.5 rounded-xl text-sm font-semibold text-center transition-colors ${isFeatured ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
                 >
-                  {ctaText || 'Book Now'}
+                  <div dangerouslySetInnerHTML={{ __html: ctaText || 'Book Now' }} />
                 </a>
               </div>
             );
           })}
         </div>
-        <div className="mt-10 text-center text-xs text-slate-400">
-          {disclaimer || '* Prices are subject to change based on specific medical requirements, waiting time, and distance beyond 10km ring road radius.'}
-        </div>
+        <div className="mt-10 text-center text-xs text-slate-400" dangerouslySetInnerHTML={{ __html: disclaimer || '* Prices are subject to change based on specific medical requirements, waiting time, and distance beyond 10km ring road radius.' }} />
       </div>
     </section>
   );

@@ -39,26 +39,19 @@ const OurStory: React.FC<OurStoryProps> = ({
               {title || "Transforming Healthcare Access in Nepal"}
             </h2>
             
-            <p className="text-slate-600 leading-relaxed mb-4 text-sm md:text-base max-w-2xl">
-              {description1 || "Easy Health Care Pvt. Ltd. (Easy Health Care 101) is a forward-thinking healthcare organization dedicated to providing accessible, affordable, and high-quality health services to individuals, families, and communities."}
-            </p>
-
-            <p className="text-slate-600 leading-relaxed mb-6 text-sm md:text-base max-w-2xl">
-              {description2 || "Founded with a vision to bridge the gap between traditional care and modern digital health, we blend technology, compassion, and community outreach to ensure continuous and personalized care — at our clinics, at home, or online."}
-            </p>
+            <div className="text-slate-600 leading-relaxed mb-4 text-sm md:text-base max-w-2xl" dangerouslySetInnerHTML={{ __html: description1 || "Easy Health Care Pvt. Ltd. (Easy Health Care 101) is a forward-thinking healthcare organization dedicated to providing accessible, affordable, and high-quality health services to individuals, families, and communities." }} />
+            <div className="text-slate-600 leading-relaxed mb-8 text-sm md:text-base max-w-2xl" dangerouslySetInnerHTML={{ __html: description2 || "We bridge the gap between patients and providers through a hybrid model of digital health and physical clinics, ensuring that care is always within reach." }} />
             
             <div className="bg-white p-5 rounded-xl border border-blue-100 shadow-sm mb-6 relative max-w-xl">
                <Quote className="absolute top-4 left-4 w-6 h-6 text-blue-100 -z-10" />
-               <p className="text-slate-800 font-medium italic pl-2 relative z-10 text-sm md:text-base">
-                  "{quote || "We bring together clinical care, telemedicine, pharmacy, and diagnostics under one seamless ecosystem."}"
-               </p>
+               <div className="text-slate-800 font-medium italic pl-2 relative z-10 text-sm md:text-base" dangerouslySetInnerHTML={{ __html: `"${quote || "We bring together clinical care, telemedicine, pharmacy, and diagnostics under one seamless ecosystem."}"` }} />
             </div>
 
             <div className="grid sm:grid-cols-2 gap-3 max-w-lg">
                {displayServices.map((item, i) => (
                  <div key={i} className="flex items-center gap-2.5 group">
                     <CheckCircle2 size={18} className="text-green-500 shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-slate-700 font-medium text-sm">{item}</span>
+                    <div className="text-slate-700 font-medium text-sm" dangerouslySetInnerHTML={{ __html: item }} />
                  </div>
                ))}
             </div>

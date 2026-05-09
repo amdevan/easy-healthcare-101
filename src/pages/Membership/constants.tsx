@@ -5,7 +5,7 @@ import { Heart, Stethoscope, Home, Smartphone, PhoneCall, Globe, UserCheck } fro
 export const PRICING_PLANS: PricingPlan[] = [
   {
     id: 'basic',
-    name: 'EasyCare 365 Basic',
+    name: 'Easy Care 365 Basic',
     price: 365,
     priceNpr: 50000,
     period: '/year',
@@ -59,6 +59,25 @@ export const PRICING_PLANS: PricingPlan[] = [
       { text: 'Pharmacy refill service included', included: true },
       { text: 'Teleconsultation credits', included: true },
       { text: 'Active chronic disease monitoring', included: true },
+    ],
+  },
+  {
+    id: 'elite',
+    name: 'EasyCare 365 Elite',
+    price: 999,
+    priceNpr: 135000,
+    period: '/year',
+    description: 'The ultimate healthcare experience with dedicated concierge.',
+    buttonText: 'Select Elite',
+    features: [
+      { text: 'Annual comprehensive health check-up', included: true },
+      { text: 'Weekly nurse visits (52/year)', included: true },
+      { text: 'Unlimited NEMT trips', included: true },
+      { text: '24/7 Dedicated Medical Concierge', included: true },
+      { text: 'Digital health records dashboard', included: true },
+      { text: 'Priority pharmacy delivery', included: true },
+      { text: 'Unlimited teleconsultations', included: true },
+      { text: 'Advanced chronic disease monitoring', included: true },
     ],
   },
 ];

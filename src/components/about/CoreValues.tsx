@@ -42,9 +42,8 @@ const CoreValues: React.FC<CoreValuesProps> = ({ mission, vision, values }) => {
                 {MissionIcon && <MissionIcon size={24} />}
              </div>
              <h3 className="text-lg lg:text-xl font-bold text-slate-900 mb-3">{mission?.title || "Our Mission"}</h3>
-             <p className="text-slate-600 text-sm leading-relaxed flex-grow relative z-10">
-               {mission?.description || "To make healthcare simple, connected, and inclusive by integrating technology, professional care, and community-based models — ensuring that quality health services are available to everyone, everywhere."}
-             </p>
+             <div className="text-slate-600 text-sm leading-relaxed flex-grow relative z-10" dangerouslySetInnerHTML={{ __html: mission?.description || "To make healthcare simple, connected, and inclusive by integrating technology, professional care, and community-based models — ensuring that quality health services are available to everyone, everywhere." }} />
+
           </div>
 
           {/* Vision */}
@@ -56,9 +55,7 @@ const CoreValues: React.FC<CoreValuesProps> = ({ mission, vision, values }) => {
                 {VisionIcon && <VisionIcon size={24} />}
              </div>
              <h3 className="text-lg lg:text-xl font-bold text-slate-900 mb-3">{vision?.title || "Our Vision"}</h3>
-             <p className="text-slate-600 text-sm leading-relaxed flex-grow relative z-10">
-               {vision?.description || "To become Nepal's most trusted and innovative primary healthcare network, leading the transformation of healthcare delivery through digital integration, patient-centered care, and sustainable partnerships."}
-             </p>
+             <div className="text-slate-600 text-sm leading-relaxed flex-grow relative z-10" dangerouslySetInnerHTML={{ __html: vision?.description || "To become Nepal's most trusted and innovative primary healthcare network, leading the transformation of healthcare delivery through digital integration, patient-centered care, and sustainable partnerships." }} />
           </div>
 
           {/* Values */}
@@ -78,8 +75,8 @@ const CoreValues: React.FC<CoreValuesProps> = ({ mission, vision, values }) => {
                   { title: "Innovation", description: "Tech that simplifies care." }
                 ]).map((val, i) => (
                   <li key={i} className={`pl-3 border-l-[3px] border-purple-200 group-hover:border-purple-400 transition-colors`}>
-                    <strong className="text-slate-900 text-sm block">{val.title}</strong> 
-                    <span className="text-[11px] text-slate-500">{val.description}</span>
+                    <div className="text-slate-900 text-sm block font-bold" dangerouslySetInnerHTML={{ __html: val.title }} />
+                    <div className="text-[11px] text-slate-500" dangerouslySetInnerHTML={{ __html: val.description }} />
                   </li>
                 ))}
              </ul>

@@ -87,8 +87,7 @@ class AppointmentResource extends Resource
             Forms\Components\Select::make('doctor_id')
                 ->relationship('doctor', 'name')
                 ->reactive()
-                ->afterStateUpdated(fn ($set) => $set('availability_slot', null))
-                ->required(),
+                ->afterStateUpdated(fn ($set) => $set('availability_slot', null)),
             
             Forms\Components\DateTimePicker::make('created_at')
                 ->label('Booking Date')

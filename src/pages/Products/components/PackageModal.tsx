@@ -3,6 +3,7 @@ import { HealthPackage } from '../types';
 import { X, CheckCircle2, Check, Loader2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { CountryCodeSelect } from '@/components/ui/CountryCodeSelect';
+import { API_URL } from '@/config/api';
 
 interface PackageModalProps {
   selected: HealthPackage | null;
@@ -15,6 +16,9 @@ const PackageModal: React.FC<PackageModalProps> = ({ selected, onClose }) => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [customizationOptions, setCustomizationOptions] = useState<any[]>([]);
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [fetchingDetails, setFetchingDetails] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -33,8 +37,21 @@ const PackageModal: React.FC<PackageModalProps> = ({ selected, onClose }) => {
   useEffect(() => {
      if (selected) {
          document.body.style.overflow = 'hidden';
+         // Fetch fresh package details and customization options
+         setFetchingDetails(true);
+         fetch(`${API_URL}/health-packages/${selected.id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.customization_options?.add_ons) {
+                    setCustomizationOptions(data.customization_options.add_ons);
+                }
+            })
+            .catch(err => console.error("Failed to fetch package details", err))
+            .finally(() => setFetchingDetails(false));
      } else {
          document.body.style.overflow = 'unset';
+         setCustomizationOptions([]);
+         setSelectedAddons([]);
      }
      return () => { document.body.style.overflow = 'unset'; };
   }, [selected]);
@@ -54,6 +71,7 @@ const PackageModal: React.FC<PackageModalProps> = ({ selected, onClose }) => {
     try {
       const payload = {
         package_name: selected.name,
+        add_ons: selectedAddons,
         is_for_self: isForSelf,
         booking_name: isForSelf ? undefined : formData.booking_name,
         booking_email: isForSelf ? undefined : formData.booking_email,
@@ -65,7 +83,7 @@ const PackageModal: React.FC<PackageModalProps> = ({ selected, onClose }) => {
         address: formData.address,
       };
 
-      const response = await fetch('/api/package-requests', {
+      const response = await fetch(`${API_URL}/package-requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload),
@@ -92,9 +110,9 @@ const PackageModal: React.FC<PackageModalProps> = ({ selected, onClose }) => {
                     <Check className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-2">Request Received!</h3>
-                <p className="text-slate-600 mb-8">
-                    Thank you for choosing <strong>{selected.name}</strong>. Our team will contact you shortly.
-                </p>
+                <div className="text-slate-600 mb-8">
+                    Thank you for choosing <div className="inline font-bold" dangerouslySetInnerHTML={{ __html: selected.name }} />. Our team will contact you shortly.
+                </div>
                 <Button variant="primary" className="w-full justify-center" onClick={onClose}>Close</Button>
             </div>
         </div>
@@ -117,8 +135,8 @@ const PackageModal: React.FC<PackageModalProps> = ({ selected, onClose }) => {
                <CheckCircle2 size={32} />
             </div>
             <div>
-               <h3 className="text-2xl font-bold text-gray-900">{selected.name}</h3>
-               <p className="text-gray-500">Rs. {selected.price.toLocaleString()}</p>
+               <div className="text-2xl font-bold text-gray-900" dangerouslySetInnerHTML={{ __html: selected.name }} />
+               <div className="text-gray-500">Rs. {selected.price.toLocaleString()}</div>
             </div>
           </div>
 
@@ -130,14 +148,45 @@ const PackageModal: React.FC<PackageModalProps> = ({ selected, onClose }) => {
                         {selected.features.map((f, i) => (
                             <li key={i} className="text-sm text-gray-600 flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                                {f}
+                                <div dangerouslySetInnerHTML={{ __html: f }} />
                             </li>
                         ))}
                     </ul>
                 </div>
-                <p className="text-gray-600 text-sm mb-8 leading-relaxed">
-                    You are about to request the <strong>{selected.name}</strong>. Please confirm your details to proceed.
-                </p>
+
+                {fetchingDetails ? (
+                    <div className="flex justify-center py-4 text-teal-600"><Loader2 className="animate-spin" /></div>
+                ) : customizationOptions.length > 0 && (
+                    <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-100">
+                        <h4 className="font-semibold text-gray-900 mb-3">Customize Your Package:</h4>
+                        <div className="space-y-3">
+                            {customizationOptions.map((opt: any) => (
+                                <label key={opt.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-teal-400 transition-colors">
+                                    <input 
+                                        type="checkbox" 
+                                        className="w-5 h-5 text-teal-600 rounded focus:ring-teal-500"
+                                        checked={selectedAddons.includes(opt.id)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedAddons(prev => [...prev, opt.id]);
+                                            } else {
+                                                setSelectedAddons(prev => prev.filter(id => id !== opt.id));
+                                            }
+                                        }}
+                                    />
+                                    <div className="flex-1 flex justify-between items-center">
+                                        <div className="text-slate-700 font-medium" dangerouslySetInnerHTML={{ __html: opt.name }} />
+                                        <span className="text-teal-600 font-bold">+ Rs. {opt.price}</span>
+                                    </div>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className="text-gray-600 text-sm mb-8 leading-relaxed">
+                    You are about to request the <div className="inline font-bold" dangerouslySetInnerHTML={{ __html: selected.name }} />. Please confirm your details to proceed.
+                </div>
                 <div className="flex gap-3">
                     <Button variant="outline" className="flex-1 justify-center" onClick={onClose}>Cancel</Button>
                     <Button variant="primary" className="flex-1 justify-center" onClick={() => setShowForm(true)}>Proceed to Book</Button>

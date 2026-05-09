@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BoardMemberResource\Pages;
 use App\Models\BoardMember;
 use Filament\Forms;
-use Filament\Schemas\Schema;
+use Filament\Schemas\Schema as ResourceSchema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -25,7 +25,7 @@ class BoardMemberResource extends Resource
         return 'UI Setting';
     }
 
-    public static function form(Schema $schema): Schema
+    public static function form(ResourceSchema $schema): ResourceSchema
     {
         return $schema->schema([
             Forms\Components\TextInput::make('name')->required()->maxLength(255),

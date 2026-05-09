@@ -22,11 +22,11 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg, onSelect, currency = 'US
       )}
       
       <div className="mb-4">
-        <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded uppercase tracking-wider mb-2">
-          {pkg.category || 'General'}
-        </span>
-        <h3 className="text-xl font-bold text-gray-900">{pkg.name}</h3>
-        <p className="text-gray-500 text-sm mt-1">{pkg.description}</p>
+        <div className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded uppercase tracking-wider mb-2">
+          <div dangerouslySetInnerHTML={{ __html: pkg.category || 'General' }} />
+        </div>
+        <div className="text-xl font-bold text-gray-900" dangerouslySetInnerHTML={{ __html: pkg.name }} />
+        <div className="text-gray-500 text-sm mt-1" dangerouslySetInnerHTML={{ __html: pkg.description }} />
       </div>
 
       <div className="mb-6">
@@ -42,14 +42,16 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg, onSelect, currency = 'US
           {pkg.features.map((feature, idx) => (
             <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
               <Check size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
-              <span>{feature}</span>
+              <div dangerouslySetInnerHTML={{ __html: feature }} />
             </li>
           ))}
         </ul>
       </div>
 
       <Button
-        onClick={() => onSelect(pkg)}
+        to={pkg.button_url}
+        target={pkg.button_new_tab ? "_blank" : undefined}
+        onClick={pkg.button_url ? undefined : () => onSelect(pkg)}
         variant={pkg.is_popular ? 'primary' : 'outline'}
         className="w-full justify-center"
       >

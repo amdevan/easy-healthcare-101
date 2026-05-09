@@ -52,21 +52,24 @@ export const VEHICLES: VehicleItem[] = [
     name: 'Basic NEMT Van',
     description: 'Comfortable transport for ambulatory patients who need supervision.',
     features: ['Comfortable Seating', 'Climate Control', 'GPS Tracking'],
-    image: 'https://picsum.photos/600/400?random=1'
+    image: 'https://picsum.photos/600/400?random=1',
+    verified_text: 'Verified'
   },
   {
     id: 'wheelchair',
     name: 'Wheelchair-Accessible Van',
     description: 'Equipped with hydraulic lifts or ramps and safety harnesses.',
     features: ['Hydraulic Lift/Ramp', 'Safety Harness', 'Attendant Seat'],
-    image: 'https://picsum.photos/600/400?random=2'
+    image: 'https://picsum.photos/600/400?random=2',
+    verified_text: 'Verified'
   },
   {
     id: 'stretcher',
     name: 'Stretcher / BLS Van',
     description: 'For patients unable to sit upright, requiring stretcher transport.',
     features: ['Medical Stretcher', 'Oxygen Support', 'BLS Trained Staff'],
-    image: 'https://picsum.photos/600/400?random=3'
+    image: 'https://picsum.photos/600/400?random=3',
+    verified_text: 'Verified'
   }
 ];
 

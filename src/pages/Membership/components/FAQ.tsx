@@ -6,6 +6,15 @@ interface FAQItem {
   answer: string;
 }
 
+interface FAQProps {
+  title?: string;
+  subtitle?: string;
+  items?: FAQItem[];
+  ctaText?: string;
+  ctaLink?: string;
+  ctaNewTab?: boolean;
+}
+
 const FAQS: FAQItem[] = [
   {
     question: "How does the 'Dedicated Care Coordinator' work?",
@@ -29,8 +38,9 @@ const FAQS: FAQItem[] = [
   }
 ];
 
-const FAQ: React.FC = () => {
+const FAQ: React.FC<FAQProps> = ({ title, subtitle, items, ctaText, ctaLink, ctaNewTab }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const faqs = items && items.length > 0 ? items : FAQS;
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -44,15 +54,15 @@ const FAQ: React.FC = () => {
             <HelpCircle className="w-6 h-6 text-teal-600" />
           </div>
           <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl tracking-tight">
-            Frequently Asked Questions
+            {title || 'Frequently Asked Questions'}
           </h2>
-          <p className="mt-4 text-xl text-slate-500">
-            Everything you need to know about EasyCare 365.
-          </p>
+          <div className="mt-4 text-xl text-slate-500">
+            {subtitle || 'Everything you need to know about Easy Care 365.'}
+          </div>
         </div>
 
         <div className="space-y-4">
-          {FAQS.map((faq, index) => (
+          {faqs.map((faq, index) => (
             <div 
               key={index} 
               className={`
@@ -64,9 +74,7 @@ const FAQ: React.FC = () => {
                 onClick={() => toggleFAQ(index)}
                 className="w-full flex justify-between items-center p-6 text-left focus:outline-none"
               >
-                <span className={`text-lg font-medium ${openIndex === index ? 'text-teal-700' : 'text-slate-900'}`}>
-                  {faq.question}
-                </span>
+                <div className={`text-lg font-medium ${openIndex === index ? 'text-teal-700' : 'text-slate-900'}`} dangerouslySetInnerHTML={{ __html: faq.question }} />
                 <span className={`ml-6 flex-shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
                   <ChevronDown className={`w-5 h-5 ${openIndex === index ? 'text-teal-500' : 'text-slate-400'}`} />
                 </span>
@@ -78,21 +86,24 @@ const FAQ: React.FC = () => {
                   ${openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
                 `}
               >
-                <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-dashed border-slate-100 mt-2">
-                  {faq.answer}
-                </div>
+                <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-dashed border-slate-100 mt-2" dangerouslySetInnerHTML={{ __html: faq.answer }} />
               </div>
             </div>
           ))}
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-slate-500">
+          <div className="text-slate-500">
             Still have questions?{' '}
-            <a href="/contact" className="font-semibold text-teal-600 hover:text-teal-500">
-              Contact our support team
+            <a 
+              href={ctaLink || '/contact'} 
+              target={ctaNewTab ? '_blank' : undefined}
+              rel={ctaNewTab ? 'noopener noreferrer' : undefined}
+              className="font-semibold text-teal-600 hover:text-teal-500"
+            >
+              {ctaText || 'Contact our support team'}
             </a>
-          </p>
+          </div>
         </div>
       </div>
     </div>

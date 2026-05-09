@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '@/components/ui/Button';
-import { Phone, Mail, MapPin, ArrowUpRight, Globe, ShieldCheck, Star, Facebook, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react';
-import { fetchFooterSetting, FooterSettingDto, FooterColumn } from '@/controllers/api';
+import { Phone, Mail, MapPin, ArrowUpRight, ShieldCheck, Facebook, Twitter, Linkedin, Instagram, Youtube, Globe } from 'lucide-react';
+import { fetchFooterSetting, FooterSettingDto, FooterColumn, resolveStorageUrl } from '@/controllers/api';
 
 const FooterLinkColumn: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div>
@@ -15,7 +15,6 @@ const Footer: React.FC = () => {
   const [footerSetting, setFooterSetting] = useState<FooterSettingDto | null>(null);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState<string | null>(null);
-  const [lang, setLang] = useState('en');
 
   useEffect(() => {
     let mounted = true;
@@ -25,9 +24,6 @@ const Footer: React.FC = () => {
       })
       .catch(console.error);
 
-    const saved = localStorage.getItem('siteLang');
-    if (saved) setLang(saved);
-    
     return () => { mounted = false; };
   }, []);
 
@@ -38,24 +34,25 @@ const Footer: React.FC = () => {
     setEmail('');
   };
 
-  const onLangChange = (val: string) => {
-    setLang(val);
-    localStorage.setItem('siteLang', val);
-  };
-
   const {
+      logo,
+      logo_height = 48,
       title = 'Easy Healthcare 101',
       description = 'Your trusted partner for accessible and comprehensive healthcare solutions.',
       phone = '+977 1-4510101',
       email: contactEmail = 'support@easyhealthcare101.com',
       address = 'Kathmandu Nepal',
       copyright = `© ${new Date().getFullYear()} Easy Healthcare 101. All rights reserved.`,
+      security_label = 'HIPAA-aware and privacy-focused',
       columns = [],
       social_links = [],
       android_app_link,
       ios_app_link,
+      android_app_badge,
+      ios_app_badge,
       newsletter_title = 'Stay Updated',
-      newsletter_description
+      newsletter_description,
+      download_app_title
   } = footerSetting || {};
 
   // Default columns fallback
@@ -75,7 +72,7 @@ const Footer: React.FC = () => {
       links: [
         { label: 'About', url: '/about' },
         { label: 'Board of Director', url: '/about/board-of-director' },
-        { label: 'Management Team', url: '/about/management-team' },
+        { label: 'Meet the Management', url: '/about/management-team' },
         { label: 'Clinics & Locations', url: '/clinics-locations' },
         { label: 'Contact', url: '/contact' },
       ]
@@ -101,8 +98,19 @@ const Footer: React.FC = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="grid lg:grid-cols-4 gap-8 items-start">
             <div>
+              {logo && (
+                 <img 
+                   src={resolveStorageUrl(logo)} 
+                   alt={title} 
+                   className="object-contain mb-3"
+                   style={{ height: `${logo_height}px`, width: 'auto' }}
+                 />
+              )}
               <h3 className="text-2xl font-extrabold text-brand-gray-900">{title}</h3>
-              <p className="mt-2 text-brand-gray-600">{description}</p>
+              <div 
+                className="mt-2 text-brand-gray-600 prose prose-sm max-w-none [&>p]:mb-0" 
+                dangerouslySetInnerHTML={{ __html: description }} 
+              />
               
               {phone && (
                 <div className="mt-4 flex items-center gap-3 text-brand-gray-700">
@@ -123,10 +131,12 @@ const Footer: React.FC = () => {
                 </div>
               )}
               
+              {security_label && (
               <div className="mt-4 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-brand-blue" />
-                <span className="text-sm text-brand-gray-600">HIPAA-aware and privacy-focused</span>
+                <span className="text-sm text-brand-gray-600">{security_label}</span>
               </div>
+              )}
 
               {social_links && social_links.length > 0 && (
                 <div className="mt-6 flex items-center gap-4">
@@ -154,7 +164,7 @@ const Footer: React.FC = () => {
                       target={link.new_tab ? '_blank' : undefined}
                       className="hover:text-brand-blue"
                     >
-                      {link.label}
+                      <div dangerouslySetInnerHTML={{ __html: link.label }} />
                     </Link>
                   </li>
                 ))}
@@ -163,7 +173,12 @@ const Footer: React.FC = () => {
 
             <div>
               <h4 className="font-bold text-brand-gray-900 mb-4">{newsletter_title}</h4>
-              {newsletter_description && <p className="mb-4 text-sm text-brand-gray-600">{newsletter_description}</p>}
+              {newsletter_description && (
+                <div 
+                  className="mb-4 text-sm text-brand-gray-600 prose prose-sm max-w-none [&>p]:mb-0" 
+                  dangerouslySetInnerHTML={{ __html: newsletter_description }} 
+                />
+              )}
               <form onSubmit={onSubscribe} className="flex items-center gap-2">
                 <input
                   type="email"
@@ -179,64 +194,60 @@ const Footer: React.FC = () => {
                 <div className="mt-2 text-sm text-brand-gray-700">{subscribed}</div>
               )}
               
-              <div className="mt-6 flex items-center gap-3">
+              <h4 className="font-bold text-brand-gray-900 mt-8 mb-4">{download_app_title || 'Download our App'}</h4>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
                 {ios_app_link && (
-                    <Button variant="outline" size="sm" href={ios_app_link} target="_blank">
-                      <ArrowUpRight className="w-4 h-4 mr-2" /> App Store
-                    </Button>
+                    <a href={ios_app_link} target="_blank" rel="noopener noreferrer">
+                        <img 
+                          src={ios_app_badge ? resolveStorageUrl(ios_app_badge) : 'https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg'} 
+                          alt="Download on the App Store" 
+                          className="h-12"
+                        />
+                    </a>
                 )}
                 {(!ios_app_link && !footerSetting) && (
-                    <Button variant="outline" size="sm" href="#">
-                      <ArrowUpRight className="w-4 h-4 mr-2" /> App Store
-                    </Button>
+                    <a href="#">
+                        <img 
+                          src='https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg' 
+                          alt="Download on the App Store" 
+                          className="h-12"
+                        />
+                    </a>
                 )}
 
                 {android_app_link && (
-                    <Button variant="outline" size="sm" href={android_app_link} target="_blank">
-                      <ArrowUpRight className="w-4 h-4 mr-2" /> Play Store
-                    </Button>
+                    <a href={android_app_link} target="_blank" rel="noopener noreferrer">
+                        <img 
+                          src={android_app_badge ? resolveStorageUrl(android_app_badge) : 'https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'} 
+                          alt="Get it on Google Play" 
+                          className="h-16"
+                        />
+                    </a>
                 )}
                 {(!android_app_link && !footerSetting) && (
-                    <Button variant="outline" size="sm" href="#">
-                      <ArrowUpRight className="w-4 h-4 mr-2" /> Play Store
-                    </Button>
+                    <a href="#">
+                        <img 
+                          src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' 
+                          alt="Get it on Google Play" 
+                          className="h-16"
+                        />
+                    </a>
                 )}
               </div>
-
-              <div className="mt-6 flex items-center gap-2 text-brand-gray-700">
-                <Star className="w-4 h-4 text-amber-500" />
-                <span className="text-sm">4.8/5 average user rating</span>
+              <div className="mt-6 flex items-center gap-4 text-sm text-brand-gray-600">
+                <Link to="/privacy" className="hover:text-brand-blue">Privacy Policy</Link>
+                <Link to="/terms" className="hover:text-brand-blue">Terms & Conditions</Link>
               </div>
-            </div>
-          </div>
-
-          <div className="mt-10 flex flex-col lg:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Globe className="w-4 h-4" />
-              <select
-                aria-label="Select language"
-                value={lang}
-                onChange={(e) => onLangChange(e.target.value)}
-                className="bg-white border border-gray-300 rounded-md px-2 py-1 text-sm"
-              >
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="fr">Français</option>
-              </select>
-            </div>
-            <div className="text-sm text-brand-gray-600">
-              <Link to="/privacy" className="hover:text-brand-blue mr-4">Privacy Policy</Link>
-              <Link to="/terms" className="hover:text-brand-blue">Terms & Conditions</Link>
             </div>
           </div>
         </div>
       </div>
       <div className="bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4 py-6 text-center md:text-left md:flex justify-between items-center text-sm text-brand-gray-700">
-          <p>{copyright}</p>
+        <div className="container mx-auto px-4 py-4 text-center md:text-left md:flex justify-between items-center text-sm text-brand-gray-700">
+          <div dangerouslySetInnerHTML={{ __html: copyright }} />
           <div className="mt-2 md:mt-0 flex items-center gap-4">
             <span className="text-brand-gray-700">
-              Design &amp; Develop By{' '}
+              Designed &amp; Developed By{' '}
               <a
                 href="https://itrelevant.com/"
                 target="_blank"

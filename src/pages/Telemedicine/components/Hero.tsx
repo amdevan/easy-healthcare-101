@@ -1,14 +1,31 @@
 import React from 'react';
 import { ArrowRight, Video, ShieldCheck, Clock } from 'lucide-react';
 import { resolveSrc } from '@/utils/url';
+import Button from '@/components/ui/Button';
 
 interface HeroProps {
   title?: string;
   subtitle?: string;
   image?: string;
+  primary_button_text?: string;
+  primary_button_link?: string;
+  primary_button_new_tab?: boolean;
+  secondary_button_text?: string;
+  secondary_button_link?: string;
+  secondary_button_new_tab?: boolean;
 }
 
-const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
+const Hero: React.FC<HeroProps> = ({ 
+  title, 
+  subtitle, 
+  image,
+  primary_button_text,
+  primary_button_link,
+  primary_button_new_tab,
+  secondary_button_text,
+  secondary_button_link,
+  secondary_button_new_tab
+}) => {
   const defaultImage = 'https://images.unsplash.com/photo-1758691461916-dc7894eb8f94?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.1.0';
   const imgSrc = image ? resolveSrc(image) : defaultImage;
 
@@ -25,35 +42,45 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
               <span>Accessible Healthcare Anytime, Anywhere</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            <div className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
               {title ? (
-                title
+                <div dangerouslySetInnerHTML={{ __html: title }} />
               ) : (
                 <>
                   Expert Care, <br />
                   <span className="text-teal-600">Just a Click Away.</span>
                 </>
               )}
-            </h1>
+            </div>
 
-            <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              {subtitle || "Experience the future of medicine with secure remote consultations, high-quality video calls, and instant digital prescriptions. Quality healthcare, now from the comfort of your home."}
-            </p>
+            <div className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+               {subtitle ? (
+                 <div dangerouslySetInnerHTML={{ __html: subtitle }} />
+               ) : (
+                 "Experience the future of medicine with secure remote consultations, high-quality video calls, and instant digital prescriptions. Quality healthcare, now from the comfort of your home."
+               )}
+            </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <a
-                href="#cta"
-                className="w-full sm:w-auto px-8 py-4 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-all shadow-lg hover:shadow-teal-200 flex items-center justify-center gap-2 group"
+              <Button
+                to={primary_button_link || "#cta"}
+                target={primary_button_new_tab ? '_blank' : undefined}
+                variant="primary"
+                size="lg"
+                className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white shadow-lg hover:shadow-teal-200"
               >
-                <span>Book an Online Consultation</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a
-                href="#how-it-works"
-                className="w-full sm:w-auto px-8 py-4 bg-white text-gray-700 font-semibold rounded-lg border border-gray-200 hover:border-teal-200 hover:bg-teal-50 transition-all flex items-center justify-center"
+                <div dangerouslySetInnerHTML={{ __html: primary_button_text || "Book an Online Consultation" }} />
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button
+                to={secondary_button_link || "#how-it-works"}
+                target={secondary_button_new_tab ? '_blank' : undefined}
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto bg-white text-gray-700 border-gray-200"
               >
-                <span>Learn How It Works</span>
-              </a>
+                <div dangerouslySetInnerHTML={{ __html: secondary_button_text || "Learn How It Works" }} />
+              </Button>
             </div>
 
             <div className="mt-10 flex items-center justify-center lg:justify-start gap-6 text-sm text-gray-500 font-medium">
@@ -88,8 +115,8 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, image }) => {
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">Doctor is online</p>
-                  <p className="text-sm text-gray-500">General Physician • 15 years exp.</p>
+                  <div className="font-bold text-gray-900">Doctor is online</div>
+                  <div className="text-sm text-gray-500">General Physician • 15 years exp.</div>
                 </div>
                 <button className="ml-auto px-4 py-2 bg-teal-600 text-white text-xs font-bold rounded-full hover:bg-teal-700">
                   Connect

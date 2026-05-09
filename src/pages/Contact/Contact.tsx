@@ -97,14 +97,16 @@ const Contact: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-sm p-0">
           <div className="rounded-t-2xl bg-gradient-to-r from-blue-600 via-cyan-600 to-sky-500 p-8 text-white">
-            <h1 className="text-3xl md:text-4xl font-extrabold">{title}</h1>
-            <p className="mt-3 text-white/90">
-              {desc ? desc : (
+            <div className="text-3xl md:text-4xl font-extrabold" dangerouslySetInnerHTML={{ __html: title }} />
+            <div className="mt-3 text-white/90">
+              {desc ? (
+                <div dangerouslySetInnerHTML={{ __html: desc }} />
+              ) : (
                 <>
-                We’re here to help with appointments, services, and membership. Call us at <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="underline font-semibold">{contactPhone}</a> or send a message below.
+                We’re here to help with appointments, services, and membership. Call us at <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="underline font-semibold"><div className="inline" dangerouslySetInnerHTML={{ __html: contactPhone }} /></a> or send a message below.
                 </>
               )}
-            </p>
+            </div>
           </div>
 
           <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -115,8 +117,8 @@ const Contact: React.FC = () => {
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-brand-gray-900">Support</p>
-                    <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="mt-1 block text-brand-blue">{contactPhone}</a>
+                    <div className="text-sm font-semibold text-brand-gray-900">Support</div>
+                    <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="mt-1 block text-brand-blue"><div dangerouslySetInnerHTML={{ __html: contactPhone }} /></a>
                   </div>
                 </div>
               </div>
@@ -126,8 +128,8 @@ const Contact: React.FC = () => {
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-brand-gray-900">General Queries</p>
-                    <a href={`mailto:${contactEmail}`} className="mt-1 block text-brand-blue">{contactEmail}</a>
+                    <div className="text-sm font-semibold text-brand-gray-900">General Queries</div>
+                    <a href={`mailto:${contactEmail}`} className="mt-1 block text-brand-blue"><div dangerouslySetInnerHTML={{ __html: contactEmail }} /></a>
                   </div>
                 </div>
               </div>
@@ -137,8 +139,8 @@ const Contact: React.FC = () => {
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-brand-gray-900">Working Hours</p>
-                    <p className="mt-1 text-sm text-brand-gray-700 whitespace-pre-line">{contactHours}</p>
+                    <div className="text-sm font-semibold text-brand-gray-900">Working Hours</div>
+                    <div className="mt-1 text-sm text-brand-gray-700 whitespace-pre-line" dangerouslySetInnerHTML={{ __html: contactHours }} />
                   </div>
                 </div>
               </div>
@@ -148,8 +150,9 @@ const Contact: React.FC = () => {
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-brand-gray-900">Location</p>
-                    <p className="mt-1 text-sm text-brand-gray-700">{contactAddress}</p>
+                    <div className="text-sm font-semibold text-brand-gray-900">Location</div>
+                    <div className="mt-1 text-sm text-brand-gray-700" dangerouslySetInnerHTML={{ __html: contactAddress }} />
+
                   </div>
                 </div>
               </div>
@@ -169,7 +172,7 @@ const Contact: React.FC = () => {
             <div className="lg:col-span-2 max-w-2xl mx-auto bg-white rounded-xl p-6 shadow-sm">
               <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6" noValidate>
                 <div className="md:col-span-1">
-                  <label htmlFor="name" className="block text-base font-medium text-brand-gray-700">{formLabels?.name || 'Full Name'}</label>
+                  <div className="block text-base font-medium text-brand-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: formLabels?.name || 'Full Name' }} />
                   <input
                     id="name"
                     name="name"
@@ -188,7 +191,7 @@ const Contact: React.FC = () => {
                 </div>
 
                 <div className="md:col-span-1">
-                  <label htmlFor="email" className="block text-base font-medium text-brand-gray-700">{formLabels?.email || 'Email'}</label>
+                  <div className="block text-base font-medium text-brand-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: formLabels?.email || 'Email' }} />
                   <input
                     id="email"
                     name="email"
@@ -207,7 +210,7 @@ const Contact: React.FC = () => {
                 </div>
 
                 <div className="md:col-span-1">
-                  <label htmlFor="phone" className="block text-base font-medium text-brand-gray-700">{formLabels?.phone || 'Phone (optional)'}</label>
+                  <div className="block text-base font-medium text-brand-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: formLabels?.phone || 'Phone (optional)' }} />
                   <input
                     id="phone"
                     name="phone"
@@ -226,7 +229,7 @@ const Contact: React.FC = () => {
                 </div>
 
                 <div className="md:col-span-1">
-                  <label htmlFor="subject" className="block text-base font-medium text-brand-gray-700">{formLabels?.subject || 'Subject'}</label>
+                  <div className="block text-base font-medium text-brand-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: formLabels?.subject || 'Subject' }} />
                   <input
                     id="subject"
                     name="subject"
@@ -245,7 +248,7 @@ const Contact: React.FC = () => {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label htmlFor="message" className="block text-base font-medium text-brand-gray-700">{formLabels?.message || 'Message'}</label>
+                  <div className="block text-base font-medium text-brand-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: formLabels?.message || 'Message' }} />
                   <textarea
                     id="message"
                     name="message"
@@ -264,13 +267,13 @@ const Contact: React.FC = () => {
 
                 <div className="md:col-span-2 flex items-center gap-3">
                   <Button type="submit" variant="primary" size="lg" disabled={submitting || !isValid} aria-label="Submit contact form">
-                    {submitting ? (formLabels?.submitting || 'Sending…') : (formLabels?.submit || 'Send Message')}
+                    <div dangerouslySetInnerHTML={{ __html: submitting ? (formLabels?.submitting || 'Sending…') : (formLabels?.submit || 'Send Message') }} />
                   </Button>
                   {submitted && (
-                    <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-sm text-green-700">{formMessages?.success || submitted.message}</span>
+                    <div className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-sm text-green-700" dangerouslySetInnerHTML={{ __html: formMessages?.success || submitted.message }} />
                   )}
                   {submitError && (
-                    <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-sm text-red-700">{formMessages?.error || submitError}</span>
+                    <div className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-sm text-red-700" dangerouslySetInnerHTML={{ __html: formMessages?.error || submitError }} />
                   )}
                 </div>
               </form>

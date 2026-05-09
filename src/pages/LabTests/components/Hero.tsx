@@ -1,5 +1,6 @@
 import { Star, Clock, Shield, Truck } from "lucide-react";
 import { getIcon } from "@/utils/iconMapper";
+import { normalizeHref } from "@/utils/url";
 
 interface HeroStat {
   label: string;
@@ -12,9 +13,26 @@ interface HeroProps {
   subtitle?: string;
   image?: string;
   stats?: HeroStat[];
+  primaryButtonText?: string;
+  primaryButtonLink?: string;
+  primaryButtonNewTab?: boolean;
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
+  secondaryButtonNewTab?: boolean;
 }
 
-export default function Hero({ title, subtitle, image, stats }: HeroProps) {
+export default function Hero({ 
+  title, 
+  subtitle, 
+  image, 
+  stats,
+  primaryButtonText,
+  primaryButtonLink,
+  primaryButtonNewTab,
+  secondaryButtonText,
+  secondaryButtonLink,
+  secondaryButtonNewTab
+}: HeroProps) {
   const defaultStats: HeroStat[] = [
     { label: "Certified", value: "NABL Labs", icon: "shield" },
     { label: "Collection", value: "Home Pickup", icon: "truck" },
@@ -23,6 +41,9 @@ export default function Hero({ title, subtitle, image, stats }: HeroProps) {
   ];
 
   const displayStats = stats && stats.length > 0 ? stats : defaultStats;
+
+  const primaryHref = normalizeHref(primaryButtonLink) || "#test-catalog";
+  const secondaryHref = normalizeHref(secondaryButtonLink) || "#assistant";
 
   const renderIcon = (iconName?: string) => {
     const Icon = getIcon(iconName);
@@ -40,32 +61,25 @@ export default function Hero({ title, subtitle, image, stats }: HeroProps) {
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Left: text content */}
           <div>
-            <div className="mb-6 inline-flex items-center rounded-full bg-white/80 px-4 py-2 text-sm shadow-sm ring-1 ring-sky-100">
-              <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 text-sky-600">
-                <Star className="h-3.5 w-3.5" />
-              </span>
-              AI Symptom Checker 2.0
-            </div>
-
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-              {title || "Lab Testing, Reimagined"}
-            </h1>
-            <p className="mt-4 text-lg leading-8 text-slate-600">
-              {subtitle || "Book lab tests from trusted NABL-certified labs, get home sample collection, and receive digital reports—fast, secure, and hassle-free."}
-            </p>
+            <div className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl" dangerouslySetInnerHTML={{ __html: title || "Lab Testing, Reimagined" }} />
+            <div className="mt-4 text-lg leading-8 text-slate-600" dangerouslySetInnerHTML={{ __html: subtitle || "Book lab tests from trusted NABL-certified labs, get home sample collection, and receive digital reports—fast, secure, and hassle-free." }} />
 
             <div className="mt-8 flex flex-wrap gap-4">
               <a
-                href="#test-catalog"
+                href={primaryHref}
+                target={primaryButtonNewTab ? "_blank" : undefined}
+                rel={primaryButtonNewTab ? "noopener noreferrer" : undefined}
                 className="inline-flex items-center rounded-lg bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
               >
-                Explore Tests
+                <div dangerouslySetInnerHTML={{ __html: primaryButtonText || "Explore Tests" }} />
               </a>
               <a
-                href="#assistant"
+                href={secondaryHref}
+                target={secondaryButtonNewTab ? "_blank" : undefined}
+                rel={secondaryButtonNewTab ? "noopener noreferrer" : undefined}
                 className="inline-flex items-center rounded-lg bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50"
               >
-                Ask AI Assistant
+                <div dangerouslySetInnerHTML={{ __html: secondaryButtonText || "Ask AI Assistant" }} />
               </a>
             </div>
 
@@ -75,9 +89,9 @@ export default function Hero({ title, subtitle, image, stats }: HeroProps) {
                 return (
                   <div key={index} className="rounded-xl bg-white/70 p-4 text-center shadow-sm ring-1 ring-slate-200">
                     <dt className="flex items-center justify-center text-slate-500">
-                      <Icon className="mr-2 h-5 w-5 text-sky-600" /> {stat.label}
+                      <Icon className="mr-2 h-5 w-5 text-sky-600" /> <div dangerouslySetInnerHTML={{ __html: stat.label }} />
                     </dt>
-                    <dd className="mt-2 text-lg font-semibold text-slate-900">{stat.value}</dd>
+                    <dd className="mt-2 text-lg font-semibold text-slate-900" dangerouslySetInnerHTML={{ __html: stat.value }} />
                   </div>
                 );
               })}
@@ -149,4 +163,3 @@ export default function Hero({ title, subtitle, image, stats }: HeroProps) {
     </section>
   );
 }
-

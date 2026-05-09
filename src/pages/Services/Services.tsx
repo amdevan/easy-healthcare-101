@@ -135,7 +135,16 @@ const Services: React.FC = () => {
 
   return (
     <main className="bg-white">
-      <Hero title={heroTitle} subtitle={heroSubtitle} />
+      <Hero
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        primary_button_text={heroBlock?.data?.primary_button_text}
+        primary_button_link={heroBlock?.data?.primary_button_link}
+        primary_button_new_tab={heroBlock?.data?.primary_button_new_tab}
+        secondary_button_text={heroBlock?.data?.secondary_button_text}
+        secondary_button_link={heroBlock?.data?.secondary_button_link}
+        secondary_button_new_tab={heroBlock?.data?.secondary_button_new_tab}
+      />
       <ServiceGrid items={items} />
       <CTA 
         title={ctaBlock?.data?.title || "Ready to prioritize your health?"}

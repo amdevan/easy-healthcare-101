@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '@/config/api';
 
 export interface PageContentBlock {
   type: string;
@@ -13,6 +14,8 @@ export interface PageData {
   hero_image?: string;
   seo_title?: string;
   seo_description?: string;
+  is_active?: boolean;
+  open_in_new_tab?: boolean;
 }
 
 export const usePageContent = (slug: string) => {
@@ -25,8 +28,8 @@ export const usePageContent = (slug: string) => {
     const fetchPage = async () => {
       try {
         setLoading(true);
-        // Using /api prefix which is proxied to backend
-        const response = await fetch(`/api/pages/${slug}`);
+        // Using API_URL from config
+        const response = await fetch(`${API_URL}/pages/${slug}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch page: ${response.statusText}`);
         }

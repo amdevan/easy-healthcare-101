@@ -7,24 +7,49 @@ interface ServiceCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
+  url?: string;
+  newTab?: boolean;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description }) => (
-  <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 text-center lg:text-left flex flex-col sm:flex-row lg:flex-col items-center sm:items-start lg:items-center space-x-6 sm:space-x-4 lg:space-x-0">
-    <div className="bg-blue-100 p-4 rounded-lg mb-4 sm:mb-0 lg:mb-4">
-        {icon}
+const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description, url, newTab }) => {
+  const content = (
+    <>
+      <div className="bg-blue-100 p-4 rounded-lg mb-4 sm:mb-0 lg:mb-4">
+          {icon}
+      </div>
+      <div>
+          <div className="text-xl font-bold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: title }} />
+              <div className="mt-2 text-brand-gray-500" dangerouslySetInnerHTML={{ __html: description }} />
+      </div>
+    </>
+  );
+
+  if (url) {
+    return (
+      <a 
+        href={url} 
+        target={newTab ? '_blank' : undefined}
+        rel={newTab ? 'noopener noreferrer' : undefined}
+        className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 text-center lg:text-left flex flex-col sm:flex-row lg:flex-col items-center sm:items-start lg:items-center space-x-6 sm:space-x-4 lg:space-x-0"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 text-center lg:text-left flex flex-col sm:flex-row lg:grid-col items-center sm:items-start lg:items-center space-x-6 sm:space-x-4 lg:space-x-0">
+      {content}
     </div>
-    <div>
-        <Editable tag="h3" id={`service-title-${title.replace(/\s+/g, '-')}`} className="text-xl font-bold text-brand-gray-900">{title}</Editable>
-        <Editable tag="p" id={`service-desc-${title.replace(/\s+/g, '-')}`} className="mt-2 text-brand-gray-500">{description}</Editable>
-    </div>
-  </div>
-);
+  );
+};
 
 export interface ServiceItem {
   title: string;
   description: string;
   icon?: string;
+  url?: string;
+  newTab?: boolean;
 }
 
 interface ServicesProps {
@@ -32,7 +57,7 @@ interface ServicesProps {
 }
 
 const Services: React.FC<ServicesProps> = ({ items }) => {
-  const defaultServices = [
+  const defaultServices: Array<ServiceItem & { iconType: string }> = [
     {
       iconType: 'video',
       title: 'Instant Video Consultation',
@@ -74,6 +99,8 @@ const Services: React.FC<ServicesProps> = ({ items }) => {
               icon={renderIcon(service.iconType)} 
               title={service.title} 
               description={service.description} 
+              url={service.url}
+              newTab={service.newTab}
             />
           ))}
         </div>

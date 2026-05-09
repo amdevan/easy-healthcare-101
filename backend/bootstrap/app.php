@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust all proxies (Required for cPanel/Cloudflare HTTPS detection)
+        $middleware->trustProxies(at: '*');
+
         // Enable CORS for API to allow frontend (localhost:3000) access during development
         $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
         // Local development: relax CSRF to unblock Livewire + Filament login

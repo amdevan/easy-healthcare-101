@@ -35,15 +35,13 @@ const Impact: React.FC<ImpactProps> = ({ title, items }) => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
 
           <div className="relative z-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">
-              {title || "Empowering Nepal's Healthcare Ecosystem"}
-            </h2>
+            <div className="text-3xl md:text-4xl font-bold mb-8" dangerouslySetInnerHTML={{ __html: title || "Empowering Nepal's Healthcare Ecosystem" }} />
             <div className="grid md:grid-cols-3 gap-8">
               {displayItems.map((item, idx) => (
                 <div key={idx} className="p-6 border border-gray-700 rounded-xl bg-gray-800/50 backdrop-blur">
-                  <div className="text-4xl font-bold text-teal-400 mb-2">{item.value}</div>
-                  <h4 className="text-lg font-semibold mb-2">{item.label}</h4>
-                  <p className="text-gray-400 text-sm">{item.description}</p>
+                  <div className="text-4xl font-bold text-teal-400 mb-2" dangerouslySetInnerHTML={{ __html: item.value }} />
+                  <div className="text-lg font-semibold mb-2" dangerouslySetInnerHTML={{ __html: item.label }} />
+                  <div className="text-gray-400 text-sm" dangerouslySetInnerHTML={{ __html: item.description }} />
                 </div>
               ))}
             </div>

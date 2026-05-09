@@ -24,24 +24,22 @@ const InfrastructureSection: React.FC<InfrastructureSectionProps> = ({ title, de
         <img src={image} alt={title} className="w-full h-64 md:h-80 object-cover" referrerPolicy="no-referrer" onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://picsum.photos/1200/800'; }} />
         <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur px-4 py-2 rounded-lg shadow-lg">
           <span className="text-sm font-bold text-blue-800 flex items-center gap-2">
-            <ShieldCheckIcon className="w-4 h-4" /> {badge}
+            <ShieldCheckIcon className="w-4 h-4" /> <div dangerouslySetInnerHTML={{ __html: badge }} />
           </span>
         </div>
       </div>
     </div>
     <div className="w-full md:w-1/2 space-y-6">
-      <h3 className="text-2xl md:text-3xl font-bold text-slate-800 relative inline-block">
-        {title}
+      <div className="text-2xl md:text-3xl font-bold text-slate-800 relative inline-block">
+        <div dangerouslySetInnerHTML={{ __html: title }} />
         <span className="absolute -bottom-2 left-0 w-12 h-1 bg-blue-500 rounded-full"></span>
-      </h3>
-      <p className="text-slate-600 leading-relaxed text-lg">
-        {description}
-      </p>
+      </div>
+      <div className="text-slate-600 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: description }} />
       <ul className="space-y-2">
         {displayFeatures.map((feature, idx) => (
           <li key={idx} className="flex items-center gap-3 text-slate-700">
             <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-            <span>{feature}</span>
+            <div dangerouslySetInnerHTML={{ __html: feature }} />
           </li>
         ))}
       </ul>

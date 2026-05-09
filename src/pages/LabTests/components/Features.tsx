@@ -59,12 +59,8 @@ export default function Features({ title, description, items }: FeaturesProps) {
     <section className="relative bg-white py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-            {title || "Why Choose Us"}
-          </h2>
-          <p className="mt-4 text-lg text-slate-600">
-            {description || "We combine convenience, accuracy, and smart insights to make lab testing effortless and informative."}
-          </p>
+          <div className="text-3xl font-bold tracking-tight text-slate-900" dangerouslySetInnerHTML={{ __html: title || "Why Choose Us" }} />
+          <div className="mt-4 text-lg text-slate-600" dangerouslySetInnerHTML={{ __html: description || "We combine convenience, accuracy, and smart insights to make lab testing effortless and informative." }} />
         </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -78,8 +74,8 @@ export default function Features({ title, description, items }: FeaturesProps) {
                 <div className={`mb-4 inline-flex rounded-lg bg-white p-3 shadow-sm ring-1 ring-slate-200 ${f.color}`}>
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900">{f.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{f.description}</p>
+                <div className="text-lg font-semibold text-slate-900" dangerouslySetInnerHTML={{ __html: f.title }} />
+                <div className="mt-2 text-sm text-slate-600" dangerouslySetInnerHTML={{ __html: f.description }} />
               </div>
             );
           })}

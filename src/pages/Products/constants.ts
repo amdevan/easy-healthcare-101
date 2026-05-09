@@ -30,6 +30,16 @@ export const HEALTH_PACKAGES: HealthPackage[] = [
     features: ['All Comprehensive Features', 'Bone Density', 'Vitamin D', 'B12', 'Cardiac Risk Markers'],
     is_popular: false,
     category: 'Senior'
+  },
+  {
+    id: 'pkg_elite',
+    name: 'Executive Health',
+    price: 12999,
+    priceUsd: 99,
+    description: 'Ultimate health assessment with premium tests.',
+    features: ['Full Body Screen', 'HBA1C', 'Iron Profile', 'Calcium', 'Electrolytes', 'Chest X-Ray'],
+    is_popular: false,
+    category: 'Executive'
   }
 ];
 

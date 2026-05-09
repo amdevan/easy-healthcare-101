@@ -51,7 +51,7 @@ class HeaderSettingResource extends Resource
                         ->default('Patient Login'),
                     Forms\Components\TextInput::make('value.top_bar.login_href')
                         ->label('Login URL')
-                        ->default('/patient-login'),
+                        ->default('/auth/login'),
                     Forms\Components\Repeater::make('value.top_bar.action_buttons')
                         ->label('Action Buttons')
                         ->schema([
@@ -61,6 +61,9 @@ class HeaderSettingResource extends Resource
                             Forms\Components\TextInput::make('href')
                                 ->label('URL')
                                 ->required(),
+                            Forms\Components\Toggle::make('new_tab')
+                                ->label('Open in New Tab')
+                                ->default(false),
                             Forms\Components\Select::make('variant')
                                 ->label('Style')
                                 ->options([
@@ -82,6 +85,11 @@ class HeaderSettingResource extends Resource
                         ->directory('ui-settings')
                         ->visibility('public')
                         ->imagePreviewHeight('100')
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('value.logo_href')
+                        ->label('Logo Redirect URL')
+                        ->default('/')
+                        ->prefixIcon('heroicon-o-link')
                         ->columnSpanFull(),
                     Forms\Components\TextInput::make('value.logo_height')
                         ->label('Logo Height (px)')
@@ -115,6 +123,9 @@ class HeaderSettingResource extends Resource
                                 ->label('URL')
                                 ->required()
                                 ->maxLength(255),
+                            Forms\Components\Toggle::make('new_tab')
+                                ->label('Open in New Tab')
+                                ->default(false),
                             Forms\Components\Select::make('type')
                                 ->label('Type')
                                 ->options([
@@ -144,6 +155,9 @@ class HeaderSettingResource extends Resource
                                 ->label('URL')
                                 ->required()
                                 ->maxLength(255),
+                            Forms\Components\Toggle::make('new_tab')
+                                ->label('Open in New Tab')
+                                ->default(false),
                         ])
                         ->default([])
                         ->columns(2)
@@ -160,6 +174,9 @@ class HeaderSettingResource extends Resource
                                 ->label('URL')
                                 ->required()
                                 ->maxLength(255),
+                            Forms\Components\Toggle::make('new_tab')
+                                ->label('Open in New Tab')
+                                ->default(false),
                             Forms\Components\Textarea::make('desc')
                                 ->label('Description')
                                 ->rows(2)

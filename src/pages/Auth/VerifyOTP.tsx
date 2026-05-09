@@ -25,8 +25,10 @@ const VerifyOTP: React.FC = () => {
     try {
       // TODO: Replace with backend verification API
       // await api.verifyOtp({ email: state.email, phone: state.phone, otp })
-      login();
+      await login();
       navigate('/dashboard');
+    } catch (err: any) {
+      setError(err?.message || 'Verification failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

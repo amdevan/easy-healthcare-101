@@ -1,25 +1,25 @@
 // Admin API client: settings CRUD and media management for editable content
 
-const API_BASE = '/api';
+import { API_URL } from '../config/api';
 
 // Settings
 export type UiSettingValue = Record<string, any>;
 
 export async function getAllSettings(): Promise<Record<string, UiSettingValue>> {
-  const res = await fetch(`${API_BASE}/settings`);
+  const res = await fetch(`${API_URL}/settings`);
   if (!res.ok) throw new Error(`Failed to fetch settings: ${res.status}`);
   return res.json();
 }
 
 export async function getSetting(key: string): Promise<UiSettingValue | null> {
-  const res = await fetch(`${API_BASE}/settings/${encodeURIComponent(key)}`);
+  const res = await fetch(`${API_URL}/settings/${encodeURIComponent(key)}`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`Failed to fetch setting ${key}: ${res.status}`);
   return res.json();
 }
 
 export async function createSetting(key: string, value: UiSettingValue = {}): Promise<any> {
-  const res = await fetch(`${API_BASE}/settings`, {
+  const res = await fetch(`${API_URL}/settings`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ key, value }),
@@ -29,7 +29,7 @@ export async function createSetting(key: string, value: UiSettingValue = {}): Pr
 }
 
 export async function setSetting(key: string, value: UiSettingValue): Promise<any> {
-  const res = await fetch(`${API_BASE}/settings/${encodeURIComponent(key)}`, {
+  const res = await fetch(`${API_URL}/settings/${encodeURIComponent(key)}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ value }),
@@ -39,7 +39,7 @@ export async function setSetting(key: string, value: UiSettingValue): Promise<an
 }
 
 export async function patchSetting(key: string, partial: UiSettingValue): Promise<any> {
-  const res = await fetch(`${API_BASE}/settings/${encodeURIComponent(key)}`, {
+  const res = await fetch(`${API_URL}/settings/${encodeURIComponent(key)}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ value: partial }),
@@ -49,14 +49,14 @@ export async function patchSetting(key: string, partial: UiSettingValue): Promis
 }
 
 export async function deleteSetting(key: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/settings/${encodeURIComponent(key)}`, { method: 'DELETE' });
+  const res = await fetch(`${API_URL}/settings/${encodeURIComponent(key)}`, { method: 'DELETE' });
   if (res.status === 404) return;
   if (!res.ok) throw new Error(`Failed to delete setting ${key}: ${res.status}`);
 }
 
 // Simple HTML helpers for static UI blocks
 export async function getSettingHtml(key: string): Promise<string> {
-  const res = await fetch(`${API_BASE}/settings/${encodeURIComponent(key)}/html`);
+  const res = await fetch(`${API_URL}/settings/${encodeURIComponent(key)}/html`);
   if (!res.ok) throw new Error(`Failed to fetch setting HTML ${key}: ${res.status}`);
   // API returns a JSON string, ensure we return a string
   const data = await res.json();
@@ -64,7 +64,7 @@ export async function getSettingHtml(key: string): Promise<string> {
 }
 
 export async function setSettingHtml(key: string, html: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/settings/${encodeURIComponent(key)}/html`, {
+  const res = await fetch(`${API_URL}/settings/${encodeURIComponent(key)}/html`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ html }),
@@ -97,14 +97,14 @@ export async function listMedia(params?: { active?: boolean; q?: string; page?: 
   if (params?.active) sp.set('active', '1');
   if (params?.q) sp.set('q', params.q);
   if (params?.page) sp.set('page', String(params.page));
-  const url = `${API_BASE}/media${sp.toString() ? `?${sp.toString()}` : ''}`;
+  const url = `${API_URL}/media${sp.toString() ? `?${sp.toString()}` : ''}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch media: ${res.status}`);
   return res.json();
 }
 
 export async function getMedia(id: number): Promise<MediaDto> {
-  const res = await fetch(`${API_BASE}/media/${id}`);
+  const res = await fetch(`${API_URL}/media/${id}`);
   if (!res.ok) throw new Error(`Failed to fetch media ${id}: ${res.status}`);
   return res.json();
 }
@@ -116,7 +116,7 @@ export async function uploadMedia(file: File, meta?: { alt_text?: string; captio
   if (meta?.caption) fd.append('caption', meta.caption);
   if (typeof meta?.is_active === 'boolean') fd.append('is_active', meta.is_active ? '1' : '0');
   if (meta?.disk) fd.append('disk', meta.disk);
-  const res = await fetch(`${API_BASE}/media`, { method: 'POST', body: fd });
+  const res = await fetch(`${API_URL}/media`, { method: 'POST', body: fd });
   if (!res.ok) throw new Error(`Failed to upload media: ${res.status}`);
   return res.json();
 }
@@ -128,12 +128,23 @@ export async function updateMedia(id: number, data?: { alt_text?: string; captio
   if (data?.caption !== undefined) fd.append('caption', data.caption ?? '');
   if (data?.is_active !== undefined) fd.append('is_active', data.is_active ? '1' : '0');
   if (data?.disk !== undefined) fd.append('disk', data.disk ?? '');
-  const res = await fetch(`${API_BASE}/media/${id}`, { method: 'POST', body: fd, headers: { 'X-HTTP-Method-Override': 'PUT' } });
+  const res = await fetch(`${API_URL}/media/${id}`, { method: 'POST', body: fd, headers: { 'X-HTTP-Method-Override': 'PUT' } });
   if (!res.ok) throw new Error(`Failed to update media ${id}: ${res.status}`);
   return res.json();
 }
 
 export async function deleteMedia(id: number): Promise<void> {
-  const res = await fetch(`${API_BASE}/media/${id}`, { method: 'DELETE' });
+  const res = await fetch(`${API_URL}/media/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error(`Failed to delete media ${id}: ${res.status}`);
+}
+
+// Page CRUD
+export async function updatePage(id: number, data: { title?: string; slug?: string; is_active?: boolean }): Promise<any> {
+  const res = await fetch(`${API_URL}/pages/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`Failed to update page ${id}: ${res.status}`);
+  return res.json();
 }

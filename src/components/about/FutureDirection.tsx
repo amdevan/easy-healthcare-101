@@ -50,14 +50,12 @@ const FutureDirection: React.FC<FutureDirectionProps> = ({
         <div className="text-center mb-16">
            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-[10px] font-bold uppercase tracking-wider mb-3 shadow-sm">
               <Rocket size={12} />
-              <span>{subtitle}</span>
+              <div dangerouslySetInnerHTML={{ __html: subtitle }} />
            </div>
-           <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900 mb-3 tracking-tight">
-             {title}
-           </h2>
-           <p className="text-slate-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-             {description ? <span dangerouslySetInnerHTML={{ __html: description }} /> : "A strategic roadmap to transform healthcare delivery through innovation, data, and accessibility."}
-           </p>
+           <div className="text-3xl lg:text-4xl font-extrabold text-slate-900 mb-3 tracking-tight" dangerouslySetInnerHTML={{ __html: title }} />
+           <div className="text-slate-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+             {description ? <div dangerouslySetInnerHTML={{ __html: description }} /> : "A strategic roadmap to transform healthcare delivery through innovation, data, and accessibility."}
+           </div>
         </div>
 
         <div className="relative">
@@ -109,16 +107,12 @@ const FutureDirection: React.FC<FutureDirectionProps> = ({
                      {/* Content Card */}
                      <div className={`w-full md:w-1/2 pl-14 md:pl-0 ${isEven ? 'md:pr-12 md:text-right' : 'md:pl-12 md:text-left'}`}>
                         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 group hover:-translate-y-1 relative">
-                          <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3 bg-opacity-10 ${badgeColorClasses[colorName]}`}>
-                            {step.year}
-                          </span>
-                          <h3 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2 md:inline-flex md:items-baseline">
-                             {step.title}
-                             <ArrowUpRight size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </h3>
-                          <p className="text-slate-600 text-sm leading-relaxed">
-                            {step.description}
-                          </p>
+                          <div className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3 bg-opacity-10 ${badgeColorClasses[colorName]}`} dangerouslySetInnerHTML={{ __html: step.year }} />
+                <h3 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2 md:inline-flex md:items-baseline">
+                  <div dangerouslySetInnerHTML={{ __html: step.title }} />
+                  <ArrowUpRight size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </h3>
+                          <div className="text-slate-600 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: step.description }} />
                         </div>
                      </div>
                   </div>

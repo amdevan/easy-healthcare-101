@@ -16,9 +16,10 @@ interface InClinicConsultationProps {
   items?: SpecialistCardProps[];
   title?: string;
   subtitle?: string;
+  loading?: boolean;
 }
 
-const InClinicConsultation: React.FC<InClinicConsultationProps> = ({ items, title, subtitle }) => {
+const InClinicConsultation: React.FC<InClinicConsultationProps> = ({ items, title, subtitle, loading = false }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const defaultSpecialists: SpecialistCardProps[] = [
@@ -64,8 +65,8 @@ const InClinicConsultation: React.FC<InClinicConsultationProps> = ({ items, titl
                 <Icon name={icon} alt={name} className="w-10 h-10" />
               )}
           </div>
-          <Editable tag="h3" id={`specialist-name-${name.replace(/\s+/g, '-')}`} className="font-bold text-lg text-brand-gray-900">{name}</Editable>
-          <Editable tag="p" id={`specialist-desc-${name.replace(/\s+/g, '-')}`} className="mt-2 text-sm text-brand-gray-500 flex-grow">{description}</Editable>
+          <div className="font-bold text-lg text-brand-gray-900" dangerouslySetInnerHTML={{ __html: name }} />
+                <div className="mt-2 text-sm text-brand-gray-500 flex-grow" dangerouslySetInnerHTML={{ __html: description }} />
       </div>
       );
   };
@@ -81,9 +82,18 @@ const InClinicConsultation: React.FC<InClinicConsultationProps> = ({ items, titl
         <section className="bg-gray-50 py-16 lg:py-24">
             <div className="container mx-auto px-4">
                 <div className="mb-10">
-                    <Editable tag="h2" id="in-clinic-title" className="text-3xl font-extrabold text-brand-gray-900">{title || "Book an appointment for an in-clinic consultation"}</Editable>
-                    <Editable tag="p" id="in-clinic-subtitle" className="mt-2 text-brand-gray-500">{subtitle || "Find experienced doctors across all specialties."}</Editable>
+                    <Editable tag="div" id="in-clinic-title" className="text-3xl font-extrabold text-brand-gray-900">
+                        <div dangerouslySetInnerHTML={{ __html: title || "Book an appointment for an in-clinic consultation" }} />
+                    </Editable>
+                    <Editable tag="div" id="in-clinic-subtitle" className="mt-2 text-brand-gray-500">
+                        <div dangerouslySetInnerHTML={{ __html: subtitle || "Find experienced doctors across all specialties." }} />
+                    </Editable>
                 </div>
+                {loading ? (
+                    <div className="flex justify-center items-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-blue"></div>
+                    </div>
+                ) : (
                 <div className="relative">
                     <div ref={scrollContainerRef} className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide">
                         {specialists.map((specialist, index) => (
@@ -97,6 +107,7 @@ const InClinicConsultation: React.FC<InClinicConsultationProps> = ({ items, titl
                         &gt;
                     </button>
                 </div>
+                )}
             </div>
         </section>
     );

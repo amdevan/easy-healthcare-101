@@ -43,12 +43,13 @@ const ServiceGrid: React.FC<ServiceGridProps> = ({ items }) => {
                 )}
             </div>
             {/* Content */}
-            <h2 className="text-base font-bold text-brand-gray-900">{item.title}</h2>
-            <p className="mt-1 text-sm text-brand-gray-600">{item.desc}</p>
+            <div className="text-base font-bold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: item.title }} />
+            <div className="mt-1 text-sm text-brand-gray-600" dangerouslySetInnerHTML={{ __html: item.desc }} />
             {/* CTA */}
             <div className="mt-4">
               <Button
                 to={item.href}
+                target={item.new_tab ? '_blank' : undefined}
                 size="sm"
                 variant="outline"
                 className="border-brand-blue text-brand-blue hover:bg-blue-50"

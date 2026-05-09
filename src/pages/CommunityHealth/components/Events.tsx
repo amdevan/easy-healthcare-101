@@ -22,16 +22,18 @@ const Events: React.FC<EventsProps> = ({ title, ctaText, events }) => {
     <section className="py-20 bg-slate-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-8">
-          <h3 className="text-2xl md:text-3xl font-bold text-slate-900">{title || "Upcoming Events"}</h3>
-          <a href="#volunteer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700">{ctaText || "Volunteer"}</a>
+          <div className="text-2xl md:text-3xl font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: title || "Upcoming Events" }} />
+          <a href="#volunteer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700">
+            {ctaText ? <div dangerouslySetInnerHTML={{ __html: ctaText }} /> : "Volunteer"}
+          </a>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {displayEvents.map((e, i) => (
             <div key={i} className="rounded-2xl border border-slate-100 bg-white p-6">
-              <div className="flex items-center gap-2 text-teal-700 mb-2"><Calendar className="h-5 w-5" /><span>{e.date}</span></div>
-              <div className="flex items-center gap-2 text-slate-700 mb-4"><MapPin className="h-5 w-5" /><span>{e.location}</span></div>
-              <div className="text-lg font-bold text-slate-900 mb-1">{e.title}</div>
-              <div className="text-slate-600">{e.description}</div>
+              <div className="flex items-center gap-2 text-teal-700 mb-2"><Calendar className="h-5 w-5" /><div dangerouslySetInnerHTML={{ __html: e.date }} /></div>
+              <div className="flex items-center gap-2 text-slate-700 mb-4"><MapPin className="h-5 w-5" /><div dangerouslySetInnerHTML={{ __html: e.location }} /></div>
+              <div className="text-lg font-bold text-slate-900 mb-1" dangerouslySetInnerHTML={{ __html: e.title }} />
+              <div className="text-slate-600" dangerouslySetInnerHTML={{ __html: e.description }} />
             </div>
           ))}
         </div>

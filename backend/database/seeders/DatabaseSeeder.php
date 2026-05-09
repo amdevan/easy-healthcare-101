@@ -12,6 +12,7 @@ use Database\Seeders\AppointmentSeeder;
 use Database\Seeders\FaqSeeder;
 use Database\Seeders\BannerSeeder;
 use Database\Seeders\TestimonialSeeder;
+use Database\Seeders\TestimonialSectionSeeder;
 use Database\Seeders\UiSettingSeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\PatientSeeder;
@@ -96,10 +97,13 @@ class DatabaseSeeder extends Seeder
             FaqSeeder::class,
             BannerSeeder::class,
             TestimonialSeeder::class,
+            TestimonialSectionSeeder::class,
             UiSettingSeeder::class,
             RoleSeeder::class,
-            PatientSeeder::class,
+            ManagementTeamSeeder::class,
+            BoardMemberSeeder::class,
             PageSeeder::class,
+            PatientSeeder::class,
         ]);
     }
 }

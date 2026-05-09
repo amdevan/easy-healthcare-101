@@ -12,6 +12,8 @@ use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class Backups extends Page
 {
@@ -53,8 +55,8 @@ class Backups extends Page
                     ->label('Upload Backup Zip')
                     ->disk('local')
                     ->directory('temp-restores')
-                    ->acceptedFileTypes(['application/zip', 'application/x-zip-compressed'])
-                    ->maxSize(102400)
+                    ->acceptedFileTypes(['application/zip', 'application/x-zip-compressed', 'application/x-zip', 'application/octet-stream'])
+                    ->maxSize(104857600) // 100GB (Effectively unlimited)
                     ->required(),
                 Forms\Components\Checkbox::make('restore_database')
                     ->label('Restore Database (if present)')
@@ -64,16 +66,147 @@ class Backups extends Page
                     ->default(true),
             ])
             ->action(function (array $data) {
-                $this->processRestore($data);
+                try {
+                    $this->processRestore($data);
+                } catch (\Throwable $e) {
+                    Log::error('Restore failed', ['message' => $e->getMessage()]);
+                    Notification::make()->title('Error')->body('Restore failed. Check logs for details.')->danger()->send();
+                }
+            });
+    }
+
+    public function getLocalBackups(): array
+    {
+        $path = storage_path('app/manual_backups');
+        if (!file_exists($path)) {
+            @mkdir($path, 0775, true);
+        }
+        $files = glob($path . '/*.zip');
+        $options = [];
+        foreach ($files as $file) {
+            $options[$file] = basename($file) . ' (' . $this->formatSize(filesize($file)) . ')';
+        }
+        return $options;
+    }
+
+    public function formatSize($bytes)
+    {
+        if ($bytes >= 1073741824) {
+            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
+        } elseif ($bytes >= 1048576) {
+            $bytes = number_format($bytes / 1048576, 2) . ' MB';
+        } elseif ($bytes >= 1024) {
+            $bytes = number_format($bytes / 1024, 2) . ' KB';
+        } elseif ($bytes > 1) {
+            $bytes = $bytes . ' bytes';
+        } elseif ($bytes == 1) {
+            $bytes = $bytes . ' byte';
+        } else {
+            $bytes = '0 bytes';
+        }
+
+        return $bytes;
+    }
+
+    public function restoreLocalAction(): Action
+    {
+        return Action::make('restoreLocal')
+            ->label('Restore from Server File')
+            ->color('warning')
+            ->icon('heroicon-o-server')
+            ->requiresConfirmation()
+            ->modalHeading('Restore from Manual Backup')
+            ->modalDescription('Select a backup file previously uploaded to storage/app/manual_backups via FTP/File Manager.')
+            ->form([
+                Forms\Components\Select::make('backup_file')
+                    ->label('Select Backup File')
+                    ->options($this->getLocalBackups())
+                    ->required()
+                    ->searchable()
+                    ->noSearchResultsMessage('No backups found in storage/app/manual_backups'),
+                Forms\Components\Checkbox::make('restore_database')
+                    ->label('Restore Database')
+                    ->default(true),
+                Forms\Components\Checkbox::make('restore_files')
+                    ->label('Restore Files')
+                    ->default(true),
+            ])
+            ->action(function (array $data) {
+                $originalPath = $data['backup_file'];
+                if (file_exists($originalPath)) {
+                    // Create a copy in temp-restores so the original is preserved
+                    $tempDir = storage_path('app/temp-restores');
+                    if (!is_dir($tempDir)) @mkdir($tempDir, 0775, true);
+                    $tempPath = $tempDir . '/' . basename($originalPath);
+                    copy($originalPath, $tempPath);
+                    $data['backup_file'] = $tempPath;
+                    
+                    try {
+                        $this->processRestore($data);
+                    } catch (\Throwable $e) {
+                         Log::error('Restore failed', ['message' => $e->getMessage()]);
+                        Notification::make()->title('Error')->body('Restore failed: ' . $e->getMessage())->danger()->send();
+                    }
+                } else {
+                    Notification::make()->title('Error')->body('File not found')->danger()->send();
+                }
             });
     }
 
     protected function processRestore(array $data)
     {
-        $backupPath = storage_path('app/' . $data['backup_file']);
+        $raw = $data['backup_file'] ?? null;
+        $backupPath = null;
+        $candidates = [];
+        $targetDir = storage_path('app/temp-restores');
         
-        if (!file_exists($backupPath)) {
-            Notification::make()->title('Error')->body('Backup file not found.')->danger()->send();
+        // Ensure target directory exists and is writable
+        if (!is_dir($targetDir)) {
+            @mkdir($targetDir, 0775, true);
+        }
+        @chmod($targetDir, 0775);
+        
+        if ($raw instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+            $stored = $raw->storeAs('temp-restores', $raw->getClientOriginalName(), 'local');
+            $candidates[] = storage_path('app/' . $stored);
+        } else {
+            $value = is_array($raw) ? ($raw[0] ?? null) : $raw;
+            if (is_string($value) && $value !== '') {
+                // Common relative paths
+                $relative = ltrim($value, '/');
+                $candidates[] = storage_path('app/' . $relative);
+                $candidates[] = $targetDir . '/' . basename($relative);
+                // Absolute path fallback
+                $candidates[] = $value;
+                
+                // Resolve via Storage disk explicitly
+                try {
+                    $diskPath = Storage::disk('local')->path($relative);
+                    $candidates[] = $diskPath;
+                } catch (\Throwable $e) {
+                    // ignore resolution failure
+                }
+                
+                // Search in Livewire temporary directory and copy to target
+                $livewireTmp = storage_path('app/livewire-tmp');
+                $basename = basename($relative);
+                foreach (glob($livewireTmp . '/*/' . $basename) as $tmpFile) {
+                    $dest = $targetDir . '/' . $basename;
+                    @copy($tmpFile, $dest);
+                    $candidates[] = $dest;
+                }
+            }
+        }
+        
+        foreach ($candidates as $candidate) {
+            if ($candidate && file_exists($candidate)) {
+                $backupPath = $candidate;
+                break;
+            }
+        }
+        
+        if (!$backupPath) {
+            Notification::make()->title('Error')->body('Backup file not found. Please re-upload and ensure storage/app is writable.')->danger()->send();
             return;
         }
 
@@ -83,7 +216,8 @@ class Backups extends Page
         }
 
         $zip = new ZipArchive;
-        if ($zip->open($backupPath) === TRUE) {
+        $opened = $zip->open($backupPath);
+        if ($opened === true) {
             $zip->extractTo($tempDir);
             $zip->close();
         } else {
@@ -103,7 +237,7 @@ class Backups extends Page
 
         // Cleanup
         $this->recursiveRemoveDirectory($tempDir);
-        unlink($backupPath);
+        @unlink($backupPath);
 
         Notification::make()
             ->title('Restore Completed')
@@ -158,13 +292,55 @@ class Backups extends Page
                 exec($command, $output, $returnVar);
                 
                 if ($returnVar !== 0) {
-                    throw new \Exception('MySQL import failed.');
+                    // Try PHP-based import if command line failed
+                    $this->importSqlFile($foundDump);
                 }
             } else {
                  Notification::make()->title('Warning')->body('Automatic restore not supported for this driver/format.')->warning()->send();
             }
         } catch (\Exception $e) {
             Notification::make()->title('Error')->body('Database restore failed: ' . $e->getMessage())->danger()->send();
+        }
+    }
+
+    protected function importSqlFile($filePath)
+    {
+        // Increase memory and time limit for large imports
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+
+        $handle = fopen($filePath, "r");
+        if (!$handle) {
+            throw new \Exception("Could not open SQL file.");
+        }
+
+        $sql = '';
+        
+        DB::beginTransaction();
+        
+        try {
+            while (($line = fgets($handle)) !== false) {
+                // Skip comments (simple check) and empty lines
+                $trimmedLine = trim($line);
+                if (substr($trimmedLine, 0, 2) == '--' || $trimmedLine == '' || substr($trimmedLine, 0, 1) == '#') {
+                    continue;
+                }
+                
+                $sql .= $line;
+                
+                // If line ends with semicolon, execute query
+                if (substr(rtrim($line), -1, 1) == ';') {
+                    DB::unprepared($sql);
+                    $sql = '';
+                }
+            }
+            
+            DB::commit();
+            fclose($handle);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if ($handle) fclose($handle);
+            throw $e;
         }
     }
 
@@ -187,7 +363,7 @@ class Backups extends Page
                 
                 if ($item->isDir()) {
                     if (!file_exists($destPath)) {
-                        mkdir($destPath);
+                        mkdir($destPath, 0755, true);
                     }
                 } else {
                     copy($item, $destPath);
@@ -198,14 +374,21 @@ class Backups extends Page
 
     protected function recursiveRemoveDirectory($directory)
     {
-        foreach (glob("{$directory}/*") as $file) {
-            if (is_dir($file)) { 
-                $this->recursiveRemoveDirectory($file);
-            } else {
-                unlink($file);
-            }
+        if (!is_dir($directory)) {
+            return;
         }
-        rmdir($directory);
+
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($files as $fileinfo) {
+            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+            @$todo($fileinfo->getRealPath());
+        }
+
+        @rmdir($directory);
     }
 
     public function backupSystemAction(): Action
@@ -278,9 +461,9 @@ class Backups extends Page
                 copy($dbConfig['database'], $dumpFile);
             } elseif ($driver === 'mysql') {
                 $dumpFile = $tempDir . '/database.sql';
-                $mysqldumpPath = $this->getMysqldumpPath();
                 
-                // Try mysqldump
+                // Try mysqldump first
+                $mysqldumpPath = $this->getMysqldumpPath();
                 $command = sprintf(
                     '%s --user=%s --password=%s --host=%s --port=%s %s > %s',
                     escapeshellarg($mysqldumpPath),
@@ -294,16 +477,9 @@ class Backups extends Page
                 
                 exec($command, $output, $returnVar);
                 
+                // If mysqldump failed, use PHP fallback
                 if ($returnVar !== 0 || !file_exists($dumpFile) || filesize($dumpFile) === 0) {
-                    // Fallback to JSON dump
-                    $dumpFile = $tempDir . '/database.json';
-                    $tables = DB::select('SHOW TABLES');
-                    $data = [];
-                    foreach ($tables as $table) {
-                        $tableName = reset($table);
-                        $data[$tableName] = DB::table($tableName)->get();
-                    }
-                    file_put_contents($dumpFile, json_encode($data, JSON_PRETTY_PRINT));
+                    $this->generatePhpSqlDump($dumpFile);
                 }
             } else {
                  $dumpFile = $tempDir . '/database_fallback.json';
@@ -319,6 +495,56 @@ class Backups extends Page
         }
 
         return $dumpFile;
+    }
+
+    protected function generatePhpSqlDump(string $outputFile)
+    {
+        // Increase memory and time limit for large imports
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+
+        $handle = fopen($outputFile, 'w');
+        
+        // Disable foreign key checks
+        fwrite($handle, "SET FOREIGN_KEY_CHECKS=0;\n");
+        fwrite($handle, "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n\n");
+
+        $tables = DB::select('SHOW TABLES');
+        $dbName = config('database.connections.mysql.database');
+        $tablesKey = "Tables_in_" . $dbName;
+
+        foreach ($tables as $tableObj) {
+            // Determine table name key (it varies based on fetch mode or PDO)
+            $table = reset($tableObj);
+            
+            // Drop table
+            fwrite($handle, "DROP TABLE IF EXISTS `$table`;\n");
+
+            // Create table
+            try {
+                $createTable = DB::select("SHOW CREATE TABLE `$table`")[0];
+                $createTableSql = $createTable->{'Create Table'} ?? $createTable->{'create table'};
+                fwrite($handle, $createTableSql . ";\n\n");
+            } catch (\Exception $e) {
+                continue; // Skip if table definition cannot be read
+            }
+
+            // Insert data - use cursor for memory efficiency
+            $rows = DB::table($table)->cursor();
+            foreach ($rows as $row) {
+                $values = array_map(function ($value) {
+                    if ($value === null) return 'NULL';
+                    return "'" . addslashes($value) . "'";
+                }, (array)$row);
+                
+                fwrite($handle, "INSERT INTO `$table` VALUES (" . implode(', ', $values) . ");\n");
+            }
+            fwrite($handle, "\n");
+        }
+
+        // Enable foreign key checks
+        fwrite($handle, "SET FOREIGN_KEY_CHECKS=1;\n");
+        fclose($handle);
     }
 
     protected function addFilesToZip(ZipArchive $zip, string $sourcePath, string $zipInternalPrefix = '')

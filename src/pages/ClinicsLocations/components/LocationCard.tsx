@@ -41,52 +41,52 @@ const LocationCard: React.FC<{ location: Location; onOpen: (loc: Location) => vo
         onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://picsum.photos/800/400'; }}
       />
       <div className="absolute top-4 left-4">
-        <span className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${location.isPrimary ? 'bg-blue-600 text-white' : 'bg-white/90 text-slate-800 backdrop-blur-sm'}`}>
-          {location.type}
-        </span>
+        <div className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${location.isPrimary ? 'bg-blue-600 text-white' : 'bg-white/90 text-slate-800 backdrop-blur-sm'}`}>
+          <div dangerouslySetInnerHTML={{ __html: location.type }} />
+        </div>
       </div>
     </div>
     <div className="p-6 flex-1 flex flex-col">
-      <h3 className="text-xl font-bold text-slate-800 mb-2">{location.name}</h3>
+      <div className="text-xl font-bold text-slate-800 mb-2" dangerouslySetInnerHTML={{ __html: location.name }} />
       <div className="space-y-3 mb-6">
         <div className="flex items-start gap-3 text-slate-600">
           <MapPinIcon className="w-5 h-5 mt-0.5 text-blue-500 shrink-0" />
-          <span className="text-sm">{location.address}</span>
+          <div className="text-sm" dangerouslySetInnerHTML={{ __html: location.address }} />
         </div>
         <div className="flex items-center gap-3 text-slate-600">
           <PhoneIcon className="w-5 h-5 text-blue-500 shrink-0" />
-          <span className="text-sm font-medium">{location.phone}</span>
+          <div className="text-sm font-medium" dangerouslySetInnerHTML={{ __html: location.phone }} />
         </div>
         <div className="flex items-center gap-3 text-slate-600">
           <ClockIcon className="w-5 h-5 text-blue-500 shrink-0" />
-          <span className="text-sm">{location.hours}</span>
+          <div className="text-sm" dangerouslySetInnerHTML={{ __html: location.hours }} />
         </div>
       </div>
       <div className="mt-auto space-y-4">
         <div className="border-t border-gray-100 pt-4">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Available Tech</p>
+          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2"><div dangerouslySetInnerHTML={{ __html: 'Available Tech' }} /></div>
           <div className="flex flex-wrap gap-2">
             {location.techSpecs.map((tech, idx) => (
-              <span key={idx} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-100 font-medium flex items-center gap-1">
-                <ZapIcon /> {tech}
-              </span>
+              <div key={idx} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-100 font-medium flex items-center gap-1">
+                <ZapIcon /> <div dangerouslySetInnerHTML={{ __html: tech }} />
+              </div>
             ))}
           </div>
         </div>
         <div className="border-t border-gray-100 pt-2">
           <div className="flex flex-wrap gap-2 mt-2">
             {location.features.slice(0, 2).map((feature, idx) => (
-              <span key={idx} className="text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded">
-                {feature}
-              </span>
+              <div key={idx} className="text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded">
+                <div dangerouslySetInnerHTML={{ __html: feature }} />
+              </div>
             ))}
             {location.features.length > 2 && (
-              <span className="text-xs text-slate-400 px-1 py-1">+ {location.features.length - 2} more</span>
+              <div className="text-xs text-slate-400 px-1 py-1">+ {location.features.length - 2} more</div>
             )}
           </div>
         </div>
         <button onClick={() => onOpen(location)} className="w-full py-2.5 rounded-lg border border-blue-600 text-blue-600 font-medium hover:bg-blue-50 transition-colors text-sm mt-2 text-center">
-          View Details
+          <div dangerouslySetInnerHTML={{ __html: 'View Details' }} />
         </button>
       </div>
     </div>

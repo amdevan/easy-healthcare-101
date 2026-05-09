@@ -42,20 +42,14 @@ const HomeDiagnostics: React.FC<HomeDiagnosticsProps> = ({ title, subtitle, imag
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         {/* Left Side: Info and CTA */}
                         <div className="order-2 lg:order-1">
-                            <Editable tag="h2" id="doctor-home-visit-title" className="text-4xl font-extrabold text-brand-gray-900">
-                                {title || "Expand Your Practice. Offer Home Visits."}
-                            </Editable>
-                            <Editable tag="p" id="doctor-home-visit-subtitle" className="mt-4 text-lg text-brand-gray-500">
-                                {subtitle || "Join our network of esteemed doctors providing compassionate care at patients' homes. Increase your reach, manage your schedule flexibly, and boost your earnings."}
-                            </Editable>
+                            <div className="text-4xl font-extrabold text-brand-gray-900" dangerouslySetInnerHTML={{ __html: title || "Expand Your Practice. Offer Home Visits." }} />
+                            <div className="mt-4 text-lg text-brand-gray-500" dangerouslySetInnerHTML={{ __html: subtitle || "Join our network of esteemed doctors providing compassionate care at patients' homes. Increase your reach, manage your schedule flexibly, and boost your earnings." }} />
                             
                             <ul className="mt-8 space-y-4">
                                 {displayBenefits.map(benefit => (
                                     <li key={benefit.id} className="flex items-start space-x-3">
                                         <CheckIcon />
-                                        <Editable tag="span" id={benefit.id} className="text-brand-gray-700">
-                                            {benefit.text}
-                                        </Editable>
+                                        <div className="text-brand-gray-700" dangerouslySetInnerHTML={{ __html: benefit.text }} />
                                     </li>
                                 ))}
                             </ul>

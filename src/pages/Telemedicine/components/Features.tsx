@@ -64,12 +64,8 @@ const Features: React.FC<FeaturesProps> = ({ title, subtitle, items }) => {
     <section id="features" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
-          <span className="text-teal-600 font-semibold tracking-wide uppercase text-sm">
-            {subtitle || "Key Features"}
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">
-            {title || "Comprehensive Digital Care"}
-          </h2>
+          <div className="text-teal-600 font-semibold tracking-wide uppercase text-sm" dangerouslySetInnerHTML={{ __html: subtitle || "Key Features" }} />
+          <div className="text-3xl md:text-4xl font-bold text-gray-900 mt-2" dangerouslySetInnerHTML={{ __html: title || "Comprehensive Digital Care" }} />
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -79,10 +75,8 @@ const Features: React.FC<FeaturesProps> = ({ title, subtitle, items }) => {
             return (
               <div key={idx} className={`bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow ${idx === 4 ? 'md:col-span-2 lg:col-span-1' : ''}`}>
                 {renderIcon(item.icon, fallbackIcon)}
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {item.description}
-                </p>
+                <div className="text-xl font-bold text-gray-900 mb-3" dangerouslySetInnerHTML={{ __html: item.title }} />
+                <div className="text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: item.description }} />
               </div>
             );
           })}
