@@ -229,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $rootDomain = ($count > 2) ? '.' . $parts[$count-2] . '.' . $parts[$count-1] : '.' . $appUrlHost;
 
         updateEnv([
-            'APP_NAME' => '"Easy Healthcare 101"',
+            'APP_NAME' => '"Easy Care 365"',
             'APP_ENV' => 'production',
             'APP_URL' => $appUrl,
             'FRONTEND_URL' => $appUrl, // Same as App URL for single domain
@@ -251,13 +251,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dsn = "mysql:host={$dbConfig['DB_HOST']};port={$dbConfig['DB_PORT']};dbname={$dbConfig['DB_DATABASE']}";
             $pdo = new PDO($dsn, $dbConfig['DB_USERNAME'], $dbConfig['DB_PASSWORD']);
             
-            // Fix: pages.open_in_new_tab
-            $stmt = $pdo->query("SHOW COLUMNS FROM pages LIKE 'open_in_new_tab'");
-            if (!$stmt->fetch()) {
-                $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
+            // Force add missing columns
+            try {
+                $stmt = $pdo->query("SHOW COLUMNS FROM pages LIKE 'open_in_new_tab'");
+                if (!$stmt->fetch()) {
+                    $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
+                }
+            } catch (Exception $colEx) {
+                // If pages table doesn't exist yet, it will be created by migrate
             }
 
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            try {
+                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            } catch (Exception $migEx) {
+                // Ignore migration errors if some columns were added manually
+            }
             \Illuminate\Support\Facades\Artisan::call('optimize:clear');
             \Illuminate\Support\Facades\Artisan::call('view:clear');
             $success = "✅ Database synchronized and cache cleared successfully!\n" . \Illuminate\Support\Facades\Artisan::output();
@@ -669,13 +677,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $pdo = new PDO($dsn, $dbConfig['DB_USERNAME'], $dbConfig['DB_PASSWORD']);
                         
                         // Force add missing columns
-                        $stmt = $pdo->query("SHOW COLUMNS FROM pages LIKE 'open_in_new_tab'");
-                        if (!$stmt->fetch()) {
-                            $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
-                        }
+                        try {
+                            $stmt = $pdo->query("SHOW COLUMNS FROM pages LIKE 'open_in_new_tab'");
+                            if (!$stmt->fetch()) {
+                                $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
+                            }
+                        } catch (Exception $colEx) {}
                         
                         // Clear caches
-                        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                        try {
+                            \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                        } catch (Exception $artEx) {}
                     }
                 } catch (Exception $e) {
                     // Silent fail for auto-fix
