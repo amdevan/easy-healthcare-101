@@ -60,6 +60,10 @@ We have a script that builds the React frontend, places it inside the Laravel pu
 
 ## Troubleshooting
 
+-   **Column Not Found Error**: If you see an error like `Unknown column 'open_in_new_tab'`, it means your database schema is out of sync. 
+    -   Go to `https://yourdomain.com/install.php?step=6`.
+    -   Click the **"Run Migrations"** button in the Troubleshooting section.
 -   **404 on Refresh**: Ensure the `.htaccess` file in the root is present. It handles both Laravel and React routing.
 -   **500 Error**: Check `storage/logs/laravel.log`. Ensure PHP version is 8.1+.
 -   **Static Assets Not Loading**: If images or styles are missing, try running the "Fix Storage" tool in the installer's final step.
+-   **App Key Error**: If you see `No application encryption key has been specified`, use the **"Generate App Key"** button in the installer.

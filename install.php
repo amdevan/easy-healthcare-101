@@ -220,6 +220,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Run Migrations Action
+    if ($action === 'run_migrations') {
+        try {
+            bootstrapLaravel($corePath);
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $success = "✅ Migrations run successfully!\n" . \Illuminate\Support\Facades\Artisan::output();
+        } catch (Exception $e) {
+            $error = "❌ Failed to run migrations: " . $e->getMessage();
+        }
+    }
+
     // Fix Storage Link Action
     if ($action === 'fix_storage') {
         try {
@@ -649,6 +660,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="hidden" name="action" value="generate_key">
                             <button type="submit" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded transition">
                                 <i class="fas fa-key mr-1"></i> Generate App Key
+                            </button>
+                        </form>
+
+                        <form method="post" class="inline-block">
+                            <input type="hidden" name="action" value="run_migrations">
+                            <button type="submit" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded transition">
+                                <i class="fas fa-database mr-1"></i> Run Migrations
                             </button>
                         </form>
 
