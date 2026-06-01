@@ -82,7 +82,7 @@ const AppRoutes: React.FC = () => {
                     case 'health-package': return <Products />;
                     case 'products': return <Products />;
                     case 'easy-care-365': return <Membership slug="easy-care-365" />;
-                    case 'membership': return <Membership slug="easy-care-365" />;
+                    case 'membership': return <Membership slug="membership" />;
                     case 'clinics-locations': return <ClinicsLocations />;
                     case 'contact': return <Contact />;
                     case 'find-doctors': return <FindDoctors />;
@@ -103,7 +103,7 @@ const AppRoutes: React.FC = () => {
             <Route path="/health-package" element={<Products />} />
             <Route path="/pharmacy" element={<Pharmacy />} />
             <Route path="/easy-care-365" element={<Membership slug="easy-care-365" />} />
-            <Route path="/membership" element={<Navigate to="/easy-care-365" replace />} />
+            <Route path="/membership" element={<Membership slug="membership" />} />
             {/* <Route path="/telemedicine" element={<Telemedicine />} /> */}
             <Route path="/lab-tests" element={<LabTests />} />
             {/* <Route path="/about" element={<AboutPage />} /> */}

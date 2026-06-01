@@ -49,6 +49,7 @@ class PageController extends Controller
             'is_active' => 'sometimes|boolean',
             'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string|max:500',
+            'content' => 'sometimes|array',
         ]);
 
         $page->update($validated);

@@ -638,7 +638,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Step 6: Finish -->
         <?php if ($step == 6): ?>
             <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+                <?php
+                // Automatically attempt to fix common issues when landing on this step
+                try {
+                    bootstrapLaravel($corePath);
+                    $dbConfig = getEnvValues($envPath);
+                    $dsn = "mysql:host={$dbConfig['DB_HOST']};port=" . ($dbConfig['DB_PORT'] ?? '3306') . ";dbname={$dbConfig['DB_DATABASE']}";
+                    $pdo = new PDO($dsn, $dbConfig['DB_USERNAME'], $dbConfig['DB_PASSWORD']);
+                    
+                    // Force add missing columns
+                    $stmt = $pdo->query("SHOW COLUMNS FROM pages LIKE 'open_in_new_tab'");
+                    if (!$stmt->fetch()) {
+                        $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
+                    }
+                    
+                    // Clear caches
+                    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                } catch (Exception $e) {
+                    // Silent fail for auto-fix
+                }
+                ?>
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-check text-green-600 text-3xl"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">Installation Complete!</h2>

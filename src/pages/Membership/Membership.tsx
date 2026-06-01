@@ -18,18 +18,28 @@ const Membership: React.FC<MembershipProps> = ({ slug }) => {
   const [pageSlug, setPageSlug] = React.useState(slug || 'easy-care-365');
   const { data: apiData, loading, error } = usePageContent(pageSlug);
 
-  // Use API data if available, otherwise fallback to default data for easy-care-365
-  // We use a more robust check to ensure we don't accidentally use default data if API returns valid content
-  const pageData = (apiData && apiData.content && apiData.content.length > 0) 
+  // Use API data if available. 
+  // We check if content is an array or object and has at least one item.
+  const hasApiContent = apiData && apiData.content && (
+    (Array.isArray(apiData.content) && apiData.content.length > 0) || 
+    (typeof apiData.content === 'object' && Object.keys(apiData.content).length > 0)
+  );
+
+  const pageData = hasApiContent 
     ? apiData 
     : (pageSlug === 'easy-care-365' ? defaultMembershipData : null);
 
-  const heroBlock = pageData?.content?.find((b: any) => b.type === 'hero_section');
-  const featuresBlock = pageData?.content?.find((b: any) => b.type === 'features_section');
-  const valuePropBlock = pageData?.content?.find((b: any) => b.type === 'value_prop_section');
-  const pricingBlock = pageData?.content?.find((b: any) => b.type === 'pricing_section');
-  const faqBlock = pageData?.content?.find((b: any) => b.type === 'faq_section');
-  const testimonialsBlock = pageData?.content?.find((b: any) => b.type === 'testimonials_section');
+  // Convert content to array if it's an object (for .find, .map etc)
+  const contentArray: any[] = Array.isArray(pageData?.content) 
+    ? pageData.content 
+    : (pageData?.content ? Object.values(pageData.content) : []);
+
+  const heroBlock = contentArray?.find((b: any) => b.type === 'hero_section');
+  const featuresBlock = contentArray?.find((b: any) => b.type === 'features_section');
+  const valuePropBlock = contentArray?.find((b: any) => b.type === 'value_prop_section');
+  const pricingBlock = contentArray?.find((b: any) => b.type === 'pricing_section');
+  const faqBlock = contentArray?.find((b: any) => b.type === 'faq_section');
+  const testimonialsBlock = contentArray?.find((b: any) => b.type === 'testimonials_section');
 
   React.useEffect(() => {
     // Only try to switch slug if we don't have fallback data
