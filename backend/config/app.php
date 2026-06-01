@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Easy Healthcare CMS'),
+    'name' => env('APP_NAME', 'Easy Care 365'),
 
     /*
     |--------------------------------------------------------------------------

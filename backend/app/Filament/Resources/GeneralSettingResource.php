@@ -29,6 +29,10 @@ class GeneralSettingResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->schema([
+            Forms\Components\TextInput::make('value.site_name')
+                ->label('Site Name')
+                ->default('Easy Care 365')
+                ->required(),
             Select::make('value.home_page_slug')
                 ->label('Home Page')
                 ->options(Page::all()->pluck('title', 'slug'))

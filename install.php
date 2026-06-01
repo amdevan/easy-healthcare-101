@@ -683,6 +683,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
                             }
                         } catch (Exception $colEx) {}
+
+                        // Force App Name in Database (Persistent Fix)
+                        try {
+                            $stmt = $pdo->prepare("SELECT value FROM ui_settings WHERE `key` = 'general'");
+                            $stmt->execute();
+                            $general = $stmt->fetch(PDO::FETCH_ASSOC);
+                            
+                            if ($general) {
+                                $value = json_decode($general['value'], true);
+                                $value['site_name'] = 'Easy Care 365';
+                                $stmt = $pdo->prepare("UPDATE ui_settings SET value = ? WHERE `key` = 'general'");
+                                $stmt->execute([json_encode($value)]);
+                            }
+                        } catch (Exception $nameEx) {}
                         
                         // Clear caches
                         try {
