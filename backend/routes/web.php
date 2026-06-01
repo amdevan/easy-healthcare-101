@@ -7,7 +7,11 @@ use Illuminate\Support\Facades\Artisan;
 use App\Models\User;
 
 Route::get('/', function () {
-    return response()->json(['message' => 'Easy Healthcare 101 Backend API is running']);
+    $path = public_path('index.html');
+    if (file_exists($path)) {
+        return file_get_contents($path);
+    }
+    return response()->json(['message' => 'Easy Healthcare 101 Backend API is running. (Frontend not built yet)']);
 });
 
 Route::get('/storage/{path}', function ($path) {

@@ -8,7 +8,7 @@ const getApiUrl = (): string => {
         return (window as any).APP_CONFIG.API_URL;
     }
 
-    const url = env.VITE_API_URL || 'https://admin.easyhealthcare101.com/api';
+    const url = env.VITE_API_URL || '/api';
     return url;
 };
 

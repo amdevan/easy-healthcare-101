@@ -41,8 +41,15 @@ cpanel_installer/
 cpanel_build.zip
 cpanel_deployment.zip
 cpanel-build.zip
-cpanel_deployment.zip
 cpanel_installer.zip
+cpanel_file/
+cpanel_file.zip
 
-build-cpanel.sh
-install.php
+# Build artifacts
+backend/public/assets/
+backend/public/index.html
+backend/public/config.js
+
+# Note: build-cpanel.sh and install.php are now tracked
+# build-cpanel.sh
+# install.php
