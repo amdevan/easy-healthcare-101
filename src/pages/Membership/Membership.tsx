@@ -19,7 +19,10 @@ const Membership: React.FC<MembershipProps> = ({ slug }) => {
   const { data: apiData, loading, error } = usePageContent(pageSlug);
 
   // Use API data if available, otherwise fallback to default data for easy-care-365
-  const pageData = apiData || (pageSlug === 'easy-care-365' ? defaultMembershipData : null);
+  // We use a more robust check to ensure we don't accidentally use default data if API returns valid content
+  const pageData = (apiData && apiData.content && apiData.content.length > 0) 
+    ? apiData 
+    : (pageSlug === 'easy-care-365' ? defaultMembershipData : null);
 
   const heroBlock = pageData?.content?.find((b: any) => b.type === 'hero_section');
   const featuresBlock = pageData?.content?.find((b: any) => b.type === 'features_section');

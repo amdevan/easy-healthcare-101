@@ -224,8 +224,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'run_migrations') {
         try {
             bootstrapLaravel($corePath);
+            
+            // Manual check for missing columns (Robust fallback)
+            $dbConfig = getEnvValues($envPath);
+            $dsn = "mysql:host={$dbConfig['DB_HOST']};port={$dbConfig['DB_PORT']};dbname={$dbConfig['DB_DATABASE']}";
+            $pdo = new PDO($dsn, $dbConfig['DB_USERNAME'], $dbConfig['DB_PASSWORD']);
+            
+            // Fix: pages.open_in_new_tab
+            $stmt = $pdo->query("SHOW COLUMNS FROM pages LIKE 'open_in_new_tab'");
+            if (!$stmt->fetch()) {
+                $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
+            }
+
             \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-            $success = "✅ Migrations run successfully!\n" . \Illuminate\Support\Facades\Artisan::output();
+            \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
+            $success = "✅ Database synchronized and cache cleared successfully!\n" . \Illuminate\Support\Facades\Artisan::output();
         } catch (Exception $e) {
             $error = "❌ Failed to run migrations: " . $e->getMessage();
         }
