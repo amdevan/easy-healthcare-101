@@ -89,10 +89,31 @@ function testDbConnection($envPath) {
 
 // Helper: Bootstrap Laravel
 function bootstrapLaravel($corePath) {
+    static $app = null;
+    if ($app) return $app;
+
     if (!defined('LARAVEL_START')) define('LARAVEL_START', microtime(true));
-    require $corePath . '/vendor/autoload.php';
-    $app = require_once $corePath . '/bootstrap/app.php';
-    $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+    require_once $corePath . '/vendor/autoload.php';
+    
+    // We use a temporary variable because require_once returns true if already included
+    $bootstrapPath = $corePath . '/bootstrap/app.php';
+    $tempApp = require $bootstrapPath;
+    
+    // If $tempApp is true, it means bootstrap/app.php was already included but didn't return anything 
+    // or we are using require_once. We want the actual $app instance.
+    if ($tempApp === true || !is_object($tempApp)) {
+        // Fallback: If it's already bootstrapped, Laravel might have put it in the global container
+        if (class_exists('\Illuminate\Container\Container')) {
+            $app = \Illuminate\Container\Container::getInstance();
+        }
+    } else {
+        $app = $tempApp;
+    }
+
+    if ($app instanceof \Illuminate\Contracts\Foundation\Application || $app instanceof \Illuminate\Container\Container) {
+        $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+    }
+    
     return $app;
 }
 
@@ -643,17 +664,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 try {
                     bootstrapLaravel($corePath);
                     $dbConfig = getEnvValues($envPath);
-                    $dsn = "mysql:host={$dbConfig['DB_HOST']};port=" . ($dbConfig['DB_PORT'] ?? '3306') . ";dbname={$dbConfig['DB_DATABASE']}";
-                    $pdo = new PDO($dsn, $dbConfig['DB_USERNAME'], $dbConfig['DB_PASSWORD']);
-                    
-                    // Force add missing columns
-                    $stmt = $pdo->query("SHOW COLUMNS FROM pages LIKE 'open_in_new_tab'");
-                    if (!$stmt->fetch()) {
-                        $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
+                    if (!empty($dbConfig['DB_DATABASE'])) {
+                        $dsn = "mysql:host={$dbConfig['DB_HOST']};port=" . ($dbConfig['DB_PORT'] ?? '3306') . ";dbname={$dbConfig['DB_DATABASE']}";
+                        $pdo = new PDO($dsn, $dbConfig['DB_USERNAME'], $dbConfig['DB_PASSWORD']);
+                        
+                        // Force add missing columns
+                        $stmt = $pdo->query("SHOW COLUMNS FROM pages LIKE 'open_in_new_tab'");
+                        if (!$stmt->fetch()) {
+                            $pdo->exec("ALTER TABLE pages ADD COLUMN open_in_new_tab BOOLEAN DEFAULT 0 AFTER is_active");
+                        }
+                        
+                        // Clear caches
+                        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
                     }
-                    
-                    // Clear caches
-                    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
                 } catch (Exception $e) {
                     // Silent fail for auto-fix
                 }
